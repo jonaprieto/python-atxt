@@ -1,0 +1,5 @@
+atxt
+=============================
+
+.. automodule:: atxt
+    :members:
