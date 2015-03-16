@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 17:12:56
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-15 22:31:00
+# @Last Modified time: 2015-03-16 14:15:30
 
 from unicodedata import normalize, combining
 from unidecode import *
@@ -118,8 +118,8 @@ def remove_accents(s):
     try:
         nkfd_form = normalize('NFKD', unicode(s))
         s = u''.join([c for c in nkfd_form if not combining(c)])
-    except Exception, e:
-        self._debug(remove_accents, e, s)
+    except:
+        pass
     return s
 
 def encoding_path(s):

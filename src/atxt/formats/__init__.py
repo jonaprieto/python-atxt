@@ -3,7 +3,11 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 18:23:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 02:13:08
+# @Last Modified time: 2015-03-16 13:12:49
+
+from atxt.log_conf import Logger
+log = Logger.log
+
 
 formats = {
     'dat' : {},
