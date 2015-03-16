@@ -1,0 +1,24 @@
+DEBUG 2015-03-16 04:14:04,841
+	with option --file
+DEBUG 2015-03-16 04:14:04,841
+	from: /Users/usuario/Documents/pp/python-atxt/src
+INFO 2015-03-16 04:14:04,841
+	supported formats: ['html']
+DEBUG 2015-03-16 04:14:04,842
+	extracting data file from /Users/usuario/Documents/pp/python-atxt/src/prueba.html
+DEBUG 2015-03-16 04:14:04,842
+	creating a temporary directory
+DEBUG 2015-03-16 04:14:04,846
+	tempdir: /var/folders/p4/54lq003119g5gtvcs8bhtp_c0000gp/T/tmppe1J5D
+INFO 2015-03-16 04:14:04,846
+	copying /Users/usuario/Documents/pp/python-atxt/src/prueba.html to /var/folders/p4/54lq003119g5gtvcs8bhtp_c0000gp/T/tmppe1J5D
+DEBUG 2015-03-16 04:14:04,847
+	temp path: /var/folders/p4/54lq003119g5gtvcs8bhtp_c0000gp/T/tmppe1J5D/prueba.html
+INFO 2015-03-16 04:14:04,848
+	working with: prueba.html
+INFO 2015-03-16 04:14:04,848
+	successful conversion: /Users/usuario/Documents/pp/python-atxt/src/prueba.html
+INFO 2015-03-16 04:14:04,848
+	html 1
+INFO 2015-03-16 04:14:04,848
+	total: 1
