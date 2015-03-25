@@ -3,10 +3,9 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 22:29:02
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-20 12:05:01
+# @Last Modified time: 2015-03-25 14:21:12
 
 import os
-import sys
 
 from log_conf import Logger
 log = Logger.log
@@ -16,7 +15,7 @@ from encoding import encoding_path
 import utils
 
 
-class InfoFile():
+class InfoFile(object):
 
     """
         Handle file
@@ -55,17 +54,17 @@ class InfoFile():
 
     def __init__(self, file_path, check=False):
         if not file_path:
-            raise IOError, 'file_path: %s' % file_path
+            raise IOError('file_path: %s' % file_path)
 
         log.debug('extracting metadata from file: %s' % file_path)
         self._path = os.path.abspath(encoding_path(file_path))
         if check:
             if not os.path.isfile(self._path):
-                raise IOError, "It is not a file or doesn't exist"
+                raise IOError('It is not a file or does not exist')
         try:
             self._basename = os.path.basename(self._path)
             self._extension = utils.extract_ext(self._basename)
-            name, ext = os.path.splitext(self._basename)
+            ext = utils.extract_ext(self._basename)
             self._name = name
             self._dirname = os.path.dirname(self._path)
         except Exception, e:
@@ -88,7 +87,8 @@ class InfoFile():
     def temp(self):
         try:
             return self._temp_path
-        except:
+        except Exception, e:
+            log.debug(e)
             return self.create_temp()
 
     def create_temp(self, value=None):
@@ -115,10 +115,10 @@ class InfoFile():
             del self._temp_basename
             del self._temp_path
             del self._temp_dir
-        except AttributeError, e:
+        except AttributeError:
             log.warning('%s file has not temporal version' % self._basename)
 
-    def __str__():
+    def __str__(self):
         return {
             'name': self._name,
             'extension': self._extension,

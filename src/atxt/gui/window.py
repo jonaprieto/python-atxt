@@ -3,14 +3,18 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-21 14:16:52
-
+# @Last Modified time: 2015-03-25 17:11:45
+import os
 import sys
 from atxt.log_conf import Logger
 log = Logger.log
 
 from PySide import QtGui, QtCore
+from walksize import WalkSize
 
+import atxt.walking as wk
+
+homeDirectory = os.path.expanduser('~')
 
 class Window(QtGui.QWidget):
     checked = QtCore.Qt.Checked
@@ -64,7 +68,7 @@ class Window(QtGui.QWidget):
         self.layout.addWidget(self.boxDirectory)
 
     def closeEvent(self, event):
-        self.debug("Exit")
+        log.debug("Exit")
         event.accept()
 
     def findDirectory(self):
@@ -243,7 +247,7 @@ class Window(QtGui.QWidget):
             self.listfiles.append(s)
 
     def scanDir(self):
-        log.debug("\nfrom scanDir", "starting scanning")
+        log.debug("\nfrom scanDir starting scanning")
         self.progress_bar.setValue(0)
 
         self.directory = self.directoryLabel.text()
@@ -256,7 +260,7 @@ class Window(QtGui.QWidget):
         except:
             log.debug('Fail casting for number level')
 
-        log.debug("level:" + str(self.level))
+        log.debug("level: %d" % self.level)
 
         self.tfiles = []
         if self.checkPDF.isChecked():
@@ -270,7 +274,7 @@ class Window(QtGui.QWidget):
         if self.checkHTML.isChecked():
             self.tfiles.append('.html')
 
-        log.debug("tfiles:", self.tfiles)
+        log.debug("tfiles: %s"% self.tfiles)
 
         self.setStatus('Calculating the total size of files ...')
         self.totalfiles, self.totalsize = [0] * 2
@@ -300,7 +304,7 @@ class Window(QtGui.QWidget):
         self.heroes = [self.heroPDF.currentText(), self.heroDOCX.currentText()]
         log.debug('heroes: ' + str(self.heroes))
 
-        log.debug('debug: ' + str(self.debug))
+        log.debug('debug:' + str(log.debug))
 
         self.clean = self.checkClean.isChecked()
         log.debug('clean: ' + str(self.clean))
@@ -314,10 +318,10 @@ class Window(QtGui.QWidget):
 
     def Ready(self):
 
-        self.debug("Ready")
-        self.debug("Total Files: " + str(self.totalfiles))
-        self.debug("Total Size: " + wk.size_str(self.totalsize))
-        self.debug("Type Files: " + str(self.tfiles))
+        log.debug("Ready")
+        log.debug("Total Files: " + str(self.totalfiles))
+        log.debug("Total Size: " + wk.size_str(self.totalsize))
+        log.debug("Type Files: " + str(self.tfiles))
 
         try:
             self.stopProcess()
@@ -357,7 +361,7 @@ class Window(QtGui.QWidget):
 
     def startProcess(self):
         if len(self.listfiles) == 0:
-            self.debug("There's not nothing to convert.")
+            log.debug("There's not nothing to convert.")
             self.buttonStart.setEnabled(False)
             return
         try:

@@ -3,11 +3,16 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:19
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-20 23:34:23
+# @Last Modified time: 2015-03-25 16:57:44
 import os
 from atxt.log_conf import Logger
 log = Logger.log
 from PySide import QtCore
+
+from atxt.encoding import encoding_path
+import atxt.walking as wk
+
+homeDirectory = os.path.expanduser('~')
 
 
 class WalkSize(QtCore.QThread):
@@ -45,7 +50,7 @@ class WalkSize(QtCore.QThread):
             log.debug("Fail review directory of search")
             return
 
-        dir = enconding_path(self.window.directory)
+        dir = encoding_path(self.window.directory)
         sdirs = []
         level = self.window.level
         tfiles = self.window.tfiles
@@ -57,7 +62,7 @@ class WalkSize(QtCore.QThread):
         tsize = 0
         factor = 0.1 if level != 0 else 0.01 * level
         log.debug("wk.walk starting")
-        for root, dirs, files in wk.walk(dir, sdirs=sdirs, level=level, tfiles=tfiles):
+        for root, _, files in wk.walk(dir, sdirs=sdirs, level=level, tfiles=tfiles):
             if not self.FLAG:
                 log.debug("Process stopped.")
                 self.partDone(0)
@@ -70,7 +75,7 @@ class WalkSize(QtCore.QThread):
                 log.debug("File #" + str(conta))
 
                 filepath = os.path.join(root, f.name)
-                filepath = enconding_path(filepath)
+                filepath = encoding_path(filepath)
                 tsize += os.path.getsize(filepath)
                 self.pathCount.emit(filepath)
 

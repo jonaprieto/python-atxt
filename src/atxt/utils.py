@@ -3,9 +3,8 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 20:28:40
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-20 12:08:19
+# @Last Modified time: 2015-03-25 14:31:47
 import os
-import sys
 
 from log_conf import Logger
 log = Logger.log

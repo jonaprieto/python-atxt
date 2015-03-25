@@ -3,10 +3,9 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 17:13:18
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 19:21:02
+# @Last Modified time: 2015-03-25 16:48:07
 
 import os
-import sys
 from encoding import encoding_path
 
 from log_conf import Logger
@@ -78,7 +77,6 @@ def walk(top, topdown=True, tfiles=None, sdirs=None, level=0):
         except OSError:
             pass
 
-    onerror = None
     flinks = False
 
     yield top, dirs, nondirs
@@ -107,17 +105,18 @@ def size_str(bs, precision=1):
     )
     if bs == 1:
         return '1 byte'
+    factor, suffix = abbrevs[0]
     for factor, suffix in abbrevs:
         if bs >= factor:
             break
     return '%.*f %s' % (precision, bs / factor, suffix)
 
 
-def walk_size(dir='', sdirs=[], level=0, tfiles=['*']):
+def walk_size(top='', tfiles=None, sdirs=None, level=0):
     total_size = 0
     count_files = 0
     try:
-        for root, dirs, files in walk(dir, sdirs=sdirs, level=level, tfiles=tfiles):
+        for root, dirs, files in walk(top, sdirs=sdirs, level=level, tfiles=tfiles):
             for f in files:
                 filepath = os.path.join(root, f.name)
                 total_size += os.path.getsize(filepath)

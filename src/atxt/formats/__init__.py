@@ -3,11 +3,10 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 18:23:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-20 03:07:45
+# @Last Modified time: 2015-03-25 14:30:58
 
 import os
 import re
-import importlib
 from atxt.log_conf import Logger
 from atxt.infofile import InfoFile
 log = Logger.log
@@ -38,7 +37,7 @@ def convert(from_file, to_txt, opts):
     if not isinstance(from_file, InfoFile):
         log.critical('the file should be instanced with InfoFile')
     f = from_file
-    bot = None
+    bot = lambda x: x # dummy def before a real definition based on format
     exec 'bot = %s' % f.extension
     log.debug('calling bot = %s' % bot.__name__)
     return bot(from_file, to_txt, opts)

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 02:38:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-20 11:42:17
+# @Last Modified time: 2015-03-25 16:33:36
 
 from atxt.log_conf import Logger
 log = Logger.log
@@ -16,7 +16,7 @@ try:
 except:
     log.critical('html2text module not installed')
     log.info('pip install html2text')
-    raise Exception, 'html2text module not installed'
+    raise Exception('html2text module not installed')
 
 __all__ = ['html']
 
@@ -24,7 +24,7 @@ __all__ = ['html']
 def html(from_file, to_txt, opts):
     log.debug('html2txt starting')
     if not isinstance(from_file, InfoFile):
-        raise IOError, e
+        raise IOError
     _file = from_file
     encoding = 'utf-8'
     if 'encoding' in opts:
@@ -35,7 +35,7 @@ def html(from_file, to_txt, opts):
     except Exception, e:
         log.critical(e)
         return None
-        
+
     s = ''
     for l in f:
         s += l

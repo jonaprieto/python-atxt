@@ -3,12 +3,17 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 17:12:56
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 19:22:46
+# @Last Modified time: 2015-03-25 16:47:01
+
+
+import sys
+from log_conf import Logger
+log = Logger.log
+
 
 from unicodedata import normalize, combining
 from unidecode import *
 from kitchen.text.converters import to_unicode
-import sys
 
 __version__ = "0.0.1"
 

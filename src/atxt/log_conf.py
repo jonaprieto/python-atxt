@@ -3,8 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 03:49:40
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-19 15:56:02
-import colorlog
+# @Last Modified time: 2015-03-25 15:03:34
 import logging
 
 def singleton(cls):
@@ -16,17 +15,20 @@ def singleton(cls):
     return get_instance()
 
 @singleton
-class Logger():
+class Logger(object):
     def __init__(self):
         LOG_LEVEL = logging.DEBUG
         # LOG_LEVEL = logging.INFO
         LOGFORMAT = "%(log_color)s%(levelname)-1s%(reset)s | %(log_color)s%(message)s%(reset)s [%(filename)s:%(lineno)s - %(funcName)s() ] "
-        from colorlog import ColoredFormatter
         logging.root.setLevel(LOG_LEVEL)
-        formatter = ColoredFormatter(LOGFORMAT)
         stream = logging.StreamHandler()
         stream.setLevel(LOG_LEVEL)
-        stream.setFormatter(formatter)
+        try:
+            from colorlog import ColoredFormatter
+            formatter = ColoredFormatter(LOGFORMAT)
+            stream.setFormatter(formatter)
+        except:
+            pass
         self.log = logging.getLogger('root')
         self.log.setLevel(LOG_LEVEL)
         self.log.addHandler(stream)

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:51:26
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 16:11:18
+# @Last Modified time: 2015-03-25 16:49:19
 
 
 from log_conf import Logger
@@ -17,7 +17,7 @@ from os.path import join
 basedir_ = os.path.abspath(__file__)
 
 
-class Office:
+class Office(object):
 
     @property
     def msword(self):
@@ -55,7 +55,7 @@ class Office:
         except Exception, e:
             log.debug('fail to close msword: %s'%e)
 
-class Config:
+class Config(object):
 
     @property
     def HOME_PATH(self):

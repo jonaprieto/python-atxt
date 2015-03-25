@@ -3,13 +3,17 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:16:24
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-20 23:30:50
+# @Last Modified time: 2015-03-25 16:35:35
 import os
 from PySide import QtCore
 from atxt.log_conf import Logger
 log = Logger.log
 
 from atxt.lib import aTXT
+from atxt.walking import walking as wk
+import shutil as sh
+
+homeDirectory = os.path.expanduser('~')
 
 
 class ProcessLib(QtCore.QThread):
@@ -85,7 +89,8 @@ class ProcessLib(QtCore.QThread):
                 try:
                     porc = conta * 100.0
                     porc /= self.window.totalfiles
-                except:
+                except Exception, e:
+                    log.debug(e)
                     porc = 0
 
                 filepath = os.path.join(root, f.name)
@@ -107,7 +112,7 @@ class ProcessLib(QtCore.QThread):
                         savein=self.window.savein
                     )
                     if newpath != '':
-                        sucessful_file += 1
+                        sucessful_files += 1
                     else:
                         unsucessful_files.append(filepath)
                         self.message.emit(
@@ -129,8 +134,8 @@ class ProcessLib(QtCore.QThread):
 
         try:
             manager.close()
-        except:
-            pass
+        except Exception, e:
+            log.debug(e)
         self.procDone.emit(True)
         self.exit()
         return None
