@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 17:12:56
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 14:15:30
+# @Last Modified time: 2015-03-16 19:22:46
 
 from unicodedata import normalize, combining
 from unidecode import *
@@ -109,8 +109,8 @@ LATIN2ASCII = {
 def latin2ascii(s):
     try:
         s = ''.join(LATIN2ASCII.get(ord(c), c) for c in s)
-    except:
-        pass
+    except Exception, e:
+        log.warning(e)
     return s
 
 
@@ -118,18 +118,18 @@ def remove_accents(s):
     try:
         nkfd_form = normalize('NFKD', unicode(s))
         s = u''.join([c for c in nkfd_form if not combining(c)])
-    except:
-        pass
+    except Exception, e:
+        log.warning(e)
     return s
+
 
 def encoding_path(s):
     if sys.platform in ["darwin"]:
         s = to_unicode(s)
         try:
             s = s.encode('utf-8', 'replace')
-        except:
-            pass
+        except Exception, e:
+            log.warning(e)
     elif sys.platform in ["win32"]:
         s = to_unicode(s, 'utf-8')
-        # s = s.encode('utf-8', 'replace')
     return s

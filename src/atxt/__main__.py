@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-13 13:45:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 04:13:38
+# @Last Modified time: 2015-03-21 14:09:47
 from __future__ import print_function
 import sys
 import os
@@ -22,8 +22,7 @@ from utils import make_dir, extract_ext
 
 import logging
 
-
-from to_txt import to_txt
+from lib import aTXT
 
 __version__ = "1.0.5"
 
@@ -37,19 +36,34 @@ def main(argv=()):
         logging.basicConfig(filename=log_path,
                             filemode='w',
                             level=logging.INFO,
-                            format='%(levelname)s %(asctime)s\n\t%(message)s',
+                            format='%(log_color)s%(levelname)-1s%(reset)s | %(log_color)s%(message)s%(reset)s',
                             # datefmt='%m/%d/%y %I:%M:%S %p | '
                             )
 
+    manager = aTXT()
+    manager.uppercase = args['-u']
+    manager.overwrite = args['-o']
+    manager.savein = args['--to']
+    manager.lang = args['--lang']
+    manager.use_temp = args['--use-temp']
+    manager.encoding = args['--enc']
+
+    options = manager.options()
+    for k in options:
+        log.debug("%s: %s" % (k, options[k]))
+
     tfiles = set()
-    files = defaultdict(set)
+    files = defaultdict(list)
+    successful_files = defaultdict(str)
+    unsuccessful_files = defaultdict(set)
     total = 0
     finished = 0
+
     if args['-i']:
         log.info('Starting pretty graphical interface...')
         try:
-            import gui
-            gui.main()
+            from gui import GUI
+            GUI.run(manager)
         except Exception, e:
             log.critical(e)
             return 0
@@ -72,32 +86,47 @@ def main(argv=()):
                 return 0
             to_path = args['--to']
 
-        tfiles = set()
-        for file_path in args['<file>']:
+        tfiles.clear()
+        files.clear()
+
+        for file_path in set(args['<file>']):
+            log.debug('-> %s' % file_path)
             if not os.path.isabs(file_path):
                 file_path = os.path.join(from_path, file_path)
             ext = extract_ext(file_path)
             if ext in supported_formats:
                 tfiles.add(ext)
                 total += 1
-                files[ext].add(file_path)
-
+                files[ext].append(file_path)
+            else:
+                log.warning('%s ignored (%s is not supported yet)' %
+                            (file_path, ext))
         log.info('supported formats: %s' % list(tfiles))
 
         # config settings...
         # if we need to process a lot MS office files is better
         # dispatching just once the program.
-
+        #  with
+        #  manager.word()
+        successful_files.clear()
+        unsuccessful_files.clear()
         for ext in supported_formats:
             for file_path in files[ext]:
                 ext = extract_ext(file_path)
-                status = to_txt(file_path, format=ext)
-                if status:
+                new_path = None
+                try:
+                    new_path = manager.convert_to_txt(filepath=file_path)
+                except Exception, e:
+                    log.critical(e)
+                    # raise e
+                if new_path:
+                    successful_files[file_path] = new_path
                     log.info('successful conversion: %s' % file_path)
                     finished += 1
                 else:
-                    files[ext].remove(file_path)
+                    unsuccessful_files[ext].add(file_path)
                     log.error('unsucessful conversion: %s' % file_path)
+
     elif args['<path>']:
         from_path = args['<path>']
         from_path = os.path.abspath(from_path)
@@ -107,7 +136,7 @@ def main(argv=()):
                       from_path)
             return 0
         try:
-            depth = args['--depth']
+            depth = int(args['--depth'])
             if depth < 0:
                 raise ValueError
         except Exception, e:
@@ -119,49 +148,56 @@ def main(argv=()):
         if to_path == 'TXT':
             to_path = os.path.join(from_path, to_path)
             make_dir(to_path)
+           
         elif not os.path.exists(to_path) or not os.path.isdir(to_path):
             log.error('%s is not a valid path for --to option' % to_path)
             return 0
         tfiles = set(supported_formats[:])
         if args['<format>']:
             tfiles = set()
-            for format in args['<format>']:
-                if format.startswith('.'):
-                    format = format[1:]
-                if format in supported_formats:
-                    tfiles.add(format)
+            for f in args['<format>']:
+                if f.startswith('.'):
+                    f = f[1:]
+                if f in supported_formats:
+                    tfiles.add(f)
         log.info('searching for: %s' % tfiles)
 
         # config settings...
         # if we need to process a lot MS office files is better
         # dispatching just once the program.
+        # manager.word()
 
         finished = 0
         total = 0
+
         for root_path, dirs, files_ in wk.walk(from_path, level=depth, tfiles=list(tfiles)):
-            if files_:
-                log.info('path=%s' % root_path)
-                for f in files_:
-                    total += 1
-                    log.info('\tfile=%s' % f.name)
-                    file_path = os.path.join(root_path, f.name)
-                    ext = extract_ext(file_path)
-                    log.info("to_txt(%s)" % file_path)
-                    status = to_txt(file_path, format=ext)
-                    if status:
-                        log.info('successful conversion: %s' % file_path)
-                        files[ext].add(file_path)
-                        finished += 1
-                    else:
-                        log.error('unsucessful conversion: %s' % file_path)
+            if not files_:
+                continue
+
+            log.info('path=%s' % root_path)
+            for f in files_:
+                total += 1
+                log.info('file: %s' % f.name)
+                file_path = os.path.join(root_path, f.name)
+                ext = extract_ext(file_path)
+                new_path = None
+                try:
+                    new_path = manager.convert_to_txt(filepath=file_path)
+                except Exception, e:
+                    log.critical(e)
+                    # raise e
+                if new_path:
+                    log.info('successful conversion: %s' % file_path)
+                    successful_files[new_path] = file_path
+                    finished += 1
+                else:
+                    unsuccessful_files[ext].add(file_path)
+                    log.error('unsucessful conversion: %s' % file_path)
 
     else:
         print(usagedoc.__doc__)
         return 0
 
-    for ext in supported_formats:
-        if len(files[ext]):
-            log.info('%s %d' % (ext, len(files[ext])))
     if total:
         log.info('total: %d', total)
     else:

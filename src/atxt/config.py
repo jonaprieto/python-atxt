@@ -3,11 +3,8 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:51:26
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 12:28:54
+# @Last Modified time: 2015-03-16 16:11:18
 
-"""
-    Check all dependencies of aTXT
-"""
 
 from log_conf import Logger
 log = Logger.log
@@ -51,7 +48,7 @@ class Office:
         log.debug('successful dispatching of msword')
         return self._msword
 
-   def close(self):
+    def close(self):
         log.debug('closing msword')
         try:
             self._msword.Quit()

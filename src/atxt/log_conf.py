@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 03:49:40
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 04:14:03
+# @Last Modified time: 2015-03-19 15:56:02
 import colorlog
 import logging
 
@@ -18,9 +18,9 @@ def singleton(cls):
 @singleton
 class Logger():
     def __init__(self):
-        # LOG_LEVEL = logging.DEBUG
         LOG_LEVEL = logging.DEBUG
-        LOGFORMAT = "%(log_color)s%(levelname)-1s%(reset)s | %(log_color)s%(message)s%(reset)s"
+        # LOG_LEVEL = logging.INFO
+        LOGFORMAT = "%(log_color)s%(levelname)-1s%(reset)s | %(log_color)s%(message)s%(reset)s [%(filename)s:%(lineno)s - %(funcName)s() ] "
         from colorlog import ColoredFormatter
         logging.root.setLevel(LOG_LEVEL)
         formatter = ColoredFormatter(LOGFORMAT)

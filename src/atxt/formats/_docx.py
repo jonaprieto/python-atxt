@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:53:06
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 14:27:42
+# @Last Modified time: 2015-03-20 11:43:15
 from atxt.log_conf import Logger
 log = Logger.log
 
@@ -15,7 +15,7 @@ import docx
 from atxt.encoding import latin2ascii
 
 
-def from_docx(info_file, info_txt, hero='xml', encoding='utf-8'):
+def docx(from_file, to_txt, opts)::
     log.debug('from_docx processing using %s' % hero)
     if not isinstance(info_file, InfoFile):
         _file = InfoFile(info_file)

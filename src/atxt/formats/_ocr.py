@@ -3,11 +3,11 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 13:08:14
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 13:15:16
+# @Last Modified time: 2015-03-20 02:06:52
 from atxt.log_conf import Logger
 log = Logger.log
 
- def need_ocr():
+def ocr():
         try:
             if not file._path:
                 file.create_temp()

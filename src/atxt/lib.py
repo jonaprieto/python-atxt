@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 11:31:53
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 14:59:38
+# @Last Modified time: 2015-03-20 12:15:15
 
 import os
 import sys
@@ -12,13 +12,13 @@ from log_conf import Logger
 log = Logger.log
 
 from infofile import InfoFile
-from config import Config, Office
-from utils import extract_ext
+from config import Config
+from utils import extract_ext, make_dir
 
-import formats
+from formats import convert, supported_formats
 
 
-class aTXT:
+class aTXT(object):
 
     @property
     def uppercase(self):
@@ -53,6 +53,14 @@ class aTXT:
         self._use_temp = value
 
     @property
+    def encoding(self):
+        return self._encoding
+
+    @encoding.setter
+    def encoding(self, value):
+        self._encoding = value
+
+    @property
     def savein(self):
         return self._savein
 
@@ -66,7 +74,7 @@ class aTXT:
             log.debug('trying to set savein')
             if not os.path.exists(value):
                 try:
-                    make_dir(value)
+                    utils.make_dir(value)
                 except Exception, e:
                     log.warning(e)
                     return None
@@ -91,25 +99,6 @@ class aTXT:
         self._hero_docx = value
 
     @property
-    def txt(self):
-        return self._txt
-
-    @property
-    def file(self):
-        return self._file
-
-    @file.setter
-    def file(self, file_path):
-        log.debug('set file')
-        self._file = InfoFile(file_path)
-        log.debug('txt file will be save in', self._savein)
-        txt_path = os.path.join(self._savein,  self._file.name + '.txt')
-        try:
-            self._txt = InfoFile(txt_path)
-        except Exception, e:
-            log.critical('txt file creation fail: %e' % e)
-
-    @property
     def msword(self):
         return self._msword
 
@@ -126,9 +115,7 @@ class aTXT:
     def __init__(self):
 
         log.debug('atxt configuring settings')
-
         self._config = Config()
-
         self._overwrite = 1
         self._uppercase = 0
         self._savein = 'TXT'
@@ -136,15 +123,18 @@ class aTXT:
         self._hero_pdf = 'xpdf'
         self._lang = 'spa'
         self._use_temp = 1
+        self._encoding = 'utf-8'
+        self._tempfile = None
 
-        log.debug('ready to start any conversion')
+        log.debug('ready to start atxt conversion')
 
     def options(self):
         opt = {
             'overwrite': self._overwrite,
             'uppercase': self._uppercase,
             'savein': self._savein,
-            'encoding': self.encoding,
+            'encoding': self._encoding,
+            'lang': self._lang,
             'hero_docx': self._hero_docx,
             'hero_pdf': self._hero_pdf,
             'lang': self._lang,
@@ -152,24 +142,35 @@ class aTXT:
         }
         return opt
 
-    def convert_to_txt(self, filepath=''):
-        self.file = filepath
+    def convert_to_txt(self, filepath='', opts=None):
+        log.info("processing %s" % filepath)
+        _file = InfoFile(filepath, check=True)
+        if _file.extension not in supported_formats:
+            log.warning('%s is not supported yet.')
+            return None
+        _txt = None
+        try:
+            _txt = InfoFile(
+                os.path.join(self._savein,  _file.name + '.txt'), check=False)
+        except OSError, e:
+            log.critical('extraction metadata fails: %e' % e)
+            raise e
+
+        if not self._overwrite and os.path.exists(_txt.path):
+            return _txt.path
+
+        opts = opts or self.options()
         if self._use_temp:
+            _file.create_temp()
+            _tempfile = InfoFile(_file.temp)
             try:
-                self.file.create_temp()
+                convert(from_file=_tempfile, to_txt=_txt, opts=opts)
             except Exception, e:
-                log.warning(e)
-                return None
-
-        log.debug('starting conversion of file %s' % self.file.basename)
-        formats.convert(self.file, self.txt, self.options())
-        log.info('successful conversion %s' % self.txt.path)
-
-        if self._use_temp:
+                log.critical(e)
+            _file.remove_temp()
+        else:
             try:
-                self.file.remove_temp()
+                convert(from_file=_file, to_txt=_txt, opts=opts)
             except Exception, e:
-                log.warning(e)
-                return None
-
-        return self.txt.path
+                log.critical(e)
+        return _txt.path

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 22:29:02
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-16 04:10:28
+# @Last Modified time: 2015-03-20 12:05:01
 
 import os
 import sys
@@ -14,7 +14,6 @@ log = Logger.log
 import tempfile as tmp
 from encoding import encoding_path
 import utils
-
 
 
 class InfoFile():
@@ -49,9 +48,20 @@ class InfoFile():
     def extension(self):
         return self._extension
 
-    def __init__(self, file_path):
-        log.debug('extracting data file from %s' % file_path)
+    @extension.setter
+    def extension(self, value):
+        self._extension = value
+        return value
+
+    def __init__(self, file_path, check=False):
+        if not file_path:
+            raise IOError, 'file_path: %s' % file_path
+
+        log.debug('extracting metadata from file: %s' % file_path)
         self._path = os.path.abspath(encoding_path(file_path))
+        if check:
+            if not os.path.isfile(self._path):
+                raise IOError, "It is not a file or doesn't exist"
         try:
             self._basename = os.path.basename(self._path)
             self._extension = utils.extract_ext(self._basename)
@@ -77,7 +87,7 @@ class InfoFile():
     @property
     def temp(self):
         try:
-            self._temp_path
+            return self._temp_path
         except:
             return self.create_temp()
 
@@ -105,5 +115,12 @@ class InfoFile():
             del self._temp_basename
             del self._temp_path
             del self._temp_dir
-        except AttributeError,e:
-            log.warning('%s file has not temporal version'%self._basename)
+        except AttributeError, e:
+            log.warning('%s file has not temporal version' % self._basename)
+
+    def __str__():
+        return {
+            'name': self._name,
+            'extension': self._extension,
+            'path': self._path
+        }
