@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 22:29:02
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-25 14:21:12
+# @Last Modified time: 2015-03-25 17:28:55
 
 import os
 
@@ -64,8 +64,7 @@ class InfoFile(object):
         try:
             self._basename = os.path.basename(self._path)
             self._extension = utils.extract_ext(self._basename)
-            ext = utils.extract_ext(self._basename)
-            self._name = name
+            self._name = os.path.splitext(name)[0]
             self._dirname = os.path.dirname(self._path)
         except Exception, e:
             log.error(e)

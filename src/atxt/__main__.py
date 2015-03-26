@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-13 13:45:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-25 16:51:55
+# @Last Modified time: 2015-03-25 17:23:39
 from __future__ import print_function
 import sys
 import os
@@ -51,7 +51,7 @@ def main():
     options = manager.options()
     for k in options:
         log.debug("%s: %s" % (k, options[k]))
-    total = 0
+    res = 0
     if args['-i']:
         log.info('Starting pretty graphical interface...')
         try:
@@ -62,13 +62,13 @@ def main():
             log.critical(e)
             return 0
     elif args['<file>']:
-        total, finished = run_file(args, manager)
+        res = run_file(args, manager)
     elif args['<path>']:
-        total, finished = run_path(args, manager)
+        res = run_path(args, manager)
     else:
         print(usagedoc.__doc__)
         return 0
-
+    total, finished = res
     if total:
         log.info('%d/%d', finished, total)
         return 1
@@ -94,6 +94,7 @@ def run_file(args, manager):
                 '%s is not a valid path for --to_path option' % args['--to'])
             return 0
         to_path = args['--to']
+    manager.savein = to_path
 
     tfiles = set()
     files = defaultdict(list)

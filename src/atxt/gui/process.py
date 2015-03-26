@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:16:24
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-25 16:35:35
+# @Last Modified time: 2015-03-25 17:34:04
 import os
 from PySide import QtCore
 from atxt.log_conf import Logger
@@ -47,7 +47,7 @@ class ProcessLib(QtCore.QThread):
         sucessful_files = 0
         unsucessful_files = []
 
-        for root, dirs, files in wk.walk(
+        for root, _, files in wk.walk(
                 self.window.directory,
                 level=self.window.level,
                 tfiles=self.window.tfiles):

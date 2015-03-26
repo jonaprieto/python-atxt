@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 17:13:18
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-25 16:48:07
+# @Last Modified time: 2015-03-25 17:27:03
 
 import os
 from encoding import encoding_path
@@ -116,7 +116,7 @@ def walk_size(top='', tfiles=None, sdirs=None, level=0):
     total_size = 0
     count_files = 0
     try:
-        for root, dirs, files in walk(top, sdirs=sdirs, level=level, tfiles=tfiles):
+        for root, _, files in walk(top, sdirs=sdirs, level=level, tfiles=tfiles):
             for f in files:
                 filepath = os.path.join(root, f.name)
                 total_size += os.path.getsize(filepath)
