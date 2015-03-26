@@ -3,13 +3,15 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-26 01:11:12
+# @Last Modified time: 2015-03-26 01:25:25
 import os
 import sys
 from PySide import QtGui, QtCore
 from PySide.QtGui import QFileDialog, QGridLayout, QGroupBox
+from PySide.QtGui import QCheckBox
 from walksize import WalkSize
 import atxt.walking as wk
+from atxt.formats import supported_formats
 from constants import *
 
 import logging
@@ -79,7 +81,8 @@ class Window(QtGui.QWidget):
     def __init__(self, manager=None):
         super(Window, self).__init__()
         log.debug('GUI aTXT')
-        self.config()
+        self.set_layout1()
+        self.set_layout2()
         self.actions()
         box = QGroupBox(LABEL_BOX_LAYOUT1)
         box.setLayout(self._layout1)
@@ -91,7 +94,7 @@ class Window(QtGui.QWidget):
 
         self.setLayout(self.layout)
 
-    def config(self):
+    def set_layout1(self):
         self.setWindowTitle(TITLE_WINDOW)
         self.setFixedSize(750, 400)
         self.setContentsMargins(15, 15, 15, 15)
@@ -144,6 +147,19 @@ class Window(QtGui.QWidget):
         self._layout1.addWidget(self._console)
         XStream.stdout().messageWritten.connect(self._console.insertPlainText)
         XStream.stderr().messageWritten.connect(self._console.insertPlainText)
+
+    def set_layout2(self):
+        self.formats = dict()
+        for ext in supported_formats:
+            self.formats[ext] = QCheckBox(ext)
+            self.formats[ext].setCheckState(unchecked)
+
+        box = QGroupBox(LABEL_BOX_FORMATS)
+        ly = QtGui.QGridLayout()
+        for ext in enumerate(supported_formats):
+            layout.addWidget(self.formats[ext], i, 0)
+        box.setLayout(ly)
+        self._layout2.addWidget(box)
 
     def actions(self):
         self._btn1.clicked.connect(self.set_source)
