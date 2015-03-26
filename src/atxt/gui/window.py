@@ -3,12 +3,12 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-26 01:25:25
+# @Last Modified time: 2015-03-26 02:02:52
 import os
 import sys
 from PySide import QtGui, QtCore
 from PySide.QtGui import QFileDialog, QGridLayout, QGroupBox
-from PySide.QtGui import QCheckBox
+from PySide.QtGui import QCheckBox, QTextBrowser, QPushButton
 from walksize import WalkSize
 import atxt.walking as wk
 from atxt.formats import supported_formats
@@ -73,7 +73,6 @@ unchecked = QtCore.Qt.Unchecked
 
 
 class Window(QtGui.QWidget):
-
     layout = QGridLayout()
     _layout1 = QtGui.QVBoxLayout()
     _layout2 = QtGui.QVBoxLayout()
@@ -91,12 +90,14 @@ class Window(QtGui.QWidget):
         box = QGroupBox(LABEL_BOX_LAYOUT2)
         box.setLayout(self._layout2)
         self.layout.addWidget(box, 0, 1)
-
         self.setLayout(self.layout)
+
+        XStream.stdout().messageWritten.connect(self._console.insertPlainText)
+        XStream.stderr().messageWritten.connect(self._console.insertPlainText)
 
     def set_layout1(self):
         self.setWindowTitle(TITLE_WINDOW)
-        self.setFixedSize(750, 400)
+        self.setFixedSize(850, 400)
         self.setContentsMargins(15, 15, 15, 15)
         self._layout1 = QtGui.QVBoxLayout()
         self._layout1.addStretch(1)
@@ -142,27 +143,65 @@ class Window(QtGui.QWidget):
         box.setLayout(ly)
         self._layout1.addWidget(box)
 
-        self._console = QtGui.QTextBrowser(self)
-        self._console.setPlainText(MSG_TEXT_BROWSER)
+        self._console = QTextBrowser(self)
+        # self._console.setPlainText(MSG_TEXT_BROWSER)
         self._layout1.addWidget(self._console)
-        XStream.stdout().messageWritten.connect(self._console.insertPlainText)
-        XStream.stderr().messageWritten.connect(self._console.insertPlainText)
 
     def set_layout2(self):
-        self.formats = dict()
+        self.formats = []
         for ext in supported_formats:
-            self.formats[ext] = QCheckBox(ext)
-            self.formats[ext].setCheckState(unchecked)
-
+            self.formats.append((ext, QCheckBox(str(ext))))
+        log.debug(self.formats)
         box = QGroupBox(LABEL_BOX_FORMATS)
-        ly = QtGui.QGridLayout()
-        for ext in enumerate(supported_formats):
-            layout.addWidget(self.formats[ext], i, 0)
+        ly = QGridLayout()
+        for ext, widget in self.formats:
+            log.debug('render %s for gui' % ext)
+            ly.addWidget(widget)
+        box.setLayout(ly)
+        self._layout2.addWidget(box)
+
+        # ACTIONS
+        self._btn_reset = QPushButton("Reset")
+        self._btn_scan = QPushButton("Scan")
+        self._btn_stop = QPushButton("Stop")
+        self._btn_start = QPushButton("Execute")
+
+        self._btn_scan.setEnabled(True)
+        self._btn_scan.setToolTip(TOOLTIP_SCAN)
+
+        self._btn_stop.setEnabled(False)
+        self._btn_start.setEnabled(False)
+        self._btn_reset.setEnabled(False)
+
+        box = QGroupBox(LABEL_BOX_ACTIONS)
+        ly = QGridLayout()
+        ly.setColumnStretch(1, 1)
+        ly.addWidget(self._btn_reset,  0, 0)
+        ly.addWidget(self._btn_scan,  1, 0)
+        ly.addWidget(self._btn_stop,  2, 0)
+        ly.addWidget(self._btn_start,  3, 0)
         box.setLayout(ly)
         self._layout2.addWidget(box)
 
     def actions(self):
         self._btn1.clicked.connect(self.set_source)
+        self._btn_reset.clicked.connect(self._reset)
+        self._btn_scan.clicked.connect(self._scan)
+        self._btn_stop.clicked.connect(self._stop)
+        self._btn_start.clicked.connect(self._start)
+
+    def _reset(self):
+        log.debug('_reset()')
+
+    def _scan(self):
+        log.debug('_scan()')
+        log.warning(TOOLTIP_SCAN)
+
+    def _stop(self):
+        log.debug('_stop()')
+
+    def _start(self):
+        log.debug('_start()')
 
     def closeEvent(self, event):
         log.debug("Exit")
@@ -174,8 +213,8 @@ class Window(QtGui.QWidget):
         dialog.setViewMode(QFileDialog.Detail)
         dialog.setDirectory(path_home)
         if dialog.exec_():
-            fileNames = dialog.selectedFiles()
-            for f in fileNames:
+            paths = dialog.selectedFiles()
+            for f in paths:
                 if os.path.isdir(f):
                     log.info('--path: %s' % f)
                 elif os.path.isfile(f):
