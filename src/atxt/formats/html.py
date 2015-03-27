@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 02:38:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-25 16:33:36
+# @Last Modified time: 2015-03-26 22:03:12
 
 from atxt.log_conf import Logger
 log = Logger.log
@@ -28,7 +28,7 @@ def html(from_file, to_txt, opts):
     _file = from_file
     encoding = 'utf-8'
     if 'encoding' in opts:
-        encoding = opts['encoding'].strip()
+        encoding = opts['--enc'].strip()
         log.debug('using encoding from opts: %s' % encoding)
     try:
         f = codecs.open(_file.path, 'r', encoding=encoding)

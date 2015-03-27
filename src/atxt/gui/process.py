@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:16:24
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-25 17:34:04
+# @Last Modified time: 2015-03-26 19:08:24
 import os
 from PySide import QtCore
 from atxt.log_conf import Logger
@@ -34,9 +34,9 @@ class ProcessLib(QtCore.QThread):
         self.window.buttonStop.setEnabled(True)
 
         self.partDone.emit(0)
-
+        opts = self.window.options()
         try:
-            if not os.path.exists(self.window.directory):
+            if not os.path.exists(opst['path']):
                 log.debug("Directory does not exist")
         except Exception, e:
             log.debug("Fail review directory of search")
@@ -48,9 +48,9 @@ class ProcessLib(QtCore.QThread):
         unsucessful_files = []
 
         for root, _, files in wk.walk(
-                self.window.directory,
-                level=self.window.level,
-                tfiles=self.window.tfiles):
+                opts['path'],
+                level=opts['depth'],
+                tfiles=opts['tfiles']):
 
             if not self.FLAG:
                 log.debug("Process stopped.")
@@ -58,31 +58,7 @@ class ProcessLib(QtCore.QThread):
                 self.procDone(True)
                 return
 
-            log.debug('Directory: ' + root)
-
-            try:
-                if os.path.isdir(self.window.savein):
-                    savein = os.path.join(root, self.window.savein)
-                else:
-                    savein = self.window.savein
-            except Exception, e:
-
-                log.debug("Something wrong with `savein` path: ")
-                log.debug(savein)
-                log.debug(e)
-
-            try:
-                if self.window.clean and os.path.exists(savein):
-                    log.debug("Cleaning directory of " + savein)
-                    sh.rmtree(savein)
-                    log.debug("Remove " + savein + " DONE")
-            except Exception, e:
-                log.debug("Fail remove " + savein)
-
-            if self.window.clean:
-                continue
-
-            log.debug("Starting process over files in Directory:")
+            log.debug("starting process over files in directory:")
 
             for f in files:
                 conta += 1
@@ -93,44 +69,19 @@ class ProcessLib(QtCore.QThread):
                     log.debug(e)
                     porc = 0
 
-                filepath = os.path.join(root, f.name)
+                file_path = os.path.join(root, f.name)
                 log.debug("File #" + str(conta))
-                log.debug("Filepath: " + filepath)
+                log.debug("Filepath: " + file_path)
 
-                try:
-                    log.debug('Converting File ... ')
-
-                    if filepath.lower().endswith('.pdf'):
-                        log.debug(
-                            'It\'ll take few seconds or minutes (OCR)')
-                        log.debug('Please Wait')
-
-                    newpath = manager.convert(
-                        filepath=filepath,
-                        uppercase=self.window.uppercase,
-                        overwrite=self.window.overwrite,
-                        savein=self.window.savein
-                    )
-                    if newpath != '':
-                        sucessful_files += 1
-                    else:
-                        unsucessful_files.append(filepath)
-                        self.message.emit(
-                            "Impossible process: " + str(filepath))
-
-                except Exception, e:
-                    log.debug('Fail conversion aTXT calling from GUI.py')
-                    log.debug(e)
-                    log.debug("*" * 50)
                 self.partDone.emit(porc)
                 log.debug("File finished")
 
         log.debug("Process finished")
         self.partDone.emit(100)
 
-        self.message.emit("Total Files: " + str(conta))
-        self.message.emit("Files Finished: " + str(sucessful_files))
-        self.message.emit("Files Unfinished: " + str(conta - sucessful_files))
+        log.info("Total Files: %s" % str(conta))
+        log.info("Files Finished: %s" % str(sucessful_files))
+        log.info("Files Unfinished: %s" % str(conta - sucessful_files))
 
         try:
             manager.close()

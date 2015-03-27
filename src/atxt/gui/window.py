@@ -3,13 +3,20 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-26 02:02:52
+# @Last Modified time: 2015-03-26 19:48:35
 import os
 import sys
 from PySide import QtGui, QtCore
-from PySide.QtGui import QFileDialog, QGridLayout, QGroupBox
-from PySide.QtGui import QCheckBox, QTextBrowser, QPushButton
-from walksize import WalkSize
+from PySide.QtGui import (
+    QFileDialog,
+    QGridLayout,
+    QGroupBox,
+    QCheckBox,
+    QTextBrowser,
+    QPushButton,
+    QMessageBox
+)
+from walk_thread import WalkThread
 import atxt.walking as wk
 from atxt.formats import supported_formats
 from constants import *
@@ -32,6 +39,7 @@ class QtHandler(logging.Handler):
 
 handler = QtHandler()
 log.addHandler(handler)
+# log.setLevel(logging.INFO)
 
 
 class XStream(QtCore.QObject):
@@ -76,13 +84,14 @@ class Window(QtGui.QWidget):
     layout = QGridLayout()
     _layout1 = QtGui.QVBoxLayout()
     _layout2 = QtGui.QVBoxLayout()
+    run_type = "path"
 
     def __init__(self, manager=None):
         super(Window, self).__init__()
         log.debug('GUI aTXT')
-        self.set_layout1()
-        self.set_layout2()
-        self.actions()
+        self._set_layout1()
+        self._set_layout2()
+        self._actions()
         box = QGroupBox(LABEL_BOX_LAYOUT1)
         box.setLayout(self._layout1)
         self.layout.addWidget(box, 0, 0)
@@ -95,7 +104,7 @@ class Window(QtGui.QWidget):
         XStream.stdout().messageWritten.connect(self._console.insertPlainText)
         XStream.stderr().messageWritten.connect(self._console.insertPlainText)
 
-    def set_layout1(self):
+    def _set_layout1(self):
         self.setWindowTitle(TITLE_WINDOW)
         self.setFixedSize(850, 400)
         self.setContentsMargins(15, 15, 15, 15)
@@ -109,6 +118,7 @@ class Window(QtGui.QWidget):
         self._edt1.setAlignment(QtCore.Qt.AlignRight)
 
         self._depth = QtGui.QSpinBox()
+        self._depth.setToolTip(TOOLTIP_DEPTH)
         self._depth.setMinimum(0)
         self._depth.setMaximum(100)
         self._depth.setFixedSize(50, 25)
@@ -127,27 +137,40 @@ class Window(QtGui.QWidget):
 
         self._label2 = QtGui.QLabel(MSG_SAVE_IN)
         self._edt2 = QtGui.QLineEdit(NAME_FOLDER_TXT)
-        self._edt2.setFixedSize(330, 20)
+        self._edt2.setFixedSize(200, 20)
         self._edt2.setToolTip(TOOLTIP_SAVEIN)
         self._btn2 = QtGui.QPushButton(BTN_BROWSER)
         self._btn2.clicked.connect(self.set_directory_save_in)
-        self._check1 = QtGui.QCheckBox(LABEL_OVERWRITE)
-        self._check1.setToolTip(TOOLTIP_OVERWRITE)
-        self._check1.setCheckState(checked)
+        self._check_overwrite = QtGui.QCheckBox(LABEL_OVERWRITE)
+        self._check_overwrite.setToolTip(TOOLTIP_OVERWRITE)
+        self._check_overwrite.setCheckState(checked)
+
+        self._check_use_temp = QtGui.QCheckBox(LABEL_USE_TEMP)
+        self._check_use_temp.setToolTip(TOOLTIP_USE_TEMP)
+        self._check_use_temp.setCheckState(checked)
 
         box = QGroupBox(LABEL_BOX_SAVE_IN)
+        box.setToolTip(TOOLTIP_BOX_SAVEIN)
         ly = QGridLayout()
         ly.addWidget(self._btn2, 0, 0)
         ly.addWidget(self._edt2, 0, 1)
-        ly.addWidget(self._check1, 0, 2)
+        ly.addWidget(self._check_overwrite, 0, 2)
+        ly.addWidget(self._check_use_temp, 0, 3)
         box.setLayout(ly)
         self._layout1.addWidget(box)
 
         self._console = QTextBrowser(self)
-        # self._console.setPlainText(MSG_TEXT_BROWSER)
-        self._layout1.addWidget(self._console)
+        frameStyle = QtGui.QFrame.Sunken | QtGui.QFrame.Panel
+        self._console.setFrameStyle(frameStyle)
+        # DETAILS
 
-    def set_layout2(self):
+        self._progress_bar = QtGui.QProgressBar()
+        self._progress_bar.setMinimum(0)
+        self._progress_bar.setMaximum(100)
+        self._layout1.addWidget(self._console)
+        self._layout1.addWidget(self._progress_bar)
+
+    def _set_layout2(self):
         self.formats = []
         for ext in supported_formats:
             self.formats.append((ext, QCheckBox(str(ext))))
@@ -161,12 +184,12 @@ class Window(QtGui.QWidget):
         self._layout2.addWidget(box)
 
         # ACTIONS
-        self._btn_reset = QPushButton("Reset")
         self._btn_scan = QPushButton("Scan")
+        self._btn_reset = QPushButton("Reset")
         self._btn_stop = QPushButton("Stop")
-        self._btn_start = QPushButton("Execute")
+        self._btn_start = QPushButton("Start")
 
-        self._btn_scan.setEnabled(True)
+        self._btn_scan.setEnabled(False)
         self._btn_scan.setToolTip(TOOLTIP_SCAN)
 
         self._btn_stop.setEnabled(False)
@@ -176,38 +199,22 @@ class Window(QtGui.QWidget):
         box = QGroupBox(LABEL_BOX_ACTIONS)
         ly = QGridLayout()
         ly.setColumnStretch(1, 1)
-        ly.addWidget(self._btn_reset,  0, 0)
-        ly.addWidget(self._btn_scan,  1, 0)
+        ly.addWidget(self._btn_scan,  0, 0)
+        ly.addWidget(self._btn_reset,  1, 0)
         ly.addWidget(self._btn_stop,  2, 0)
         ly.addWidget(self._btn_start,  3, 0)
         box.setLayout(ly)
         self._layout2.addWidget(box)
 
-    def actions(self):
-        self._btn1.clicked.connect(self.set_source)
-        self._btn_reset.clicked.connect(self._reset)
-        self._btn_scan.clicked.connect(self._scan)
-        self._btn_stop.clicked.connect(self._stop)
-        self._btn_start.clicked.connect(self._start)
-
-    def _reset(self):
-        log.debug('_reset()')
-
-    def _scan(self):
-        log.debug('_scan()')
-        log.warning(TOOLTIP_SCAN)
-
-    def _stop(self):
-        log.debug('_stop()')
-
-    def _start(self):
-        log.debug('_start()')
-
     def closeEvent(self, event):
         log.debug("Exit")
         event.accept()
 
+    def on_show_info(self, value):
+        QtGui.QMessageBox.information(self, "Information", value)
+
     def set_source(self):
+        log.info('set source for extraction')
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.AnyFile)
         dialog.setViewMode(QFileDialog.Detail)
@@ -217,9 +224,14 @@ class Window(QtGui.QWidget):
             for f in paths:
                 if os.path.isdir(f):
                     log.info('--path: %s' % f)
+                    run_type = "path"
+                    self._btn_scan.setEnabled(True)
+
                 elif os.path.isfile(f):
                     log.info('--from %s' % os.path.dirname(f))
                     log.info('file: %s' % os.path.basename(f))
+                    run_type = "file"
+                    self._btn_scan.setEnabled(False)
                 log.info('--depth: %s' % self._depth.text())
                 self._edt1.setText(f)
 
@@ -231,3 +243,78 @@ class Window(QtGui.QWidget):
         if directory:
             self._label2.setText(directory)
             log.info('--to: %s' % directory)
+
+    def options(self):
+        f = self._edt1.text()
+        if not os.path.exists(f):
+            self.on_show_info('set a valid path for "from"')
+            return None
+        if os.path.isdir(f):
+            self.run_type = "path"
+        elif os.path.isfile(f):
+            self.run_type = "file"
+
+        tfiles = []
+        for ext, widget in self.formats:
+            if widget.isChecked():
+                tfiles.append(ext)
+        opt = {
+            'run_type': self.run_type,
+            'path': f,
+            'savein': self._edt2.text(),
+            'overwrite': self._check_overwrite.isChecked(),
+            'use_temp': self._check_use_temp.isChecked(),
+            'depth': int(self._depth.text()),
+            'tfiles': tfiles,
+        }
+        return opt
+
+    def set_progress(self, value):
+        if value > 100:
+            value = 100
+        self._progress_bar.setValue(value)
+
+    def end_process(self):
+        self._progress_bar.reset()
+
+    def ready(self, value):
+        self._ready = value
+
+    def _actions(self):
+        self._btn1.clicked.connect(self.set_source)
+        self._btn_reset.clicked.connect(self._reset)
+        self._btn_scan.clicked.connect(self._scan)
+        self._btn_stop.clicked.connect(self._stop)
+        self._btn_start.clicked.connect(self._start)
+
+    def _reset(self):
+        log.debug('_reset()')
+
+    def _scan(self):
+        log.warning(TOOLTIP_SCAN)
+        self._progress_bar.setValue(0)
+        opts = self.options()
+        log.debug(opts)
+        self._thread = WalkThread(self)
+
+        self._thread._part.connect(self.set_progress)
+        self._thread._end_process.connect(self.end_process)
+        self._thread._ready.connect(self.ready)
+
+        self._progress_bar.setMinimum(0)
+        self._progress_bar.setMaximum(100)
+        self._thread.start()
+
+    def _stop(self):
+        log.debug('_stop()')
+
+    def _start(self):
+        log.debug('_start()')
+        flags = QMessageBox.StandardButton.Yes
+        flags |= QMessageBox.StandardButton.No
+        question = WARNING_LONG_PROCESS
+        response = QMessageBox.question(self, "Question", question, flags)
+        if response == QMessageBox.Yes:
+            log.info("Starting process")
+        elif QMessageBox.No:
+            log.info("Starting cancelled")
