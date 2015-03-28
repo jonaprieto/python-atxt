@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 11:31:53
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-27 00:31:25
+# @Last Modified time: 2015-03-27 20:27:07
 
 import os
 import sys
@@ -14,7 +14,7 @@ log = Logger.log
 from infofile import InfoFile
 from config import Config
 from utils import extract_ext, make_dir
-
+from encoding import encoding_path
 from formats import convert, supported_formats
 
 
@@ -124,7 +124,12 @@ class aTXT(object):
             '--to': 'TXT',
             '--lang': 'spa',
             '--use-temp': True,
-            '--enc': 'utf-8'
+            '--enc': 'utf-8',
+            '--file': False,
+            '<files>': None,
+            '--path': False,
+            '<path>': None,
+            '<source>': None
         }
         self._hero_docx = 'xml'
         self._hero_pdf = 'xpdf'
@@ -144,24 +149,41 @@ class aTXT(object):
     @options.setter
     def options(self, opts):
         assert isinstance(opts, dict)
-        try:
-            if '--from' in opts:
-                if opts['--from']:
-                    if not os.path.exists(opts['--from']) or not os.path.isdir(opts['--from']):
-
-                        return
-                opts['--from'] = os.path.abspath(opts['--from'])
-            if '--path' in opts:
-                opts['--path'] = os.path.abspath(opts['--path'])
-            
-        except Exception, e:
-            log.critical(e)
-
-
-        self.opts = opts.copy()
+        if '--from' in opts:
+            if opts['--from']:
+                opts['--from'] = encoding_path(opts['--from'])
+                if os.path.isdir(opts['--from']):
+                    opts['--from'] = os.path.abspath(opts['--from'])
+        if '<source>' in opts:
+            if isinstance(opts['<source>'], list):
+                opts['<source>'] = list(set(opts['<source>']))
+            opts['<file>'] = []
+            opts['<path>'] = []
+            for s in opts['<source>']:
+                s = encoding_path(s)
+                if os.path.isdir(s):
+                    opts['<path>'].append(s)
+                elif os.path.isfile(s):
+                    opts['<file>'].append(s)
+                else:
+                    try:
+                        s = os.path.join(opts['--from'], s)
+                        if os.path.isfile(s):
+                            opts['<file>'].append(s)
+                    except Exception,e:
+                        log.critical(e)
+            if len(opts['<file>']) > 0:
+                opts['--file'] = True
+            if len(opts['<path>']) > 0:
+                opts['--path'] = True
+                opts['<path>'] = map(encoding_path, opts['<path>'])
+                opts['<path>'] = map(os.path.abspath, opts['<path>'])
+        opts['--depth'] = int(opts['--depth'])
+        x = opts.copy()
+        self.opts.update(x)
 
     def convert_to_txt(self, filepath='', opts=None):
-        log.info("processing %s" % filepath)
+        log.info("processing...")
         _file = InfoFile(filepath, check=True)
         if _file.extension not in supported_formats:
             log.warning('%s is not supported yet.' % _file.extension)
@@ -177,7 +199,7 @@ class aTXT(object):
         if not self.opts['-o'] and os.path.exists(_txt.path):
             return _txt.path
 
-        opts = opts or self.options()
+        opts = opts or self.options
         if self.opts['--use-temp']:
             _file.create_temp()
             _tempfile = InfoFile(_file.temp)

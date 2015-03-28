@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 22:29:02
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-26 20:17:01
+# @Last Modified time: 2015-03-27 09:46:17
 
 import os
 
@@ -18,8 +18,6 @@ import utils
 class InfoFile(object):
 
     """
-        Handle file
-
         .path
         .basename
         .name
@@ -61,6 +59,9 @@ class InfoFile(object):
         if check:
             if not os.path.isfile(self._path):
                 raise IOError('It is not a file or does not exist')
+            if not os.access(self._path, os.R_OK):
+                raise OSError('The file is not readable or missing')
+
         try:
             self._basename = os.path.basename(self._path)
             name = os.path.splitext(self._basename)[0]
