@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 18:23:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-25 14:30:58
+# @Last Modified time: 2015-04-25 14:23:25
 
 import os
 import re
@@ -28,8 +28,8 @@ for root, dirs, files in os.walk(basedir_):
                 log.info('%s is supported' % extension)
                 supported_formats.append(extension)
             except Exception, e:
-                log.warning('%s is not supported' % extension)
                 log.warning(e)
+                log.warning('%s is not supported' % extension)
 
 
 def convert(from_file, to_txt, opts):

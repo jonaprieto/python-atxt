@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 02:38:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-26 22:03:12
+# @Last Modified time: 2015-04-25 14:12:54
 
 from atxt.log_conf import Logger
 log = Logger.log
