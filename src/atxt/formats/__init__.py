@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 18:23:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-04-25 14:23:25
+# @Last Modified time: 2015-06-22 15:16:49
 
 import os
 import re
@@ -33,7 +33,6 @@ for root, dirs, files in os.walk(basedir_):
 
 
 def convert(from_file, to_txt, opts):
-    log.warning('converter under construction')
     if not isinstance(from_file, InfoFile):
         log.critical('the file should be instanced with InfoFile')
     f = from_file

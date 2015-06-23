@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
-# @Date:   2015-03-16 11:31:53
-# @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-27 20:27:07
 
 import os
 import sys
@@ -71,7 +68,6 @@ class aTXT(object):
             log.debug('directory save in is not a directory')
             log.debug('--to option set by default: %s' % self.opts['--to'])
         else:
-            # TODO consider value as TXT or a
             log.debug('trying to set --to')
             if not os.path.exists(value):
                 try:
@@ -116,7 +112,7 @@ class aTXT(object):
 
     def __init__(self):
 
-        log.debug('atxt configuring settings')
+        log.debug('atxt is setting')
         self._config = Config()
         self.opts = {
             '-u': False,
@@ -126,7 +122,7 @@ class aTXT(object):
             '--use-temp': True,
             '--enc': 'utf-8',
             '--file': False,
-            '<files>': None,
+            '<file>': None,
             '--path': False,
             '<path>': None,
             '<source>': None
@@ -183,8 +179,8 @@ class aTXT(object):
         self.opts.update(x)
 
     def convert_to_txt(self, filepath='', opts=None):
-        log.info("processing...")
         _file = InfoFile(filepath, check=True)
+        log.debug("working on %s"%_file)
         if _file.extension not in supported_formats:
             log.warning('%s is not supported yet.' % _file.extension)
             return None
@@ -195,22 +191,30 @@ class aTXT(object):
         except OSError, e:
             log.critical('extraction metadata fails: %e' % e)
             raise e
-
         if not self.opts['-o'] and os.path.exists(_txt.path):
             return _txt.path
 
         opts = opts or self.options
         if self.opts['--use-temp']:
-            _file.create_temp()
-            _tempfile = InfoFile(_file.temp)
+            try:
+                _file.create_temp()
+            except Exception, e:
+                log.critical(e)
+            try:
+                _tempfile = InfoFile(_file.temp)
+            except Exception, e:
+                log.critical(e)
             try:
                 convert(from_file=_tempfile, to_txt=_txt, opts=opts)
             except Exception, e:
+                log.critical('conversion fails (--use-temp): %e' % e)
+            try:
+                _file.remove_temp()
+            except Exception, e:
                 log.critical(e)
-            _file.remove_temp()
         else:
             try:
                 convert(from_file=_file, to_txt=_txt, opts=opts)
             except Exception, e:
-                log.critical(e)
+                log.critical('conversion fails: %e' % e)
         return _txt.path

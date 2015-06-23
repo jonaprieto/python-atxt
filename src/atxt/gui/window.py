@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-26 19:48:35
+# @Last Modified time: 2015-06-23 01:09:38
 import os
 import sys
 from PySide import QtGui, QtCore
@@ -27,6 +27,10 @@ log = Logger.log
 path_home = os.path.expanduser('~')
 
 
+checked = QtCore.Qt.Checked
+unchecked = QtCore.Qt.Unchecked
+
+
 class QtHandler(logging.Handler):
 
     def __init__(self):
@@ -39,7 +43,7 @@ class QtHandler(logging.Handler):
 
 handler = QtHandler()
 log.addHandler(handler)
-# log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 
 class XStream(QtCore.QObject):
@@ -59,7 +63,7 @@ class XStream(QtCore.QObject):
 
     def write(self, msg):
         if (not self.signalsBlocked()):
-            self.messageWritten.emit(unicode(msg))
+            self.messageWritten.emit(msg)
 
     @staticmethod
     def stdout():
@@ -76,10 +80,6 @@ class XStream(QtCore.QObject):
         return XStream._stderr
 
 
-checked = QtCore.Qt.Checked
-unchecked = QtCore.Qt.Unchecked
-
-
 class Window(QtGui.QWidget):
     layout = QGridLayout()
     _layout1 = QtGui.QVBoxLayout()
@@ -91,7 +91,7 @@ class Window(QtGui.QWidget):
         log.debug('GUI aTXT')
         self._set_layout1()
         self._set_layout2()
-        self._actions()
+        self._connect_acctions()
         box = QGroupBox(LABEL_BOX_LAYOUT1)
         box.setLayout(self._layout1)
         self.layout.addWidget(box, 0, 0)
@@ -111,11 +111,11 @@ class Window(QtGui.QWidget):
         self._layout1 = QtGui.QVBoxLayout()
         self._layout1.addStretch(1)
 
-        self._btn1 = QtGui.QPushButton(BTN_BROWSER)
-        self._edt1 = QtGui.QLineEdit()
-        self._edt1.setText(path_home)
-        self._edt1.setFixedSize(330, 20)
-        self._edt1.setAlignment(QtCore.Qt.AlignRight)
+        self._btn_source = QtGui.QPushButton(BTN_BROWSER)
+        self._edt_source = QtGui.QLineEdit()
+        self._edt_source.setText(path_home)
+        self._edt_source.setFixedSize(330, 20)
+        self._edt_source.setAlignment(QtCore.Qt.AlignRight)
 
         self._depth = QtGui.QSpinBox()
         self._depth.setToolTip(TOOLTIP_DEPTH)
@@ -128,17 +128,17 @@ class Window(QtGui.QWidget):
 
         box = QGroupBox(LABEL_BOX_DIRECTORY)
         ly = QGridLayout()
-        ly.addWidget(self._btn1, 0, 0)
-        ly.addWidget(self._edt1, 0, 1)
+        ly.addWidget(self._btn_source, 0, 0)
+        ly.addWidget(self._edt_source, 0, 1)
         ly.addWidget(self._label1, 0, 2)
         ly.addWidget(self._depth, 0, 3)
         box.setLayout(ly)
         self._layout1.addWidget(box)
 
-        self._label2 = QtGui.QLabel(MSG_SAVE_IN)
-        self._edt2 = QtGui.QLineEdit(NAME_FOLDER_TXT)
-        self._edt2.setFixedSize(200, 20)
-        self._edt2.setToolTip(TOOLTIP_SAVEIN)
+        self._label_save = QtGui.QLabel(MSG_SAVE_IN)
+        self._edt_save = QtGui.QLineEdit(NAME_FOLDER_TXT)
+        self._edt_save.setFixedSize(200, 20)
+        self._edt_save.setToolTip(TOOLTIP_SAVEIN)
         self._btn2 = QtGui.QPushButton(BTN_BROWSER)
         self._btn2.clicked.connect(self.set_directory_save_in)
         self._check_overwrite = QtGui.QCheckBox(LABEL_OVERWRITE)
@@ -153,7 +153,7 @@ class Window(QtGui.QWidget):
         box.setToolTip(TOOLTIP_BOX_SAVEIN)
         ly = QGridLayout()
         ly.addWidget(self._btn2, 0, 0)
-        ly.addWidget(self._edt2, 0, 1)
+        ly.addWidget(self._edt_save, 0, 1)
         ly.addWidget(self._check_overwrite, 0, 2)
         ly.addWidget(self._check_use_temp, 0, 3)
         box.setLayout(ly)
@@ -162,6 +162,7 @@ class Window(QtGui.QWidget):
         self._console = QTextBrowser(self)
         frameStyle = QtGui.QFrame.Sunken | QtGui.QFrame.Panel
         self._console.setFrameStyle(frameStyle)
+
         # DETAILS
 
         self._progress_bar = QtGui.QProgressBar()
@@ -169,6 +170,26 @@ class Window(QtGui.QWidget):
         self._progress_bar.setMaximum(100)
         self._layout1.addWidget(self._console)
         self._layout1.addWidget(self._progress_bar)
+        self._btn_save_log = QtGui.QPushButton(BTN_SAVE_LOG)
+        self._btn_save_log.clicked.connect(self._save_log)
+        self._layout1.addWidget(self._btn_save_log)
+
+    def _save_log(self):
+        save_log_dir = QFileDialog.getSaveFileName(
+            self, "Save File", "", "Text File (*.txt)")
+        f = QtCore.QFile(str(save_log_dir[0]))
+        try:
+            if f.open(QtCore.QIODevice.ReadWrite):
+                stream = QtCore.QTextStream(f)
+                stream << self._console.toPlainText()
+                f.flush()
+                f.close()
+
+        except Exception, e:
+            log.critical(e)
+
+    def _cursor_end(self, value=None):
+        self._console.moveCursor(QtGui.QTextCursor.End)
 
     def _set_layout2(self):
         self.formats = []
@@ -189,20 +210,20 @@ class Window(QtGui.QWidget):
         self._btn_stop = QPushButton("Stop")
         self._btn_start = QPushButton("Start")
 
-        self._btn_scan.setEnabled(False)
+        self._btn_scan.setEnabled(True)
         self._btn_scan.setToolTip(TOOLTIP_SCAN)
 
-        self._btn_stop.setEnabled(False)
-        self._btn_start.setEnabled(False)
-        self._btn_reset.setEnabled(False)
+        self._btn_stop.setEnabled(True)
+        self._btn_start.setEnabled(True)
+        self._btn_reset.setEnabled(True)
 
         box = QGroupBox(LABEL_BOX_ACTIONS)
         ly = QGridLayout()
         ly.setColumnStretch(1, 1)
-        ly.addWidget(self._btn_scan,  0, 0)
-        ly.addWidget(self._btn_reset,  1, 0)
-        ly.addWidget(self._btn_stop,  2, 0)
-        ly.addWidget(self._btn_start,  3, 0)
+        ly.addWidget(self._btn_start,  0, 0)
+        ly.addWidget(self._btn_stop,  1, 0)
+        ly.addWidget(self._btn_reset,  2, 0)
+        ly.addWidget(self._btn_scan,  3, 0)
         box.setLayout(ly)
         self._layout2.addWidget(box)
 
@@ -214,7 +235,7 @@ class Window(QtGui.QWidget):
         QtGui.QMessageBox.information(self, "Information", value)
 
     def set_source(self):
-        log.info('set source for extraction')
+        log.debug('set source for extraction')
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.AnyFile)
         dialog.setViewMode(QFileDialog.Detail)
@@ -223,31 +244,31 @@ class Window(QtGui.QWidget):
             paths = dialog.selectedFiles()
             for f in paths:
                 if os.path.isdir(f):
-                    log.info('--path: %s' % f)
+                    log.info('set path: %s' % f)
                     run_type = "path"
                     self._btn_scan.setEnabled(True)
 
                 elif os.path.isfile(f):
-                    log.info('--from %s' % os.path.dirname(f))
-                    log.info('file: %s' % os.path.basename(f))
+                    log.debug('--from %s' % os.path.dirname(f))
+                    log.debug('file: %s' % os.path.basename(f))
                     run_type = "file"
                     self._btn_scan.setEnabled(False)
-                log.info('--depth: %s' % self._depth.text())
-                self._edt1.setText(f)
+                log.debug('--depth: %s' % self._depth.text())
+                self._edt_source.setText(f)
 
     def set_directory_save_in(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
         directory = QFileDialog.getExistingDirectory(self,
                                                      MSG_SAVE_IN,
-                                                     self._label2.text(), options)
+                                                     self._edt_save.text(), options)
         if directory:
-            self._label2.setText(directory)
-            log.info('--to: %s' % directory)
+            self._edt_save.setText(directory)
+            log.debug('--to: %s' % directory)
 
     def options(self):
-        f = self._edt1.text()
+        f = self._edt_source.text()
         if not os.path.exists(f):
-            self.on_show_info('set a valid path for "from"')
+            self.on_show_info('Choose a valid path for "from"')
             return None
         if os.path.isdir(f):
             self.run_type = "path"
@@ -261,7 +282,7 @@ class Window(QtGui.QWidget):
         opt = {
             'run_type': self.run_type,
             'path': f,
-            'savein': self._edt2.text(),
+            'savein': self._edt_save.text(),
             'overwrite': self._check_overwrite.isChecked(),
             'use_temp': self._check_use_temp.isChecked(),
             'depth': int(self._depth.text()),
@@ -280,8 +301,8 @@ class Window(QtGui.QWidget):
     def ready(self, value):
         self._ready = value
 
-    def _actions(self):
-        self._btn1.clicked.connect(self.set_source)
+    def _connect_acctions(self):
+        self._btn_source.clicked.connect(self.set_source)
         self._btn_reset.clicked.connect(self._reset)
         self._btn_scan.clicked.connect(self._scan)
         self._btn_stop.clicked.connect(self._stop)
@@ -291,22 +312,44 @@ class Window(QtGui.QWidget):
         log.debug('_reset()')
 
     def _scan(self):
-        log.warning(TOOLTIP_SCAN)
-        self._progress_bar.setValue(0)
         opts = self.options()
+        if not opts['tfiles']:
+            QtGui.QMessageBox.information(
+                self, "Information", NONE_EXT_CHOOSED)
+            log.debug(NONE_EXT_CHOOSED)
+            return
+        flags = QMessageBox.StandardButton.Yes
+        flags |= QMessageBox.StandardButton.No
+        question = WARNING_LONG_PROCESS
+        response = QMessageBox.question(self, "Question", question, flags)
+        if response == QMessageBox.No:
+            log.info("Scaning cancelled")
+            return
+        log.info("Starting process")
+        log.warning(TOOLTIP_SCAN)
         log.debug(opts)
-        self._thread = WalkThread(self)
 
+        self._btn_start.setEnabled(False)
+        self._btn_reset.setEnabled(False)
+        self._thread = WalkThread(self)
         self._thread._part.connect(self.set_progress)
         self._thread._end_process.connect(self.end_process)
         self._thread._ready.connect(self.ready)
+        self._thread._cursor_end.connect(self._cursor_end)
 
+        self._progress_bar.setValue(0)
         self._progress_bar.setMinimum(0)
         self._progress_bar.setMaximum(100)
         self._thread.start()
+        self._cursor_end()
+        self._btn_start.setEnabled(True)
 
     def _stop(self):
         log.debug('_stop()')
+        try:
+            del self._thread
+        except Exception, e:
+            log.debug('it can delete thread')
 
     def _start(self):
         log.debug('_start()')

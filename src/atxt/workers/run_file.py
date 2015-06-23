@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:21
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-27 15:28:00
+# @Last Modified time: 2015-06-22 15:02:32
 from __future__ import print_function
 import sys
 import os
@@ -26,23 +26,17 @@ def run_file(manager):
     assert isinstance(manager, aTXT)
     opts = manager.options
     log.debug('with option --file')
-
-    to_path = opts['--from']  # where you want to save txt files
-    if opts['--to']:
-        if not os.path.isdir(opts['--to']):
-            log.error('%s is not a valid path for --to_path option' %
-                      opts['--to'])
-            return None
+    # collect the extension of files
     tfiles = set()
     files = defaultdict(list)
     for file_path in set(opts['<file>']):
         log.debug('-> %s' % file_path)
-        if not os.path.isabs(file_path):
+        if not os.path.isabs(file_path) and '--from' in opts:
             file_path = os.path.join(opts['--from'], file_path)
         if not os.path.isfile(file_path) or not os.access(file_path, os.R_OK):
-            log.info('either file is missing or is not readable')
+            log.info('file is missing or it is not readable')
             # if file_path correspond to a folder path,(user omitted --path flag)
-            # it shoudl be process with run_path(manager) --path=True
+            # it should be process with run_path(manager) --path=True
             # and before that: manager.opts.update({'<path>': [file_path]})
             continue
         ext = extract_ext(file_path)
@@ -52,17 +46,23 @@ def run_file(manager):
         else:
             log.warning('%s ignored (%s is not supported yet)' %
                         (file_path, ext))
+
+    to_path = opts['--to']  # where you want to save txt files
+    if to_path:
+        if not os.path.isdir(opts['--to']):
+            log.error('%s is not a valid path for --to option' %
+                      opts['--to'])
+            return None
     total = sum(len(v) for _, v in files.items())
     #  manager.word()
     successful_files = defaultdict(str)
-    for _ext in supported_formats:
-        for file_path in files[_ext]:
-            ext = extract_ext(file_path)
+    for ext in supported_formats:
+        for file_path in files[ext]:
             new_path = None
             try:
                 new_path = manager.convert_to_txt(filepath=file_path)
             except Exception, e:
-                log.critical('convert_to_txt: %s'%e)
+                log.critical('convert_to_txt: %s' % e)
             if new_path:
                 successful_files[file_path] = new_path
                 log.info('successful conversion for: %s' % file_path)

@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
-# @Date:   2015-03-15 22:29:02
-# @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-27 09:46:17
 
 import os
 
@@ -121,8 +118,5 @@ class InfoFile(object):
             log.warning('%s file has not temporal version' % self._basename)
 
     def __str__(self):
-        return {
-            'name': self._name,
-            'extension': self._extension,
-            'path': self._path
-        }
+        return self.name + ('.' + self.extension) if self.extension else ''
+

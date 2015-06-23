@@ -1,0 +1,48 @@
+DEBUG:root:atxt is setting
+DEBUG:root:ready to start atxt conversion
+DEBUG:root:--lang: spa
+DEBUG:root:<source>: []
+DEBUG:root:log_path: /Users/usuario/python-atxt/src/atxt-log.txt
+DEBUG:root:<files>: []
+DEBUG:root:--file: False
+DEBUG:root:hero_pdf: xpdf
+DEBUG:root:--path: False
+DEBUG:root:<file>: []
+DEBUG:root:--enc: utf-8
+DEBUG:root:--depth: 0
+DEBUG:root:-e: utf-8
+DEBUG:root:--format: None
+DEBUG:root:--from: /Users/usuario/python-atxt/src
+DEBUG:root:-l: ./
+DEBUG:root:-o: True
+DEBUG:root:<path>: []
+DEBUG:root:-i: True
+DEBUG:root:-h: False
+DEBUG:root:-u: False
+DEBUG:root:<format>: []
+DEBUG:root:-v: False
+DEBUG:root:--use-temp: True
+DEBUG:root:--to: None
+DEBUG:root:hero_docx: xml
+INFO:root:Starting the graphical interface...
+DEBUG:root:GUI aTXT
+DEBUG:root:[('csv', <PySide.QtGui.QCheckBox object at 0x10fdd6cf8>), ('html', <PySide.QtGui.QCheckBox object at 0x10fdd6d40>), ('txt', <PySide.QtGui.QCheckBox object at 0x10fdd6d88>)]
+DEBUG:root:render csv for gui
+DEBUG:root:render html for gui
+DEBUG:root:render txt for gui
+INFO:root:Starting process
+WARNING:root:Warning: scan a folder can take long time if is a big one
+DEBUG:root:{'run_type': 'path', 'depth': 0, 'savein': u'TXT', 'overwrite': True, 'path': u'/Users/usuario', 'use_temp': True, 'tfiles': ['txt']}
+DEBUG:root:created QThread for WalkThread
+DEBUG:root:
+
+DEBUG:root:{'run_type': 'path', 'depth': 0, 'savein': u'TXT', 'overwrite': True, 'path': u'/Users/usuario', 'use_temp': True, 'tfiles': ['txt']}
+DEBUG:root:
+
+INFO:root:(1): /Users/usuario/atxt-log.txt
+INFO:root:(2): /Users/usuario/felipe.txt
+INFO:root:[number of files estimate]: 2
+INFO:root:[size on disk estimate]: 3.0 kB
+DEBUG:root:_start()
+INFO:root:Starting process
+DEBUG:root:Exit

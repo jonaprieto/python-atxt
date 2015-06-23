@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:16:24
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-26 19:08:24
+# @Last Modified time: 2015-06-22 18:12:39
 import os
 from PySide import QtCore
 from atxt.log_conf import Logger
@@ -58,7 +58,7 @@ class ProcessLib(QtCore.QThread):
                 self.procDone(True)
                 return
 
-            log.debug("starting process over files in directory:")
+            log.debug("Starting process over files in directory:")
 
             for f in files:
                 conta += 1

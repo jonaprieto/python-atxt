@@ -1,0 +1,13 @@
+Starting process
+Warning: scan a folder can take long time if is a big one
+{'run_type': 'path', 'depth': 0, 'savein': u'TXT', 'overwrite': True, 'path': u'/Users/usuario', 'use_temp': True, 'tfiles': ['txt']}
+created QThread for WalkThread
+
+
+{'run_type': 'path', 'depth': 0, 'savein': u'TXT', 'overwrite': True, 'path': u'/Users/usuario', 'use_temp': True, 'tfiles': ['txt']}
+
+
+(1): /Users/usuario/atxt-log.txt
+(2): /Users/usuario/felipe.txt
+[number of files estimate]: 2
+[size on disk estimate]: 3.0 kB

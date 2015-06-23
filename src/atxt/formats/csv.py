@@ -3,14 +3,17 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:53:25
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-04-25 14:53:50
+# @Last Modified time: 2015-06-22 18:09:33
 
 from atxt.log_conf import Logger
+from atxt.infofile import InfoFile
+
 log = Logger.log
 
 import csv as libCSV
 
 __all__ = ['csv']
+
 
 def csv(from_file, to_txt, opts):
     log.debug('csv2txt starting')
@@ -19,7 +22,7 @@ def csv(from_file, to_txt, opts):
     encoding = 'utf-8'
     if 'encoding' in opts:
         encoding = opts['--enc'].strip()
-        log.debug('using encoding from opts: %s' % encoding)
+        log.debug('using encoding: %s' % encoding)
     try:
         f = codecs.open(from_file.path, 'r', encoding=encoding)
         reader = libCSV.reader(f)

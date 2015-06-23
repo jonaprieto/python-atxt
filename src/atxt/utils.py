@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
-# @Date:   2015-03-15 20:28:40
-# @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-03-27 10:09:24
+
 import os
 
 from log_conf import Logger
@@ -14,10 +12,10 @@ import shutil as sh
 
 def make_dir(path):
     try:
-        log.info('creating directory: %s' % path)
+        log.debug('creating directory: %s' % path)
         os.makedirs(path)
         if not os.access(path, os.W_OK):
-            log.info('directory without permissions: %s' % path)
+            log.debug('directory without permissions: %s' % path)
     except OSError, e:
         if os.path.exists(path):
             log.warning('directory exists')
@@ -28,34 +26,34 @@ def make_dir(path):
 def remove_dir(path):
     if os.path.isdir(path) and os.path.exists(path):
         try:
-            log.info('removing entire folder: %s' % path)
+            log.debug('removing entire folder: %s' % path)
             sh.rmtree(path)
-            log.info('directory removed: %s' % path)
+            log.debug('directory removed: %s' % path)
         except IOError, e:
             if os.path.exists(path):
                 log.warning('fail to remove directory: %s' % e)
             else:
                 log.error(e)
     else:
-        log.info('%s is not a directory' % path)
+        log.warning('%s is not a directory' % path)
 
 
 def remove(file_path):
     if os.path.isfile(file_path):
-        log.info('removing file %s' % file_path)
+        log.debug('removing file %s' % file_path)
         try:
             sh.remove(file_path)
         except IOError, e:
             log.warning(e)
             raise e
     else:
-        log.info('remove file, %s is not a file' % file_path)
+        log.warning('remove file, %s is not a file' % file_path)
 
 
 def move_to(file_path, to_path):
     if os.path.isfile(file_path):
         try:
-            log.info('moving from %s to %s' % (file_path, to_path))
+            log.debug('moving from %s to %s' % (file_path, to_path))
             if not os.path.exists(to_path):
                 make_dir(to_path)
             sh.copy2(file_path, to_path)
@@ -66,7 +64,7 @@ def move_to(file_path, to_path):
 
 def copy_to(file_path, to_path):
     try:
-        log.info('copying %s to %s' % (file_path, to_path))
+        log.debug('copying %s to %s' % (file_path, to_path))
         sh.copy2(file_path, to_path)
     except IOError, e:
         log.error(e)
