@@ -1,0 +1,24 @@
+1. install pip (python) sino con brew
+2. install pip install virtualenv
+3. cd (... cliente-proveedor)
+4. virtualenv venv
+5. source venv/bin/activate
+6. pip install -r requirements.txt
+7. python manage.py runserver (prueba q este sirviendo)
+8. python manage.py database recrear
+9. para revisar en la base : python manage.py shell
+>>> with db_session:
+...     u = Usuario.get(usuario='d555')
+...     print u.contacto.correo
+...
+>>> from datetime import datetime as date
+>>> with db_session:
+...     u = Usuario(usuario='harol', rol=Rol.get(nombre='ADMIN'), contrasegna='1234', fecha_creacion=date.utcnow())
+>>> from pony.orm import select, count
+>>> with db_session:
+...     for u in select(u for u in Usuario):
+...         print u.usuario
+
+paginas donde puede preguntar o revisar
+ponyorm.com la documentacion
+stackoverflow.com cualquier cosa de programacion

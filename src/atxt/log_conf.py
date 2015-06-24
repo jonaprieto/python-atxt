@@ -4,28 +4,34 @@
 
 import logging
 
+
 def singleton(cls):
     instances = {}
+
     def get_instance():
         if cls not in instances:
             instances[cls] = cls()
         return instances[cls]
     return get_instance()
 
+
 @singleton
 class Logger(object):
+
     def __init__(self):
         LOG_LEVEL = logging.DEBUG
-        LOGFORMAT = "%(log_color)s%(levelname)-1s%(reset)s | %(log_color)s%(message)s%(reset)s ::%(filename)s:%(lineno)s"
-        logging.root.setLevel(LOG_LEVEL)
+        logging.root.setLevel(logging.DEBUG)
         stream = logging.StreamHandler()
         stream.setLevel(LOG_LEVEL)
+
+        LOGFORMAT = "%(levelname)-1s | %(message)s ::%(filename)s:%(lineno)s"
         try:
+            LOGFORMAT = "%(log_color)s%(levelname)-1s%(reset)s | %(log_color)s%(message)s%(reset)s ::%(filename)s:%(lineno)s"
             from colorlog import ColoredFormatter
             formatter = ColoredFormatter(LOGFORMAT)
             stream.setFormatter(formatter)
         except:
-            pass
+            formatter = logging.Formatter(LOGFORMAT)
         self.log = logging.getLogger('root')
         self.log.setLevel(LOG_LEVEL)
         self.log.addHandler(stream)

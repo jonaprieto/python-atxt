@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-23 01:09:38
+# @Last Modified time: 2015-06-23 12:24:15
 import os
 import sys
 from PySide import QtGui, QtCore
@@ -206,24 +206,21 @@ class Window(QtGui.QWidget):
 
         # ACTIONS
         self._btn_scan = QPushButton("Scan")
-        self._btn_reset = QPushButton("Reset")
         self._btn_stop = QPushButton("Stop")
         self._btn_start = QPushButton("Start")
 
         self._btn_scan.setEnabled(True)
         self._btn_scan.setToolTip(TOOLTIP_SCAN)
 
-        self._btn_stop.setEnabled(True)
+        self._btn_stop.setEnabled(False)
         self._btn_start.setEnabled(True)
-        self._btn_reset.setEnabled(True)
 
         box = QGroupBox(LABEL_BOX_ACTIONS)
         ly = QGridLayout()
         ly.setColumnStretch(1, 1)
         ly.addWidget(self._btn_start,  0, 0)
         ly.addWidget(self._btn_stop,  1, 0)
-        ly.addWidget(self._btn_reset,  2, 0)
-        ly.addWidget(self._btn_scan,  3, 0)
+        ly.addWidget(self._btn_scan,  2, 0)
         box.setLayout(ly)
         self._layout2.addWidget(box)
 
@@ -303,13 +300,9 @@ class Window(QtGui.QWidget):
 
     def _connect_acctions(self):
         self._btn_source.clicked.connect(self.set_source)
-        self._btn_reset.clicked.connect(self._reset)
         self._btn_scan.clicked.connect(self._scan)
         self._btn_stop.clicked.connect(self._stop)
         self._btn_start.clicked.connect(self._start)
-
-    def _reset(self):
-        log.debug('_reset()')
 
     def _scan(self):
         opts = self.options()
@@ -330,7 +323,6 @@ class Window(QtGui.QWidget):
         log.debug(opts)
 
         self._btn_start.setEnabled(False)
-        self._btn_reset.setEnabled(False)
         self._thread = WalkThread(self)
         self._thread._part.connect(self.set_progress)
         self._thread._end_process.connect(self.end_process)

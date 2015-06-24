@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:16:24
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-22 18:12:39
+# @Last Modified time: 2015-06-24 01:10:38
 import os
 from PySide import QtCore
 from atxt.log_conf import Logger
@@ -13,13 +13,13 @@ from atxt.lib import aTXT
 from atxt.walking import walking as wk
 import shutil as sh
 
-homeDirectory = os.path.expanduser('~')
 
-
-class ProcessLib(QtCore.QThread):
-    procDone = QtCore.Signal(bool)
-    partDone = QtCore.Signal(int)
-    message = QtCore.Signal(str)
+class Process(QtCore.QThread):
+    _end_process = QtCore.Signal(bool)
+    _part = QtCore.Signal(int)
+    _ready = QtCore.Signal(bool)
+    _cursor_end = QtCore.Signal(bool)  # for the textbox
+    _message = QtCore.Signal(str)
     FLAG = True
 
     def __init__(self, window):
@@ -28,21 +28,23 @@ class ProcessLib(QtCore.QThread):
 
     def run(self):
 
-        log.debug('created QThread for ProcessLib')
+        log.debug('created QThread for Process')
 
-        self.window.buttonStart.setEnabled(False)
-        self.window.buttonStop.setEnabled(True)
+        self.window._btn_start.setEnabled(False)
+        self.window._btn_scan.setEnabled(False)
+        self.window._btn_stop.setEnabled(True)
 
-        self.partDone.emit(0)
+        self._ready.emit(0)
         opts = self.window.options()
         try:
-            if not os.path.exists(opst['path']):
-                log.debug("Directory does not exist")
+            if not os.path.exists(opts['path']):
+                log.critical("Directory does not exist")
         except Exception, e:
-            log.debug("Fail review directory of search")
+            log.critical("Fail review directory of search: %s" % e)
             return None
 
         manager = aTXT()
+
         conta = 0
         sucessful_files = 0
         unsucessful_files = []
@@ -54,8 +56,8 @@ class ProcessLib(QtCore.QThread):
 
             if not self.FLAG:
                 log.debug("Process stopped.")
-                self.partDone(0)
-                self.procDone(True)
+                self._ready(0)
+                self._part(True)
                 return
 
             log.debug("Starting process over files in directory:")
@@ -73,11 +75,11 @@ class ProcessLib(QtCore.QThread):
                 log.debug("File #" + str(conta))
                 log.debug("Filepath: " + file_path)
 
-                self.partDone.emit(porc)
+                self._ready.emit(porc)
                 log.debug("File finished")
 
         log.debug("Process finished")
-        self.partDone.emit(100)
+        self._ready.emit(100)
 
         log.info("Total Files: %s" % str(conta))
         log.info("Files Finished: %s" % str(sucessful_files))
@@ -87,6 +89,9 @@ class ProcessLib(QtCore.QThread):
             manager.close()
         except Exception, e:
             log.debug(e)
-        self.procDone.emit(True)
+        self._part.emit(True)
+        self.window._btn_start.setEnabled(True)
+        self.window._btn_scan.setEnabled(True)
+        self.window._btn_stop.setEnabled(False)
         self.exit()
         return None

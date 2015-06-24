@@ -166,8 +166,8 @@ class aTXT(object):
                         s = os.path.join(opts['--from'], s)
                         if os.path.isfile(s):
                             opts['<file>'].append(s)
-                    except Exception,e:
-                        log.critical(e)
+                    except Exception, e:
+                        log.critical("options: %s " % e)
             if len(opts['<file>']) > 0:
                 opts['--file'] = True
             if len(opts['<path>']) > 0:
@@ -179,22 +179,24 @@ class aTXT(object):
         self.opts.update(x)
 
     def convert_to_txt(self, filepath='', opts=None):
+        opts = opts or self.options
+        
         _file = InfoFile(filepath, check=True)
-        log.debug("working on %s"%_file)
+        log.debug("working on %s" % _file)
         if _file.extension not in supported_formats:
             log.warning('%s is not supported yet.' % _file.extension)
             return None
         _txt = None
         try:
-            _txt = InfoFile(
-                os.path.join(self.opts['--to'],  _file.name + '.txt'))
+            _txt = InfoFile(os.path.join(self.opts['--to'], _file.name + '.txt'))
         except OSError, e:
             log.critical('extraction metadata fails: %e' % e)
             raise e
+            log.critical(opts)
+
         if not self.opts['-o'] and os.path.exists(_txt.path):
             return _txt.path
 
-        opts = opts or self.options
         if self.opts['--use-temp']:
             try:
                 _file.create_temp()

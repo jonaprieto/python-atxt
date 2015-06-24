@@ -21,6 +21,7 @@ from utils import make_dir, extract_ext
 from workers import run_file, run_path
 
 from lib import aTXT
+from check import check
 
 __version__ = "1.0.5"
 
@@ -29,11 +30,11 @@ def main():
     """aTXT for text extraction data mining tool
 
     Usage:
-        aTXT
-        aTXT [-ihv] [-l LOGPATH]
-        aTXT <source>... [-ihv] [-d DEPTH] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT]
-        aTXT --file <files>... [-ihv] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT]
-        aTXT --path <path>...  [-d DEPTH] [-ihv] [-l LOGPATH] [-e ENC] [--to PATH] [--format EXT]
+        aTXT [--check] [-l LOGPATH]
+        aTXT [-ihvuo] [-l LOGPATH] [--use-temp] [--lang LANG]
+        aTXT <source>... [-ihvuo] [-d DEPTH] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
+        aTXT --file <files>... [-ihvuo] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
+        aTXT --path <path>...  [-d DEPTH] [-ihvuo] [-l LOGPATH] [-e ENC] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
 
     Arguments:
         <source>...         It can be files, foldres or mix of them.
@@ -52,7 +53,13 @@ def main():
                             [default: 0]
         -e ENC              Give a codification to open/save files. [default: utf-8].
         --from PATH         root path of the files [default: ./].
-        --to PATH           root path of save the result files [default:./].
+        --to PATH           root path of save the result files [default: ./].
+        --check             check the system for requirements: Xpdf, Tesseract
+        --use-temp          use the generation of temporary files for avoid problems with filepaths
+        --lang LANG         option of a language for tesseract OCR, please be sure that its package is installed
+        -u                  To uppercase the text files.
+        -o                  Overwrite result files.
+
     Examples:
 
         $ atxt -i
@@ -64,6 +71,7 @@ def main():
 
     opts = docopt(main.__doc__, version=__version__)
     opts['<format>'] = []
+
     for ext in supported_formats:
         if opts['--format'] and opts['--format'].find(ext) > 0:
             opts['<format>'].append(ext)
@@ -80,17 +88,26 @@ def main():
         try:
             log_path = os.path.abspath(opts['-l'])
             if not os.path.isfile(log_path):
-                log_path = os.path.join(log_path, 'atxt-log.txt')
+                log_path = os.path.join(log_path, 'log.txt')
             log.info('log will be save in: %s' % log_path)
         except:
             log.error('LOGPATH error, it is not a valid path')
             print(main.__doc__)
             return
         opts['log_path'] = log_path
-        logging.basicConfig(filename=log_path,
-                            filemode='w',
-                            level=logging.DEBUG
-                            )
+        f = open(log_path, 'wb')
+        f.close()
+        fh = logging.FileHandler(log_path)
+        fh.setLevel(logging.DEBUG)
+        formatter = logging.Formatter(
+            "%(levelname)-1s| %(message)s::%(filename)s:%(lineno)s")
+        fh.setFormatter(formatter)
+        log.addHandler(fh)
+
+    if opts['--check']:
+        check()
+        return
+
     manager = aTXT()
     manager.options = opts
 

@@ -9,7 +9,6 @@ log = Logger.log
 
 import shutil as sh
 
-
 def make_dir(path):
     try:
         log.debug('creating directory: %s' % path)
@@ -84,6 +83,7 @@ def size(file_path):
 
 
 def extract_ext(filepath):
+    assert isinstance(filepath, str) or isinstance(filepate, unicode)
     ext = os.path.splitext(filepath)[1].lower()
     if ext.startswith('.'):
         ext = ext[1:]
