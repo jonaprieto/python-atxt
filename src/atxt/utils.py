@@ -7,7 +7,9 @@ import os
 from log_conf import Logger
 log = Logger.log
 
+from encoding import encoding_path
 import shutil as sh
+
 
 def make_dir(path):
     try:
@@ -73,13 +75,13 @@ def copy_to(file_path, to_path):
 def size(file_path):
     if not os.path.isfile(file_path):
         log.warning('%s isnot a file' % os.path.basename(file_path))
-        return None
+        return
     try:
         size = os.path.getsize(file_path)
         return size
     except Exception, e:
         log.warning(e)
-    return None
+    return
 
 
 def extract_ext(filepath):
@@ -88,3 +90,40 @@ def extract_ext(filepath):
     if ext.startswith('.'):
         ext = ext[1:]
     return ext
+
+
+def parser_opts(opts):
+    assert isinstance(opts, dict)
+    if '--from' in opts:
+        if opts['--from']:
+            opts['--from'] = encoding_path(opts['--from'])
+            if os.path.isdir(opts['--from']):
+                opts['--from'] = os.path.abspath(opts['--from'])
+    if '<source>' in opts:
+        if isinstance(opts['<source>'], list):
+            opts['<source>'] = list(set(opts['<source>']))
+        opts['<file>'] = []
+        opts['<path>'] = []
+        for s in opts['<source>']:
+            s = encoding_path(s)
+            if os.path.isdir(s):
+                opts['<path>'].append(s)
+            elif os.path.isfile(s):
+                opts['<file>'].append(s)
+            else:
+                log.debug('else: %s' % s)
+                try:
+                    if '--from' in opts and os.path.isdir(opts['--from']):
+                        s = os.path.join(opts['--from'], s)
+                        if os.path.isfile(s):
+                            opts['<file>'].append(s)
+                except Exception, e:
+                    log.critical("options: %s " % e)
+        if len(opts['<file>']) > 0:
+            opts['--file'] = True
+        if len(opts['<path>']) > 0:
+            opts['--path'] = True
+            opts['<path>'] = map(encoding_path, opts['<path>'])
+            opts['<path>'] = map(os.path.abspath, opts['<path>'])
+    opts['--depth'] = int(opts['--depth'])
+    return opts.copy()

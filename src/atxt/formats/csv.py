@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:53:25
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-22 18:09:33
+# @Last Modified time: 2015-06-25 00:17:38
 
 from atxt.log_conf import Logger
 from atxt.infofile import InfoFile
@@ -33,5 +33,5 @@ def csv(from_file, to_txt, opts):
         f.close()
     except Exception, e:
         log.critical(e)
-        return None
+        return 
     return to_txt.path

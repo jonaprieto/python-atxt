@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-04-25 14:07:56
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-22 17:49:23
+# @Last Modified time: 2015-06-25 00:17:38
 from __future__ import print_function
 from atxt.log_conf import Logger
 import codecs
@@ -27,5 +27,5 @@ def txt(from_file, to_txt, opts):
         f.close()
     except Exception, e:
         log.critical(e)
-        return None
+        return 
     return to_txt.path

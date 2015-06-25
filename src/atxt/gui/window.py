@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-23 12:24:15
+# @Last Modified time: 2015-06-25 00:57:02
 import os
 import sys
 from PySide import QtGui, QtCore
@@ -23,6 +23,8 @@ from constants import *
 
 import logging
 from atxt.log_conf import Logger
+from atxt.utils import parser_opts
+
 log = Logger.log
 path_home = os.path.expanduser('~')
 
@@ -85,6 +87,7 @@ class Window(QtGui.QWidget):
     _layout1 = QtGui.QVBoxLayout()
     _layout2 = QtGui.QVBoxLayout()
     run_type = "path"
+    totalfiles = 0
 
     def __init__(self, manager=None):
         super(Window, self).__init__()
@@ -165,11 +168,11 @@ class Window(QtGui.QWidget):
 
         # DETAILS
 
-        self._progress_bar = QtGui.QProgressBar()
-        self._progress_bar.setMinimum(0)
-        self._progress_bar.setMaximum(100)
+        # self._progress_bar = QtGui.QProgressBar()
+        # self._progress_bar.setMinimum(0)
+        # self._progress_bar.setMaximum(100)
         self._layout1.addWidget(self._console)
-        self._layout1.addWidget(self._progress_bar)
+        # self._layout1.addWidget(self._progress_bar)
         self._btn_save_log = QtGui.QPushButton(BTN_SAVE_LOG)
         self._btn_save_log.clicked.connect(self._save_log)
         self._layout1.addWidget(self._btn_save_log)
@@ -265,38 +268,34 @@ class Window(QtGui.QWidget):
     def options(self):
         f = self._edt_source.text()
         if not os.path.exists(f):
-            self.on_show_info('Choose a valid path for "from"')
-            return None
-        if os.path.isdir(f):
-            self.run_type = "path"
-        elif os.path.isfile(f):
-            self.run_type = "file"
+            self.on_show_info('Choose a valid source!"')
+            return
 
         tfiles = []
         for ext, widget in self.formats:
             if widget.isChecked():
                 tfiles.append(ext)
-        opt = {
-            'run_type': self.run_type,
-            'path': f,
-            'savein': self._edt_save.text(),
-            'overwrite': self._check_overwrite.isChecked(),
-            'use_temp': self._check_use_temp.isChecked(),
-            'depth': int(self._depth.text()),
+        opts = {
+            '<source>' : [f],
+            '--to': self._edt_save.text(),
+            '-o': self._check_overwrite.isChecked(),
+            '-u': self._check_use_temp.isChecked(),
+            '--depth': int(self._depth.text()),
             'tfiles': tfiles,
         }
-        return opt
+        return parser_opts(opts)
 
-    def set_progress(self, value):
-        if value > 100:
-            value = 100
-        self._progress_bar.setValue(value)
+    # def set_progress(self, value):
+    #     if value > 100:
+    #         value = 100
+        # self._progress_bar.setValue(value)
 
-    def end_process(self):
-        self._progress_bar.reset()
+    # def end_process(self):
+    #     # self._progress_bar.reset()
+    #     pass
 
-    def ready(self, value):
-        self._ready = value
+    # def ready(self, value):
+    #     self._ready = value
 
     def _connect_acctions(self):
         self._btn_source.clicked.connect(self.set_source)
@@ -320,28 +319,31 @@ class Window(QtGui.QWidget):
             return
         log.info("Starting process")
         log.warning(TOOLTIP_SCAN)
-        log.debug(opts)
 
         self._btn_start.setEnabled(False)
         self._thread = WalkThread(self)
-        self._thread._part.connect(self.set_progress)
-        self._thread._end_process.connect(self.end_process)
-        self._thread._ready.connect(self.ready)
+        # self._thread._end_process.connect(self.end_process)
         self._thread._cursor_end.connect(self._cursor_end)
+        # self._thread._part.connect(self.set_progress)
+        # self._thread._ready.connect(self.ready)
 
-        self._progress_bar.setValue(0)
-        self._progress_bar.setMinimum(0)
-        self._progress_bar.setMaximum(100)
+        # self._progress_bar.setValue(0)
+        # self._progress_bar.setMinimum(0)
+        # self._progress_bar.setMaximum(100)
         self._thread.start()
         self._cursor_end()
         self._btn_start.setEnabled(True)
 
     def _stop(self):
         log.debug('_stop()')
-        try:
-            del self._thread
-        except Exception, e:
-            log.debug('it can delete thread')
+        if hasattr(self, _thread):
+            try:
+                self._thread.finished()
+                self._thread.deleteLater()
+                self._thread.FLAG = False
+                del self._thread
+            except Exception, e:
+                log.debug('it can delete thread')
 
     def _start(self):
         log.debug('_start()')

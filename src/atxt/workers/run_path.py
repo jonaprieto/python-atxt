@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:48
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-22 17:55:27
+# @Last Modified time: 2015-06-25 00:38:06
 from __future__ import print_function
 import sys
 import os
@@ -20,15 +20,15 @@ from atxt.utils import make_dir, extract_ext
 from atxt.lib import aTXT
 from atxt.encoding import encoding_path
 
-__all__ = ['run_path']
+__all__ = ['run_paths', 'run_one_path']
 
 
-def run_path(manager):
+def run_paths(manager):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not opts['--path'] or not opts['<path>']:
         log.debug('nothing for path')
-        return None
+        return 
     log.debug('<path>: %s' % opts['<path>'])
     if opts['--depth'] < 0:
         opts['--depth'] = 0
@@ -58,14 +58,14 @@ def run_one_path(manager, path=None):
     opts = manager.options
     if not path:
         if opts['--path']:  # the path will be always stored on <path>
-            return run_path(manager)
+            return run_paths(manager)
         else:
             raise ValueError('--path is not on')
     log.debug('working over: %s' % path)
     assert isinstance(path, str) or isinstance(path, unicode)
     if not os.path.isdir(path):
         log.error('%s is not a valid path for --path option' % path)
-        return None
+        return 
     # the part below can be omitted for a second time (tfiles->opts)
     if 'tfiles' not in opts:
         log.critical('there is not tfiles key. Grave.')

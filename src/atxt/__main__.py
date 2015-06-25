@@ -18,7 +18,7 @@ import walking as wk
 
 from utils import make_dir, extract_ext
 
-from workers import run_file, run_path
+from workers import run_files, run_paths
 
 from lib import aTXT
 from check import check
@@ -32,9 +32,9 @@ def main():
     Usage:
         aTXT [--check] [-l LOGPATH]
         aTXT [-ihvuo] [-l LOGPATH] [--use-temp] [--lang LANG]
-        aTXT <source>... [-ihvuo] [-d DEPTH] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
-        aTXT --file <files>... [-ihvuo] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
-        aTXT --path <path>...  [-d DEPTH] [-ihvuo] [-l LOGPATH] [-e ENC] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
+        aTXT <source>... [-hvuo] [-d DEPTH] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
+        aTXT --file <files>... [-hvuo] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
+        aTXT --path <path>...  [-d DEPTH] [-hvuo] [-l LOGPATH] [-e ENC] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
 
     Arguments:
         <source>...         It can be files, foldres or mix of them.
@@ -126,15 +126,16 @@ def main():
     res = None
     total, finished = 0, 0
     if manager.options['--file']:
-        res = run_file(manager)
+        res = run_files(manager)
         if res and len(res) == 2:
             total += res[0]
             finished += res[1]
     if manager.options['--path']:
-        res = run_path(manager)
+        res = run_paths(manager)
         if res and len(res) == 2:
             total += res[0]
             finished += res[1]
+            
     log.info('{0} end of aTXT {0}'.format('-' * 15))
     log.info('files: %d\tfinished: %d', total, finished)
 

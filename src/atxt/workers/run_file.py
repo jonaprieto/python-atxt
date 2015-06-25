@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:21
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-22 15:02:32
+# @Last Modified time: 2015-06-25 00:55:12
 from __future__ import print_function
 import sys
 import os
@@ -19,10 +19,10 @@ import atxt.walking as wk
 from atxt.utils import make_dir, extract_ext
 from atxt.lib import aTXT
 
-__all__ = ['run_file']
+__all__ = ['run_files', 'run_one_file']
 
 
-def run_file(manager):
+def run_files(manager):
     assert isinstance(manager, aTXT)
     opts = manager.options
     log.debug('with option --file')
@@ -36,7 +36,7 @@ def run_file(manager):
         if not os.path.isfile(file_path) or not os.access(file_path, os.R_OK):
             log.info('file is missing or it is not readable')
             # if file_path correspond to a folder path,(user omitted --path flag)
-            # it should be process with run_path(manager) --path=True
+            # it should be process with run_paths(manager) --path=True
             # and before that: manager.opts.update({'<path>': [file_path]})
             continue
         ext = extract_ext(file_path)
@@ -52,7 +52,7 @@ def run_file(manager):
         if not os.path.isdir(opts['--to']):
             log.error('%s is not a valid path for --to option' %
                       opts['--to'])
-            return None
+            return 
     total = sum(len(v) for _, v in files.items())
     #  manager.word()
     successful_files = defaultdict(str)
@@ -70,3 +70,18 @@ def run_file(manager):
                 log.error('unsucessful conversion: %s' % file_path)
     finished = len(successful_files)
     return total, finished
+
+
+def run_one_file(manager, filepath=None, cache=False):
+    assert isinstance(manager, aTXT)
+    opts = manager.options
+    assert '<file>' in opts
+    assert '--file' in opts
+    if filepath:
+        if cache:
+            opts['<file>'].append(filepath)
+        else:
+            opts['<file>'] = [filepath]
+    opts['--file'] = True
+    manager.options = opts
+    return run_files(manager)

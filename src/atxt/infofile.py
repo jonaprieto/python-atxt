@@ -99,7 +99,7 @@ class InfoFile(object):
                 log.debug('tempdir: %s' % self._temp_dir)
             except Exception, e:
                 log.error(e)
-                return None
+                return 
         utils.copy_to(self._path, self._temp_dir)
 
         self._temp_basename = self._basename

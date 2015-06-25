@@ -10,7 +10,7 @@ log = Logger.log
 
 from infofile import InfoFile
 from config import Config
-from utils import extract_ext, make_dir
+from utils import extract_ext, make_dir, parser_opts
 from encoding import encoding_path
 from formats import convert, supported_formats
 
@@ -74,7 +74,7 @@ class aTXT(object):
                     utils.make_dir(value)
                 except Exception, e:
                     log.warning(e)
-                    return None
+                    return
             self.opts['--to'] = value
             log.debug('--to: %s' % value)
         return self.opts['--to']
@@ -144,51 +144,20 @@ class aTXT(object):
 
     @options.setter
     def options(self, opts):
-        assert isinstance(opts, dict)
-        if '--from' in opts:
-            if opts['--from']:
-                opts['--from'] = encoding_path(opts['--from'])
-                if os.path.isdir(opts['--from']):
-                    opts['--from'] = os.path.abspath(opts['--from'])
-        if '<source>' in opts:
-            if isinstance(opts['<source>'], list):
-                opts['<source>'] = list(set(opts['<source>']))
-            opts['<file>'] = []
-            opts['<path>'] = []
-            for s in opts['<source>']:
-                s = encoding_path(s)
-                if os.path.isdir(s):
-                    opts['<path>'].append(s)
-                elif os.path.isfile(s):
-                    opts['<file>'].append(s)
-                else:
-                    try:
-                        s = os.path.join(opts['--from'], s)
-                        if os.path.isfile(s):
-                            opts['<file>'].append(s)
-                    except Exception, e:
-                        log.critical("options: %s " % e)
-            if len(opts['<file>']) > 0:
-                opts['--file'] = True
-            if len(opts['<path>']) > 0:
-                opts['--path'] = True
-                opts['<path>'] = map(encoding_path, opts['<path>'])
-                opts['<path>'] = map(os.path.abspath, opts['<path>'])
-        opts['--depth'] = int(opts['--depth'])
-        x = opts.copy()
-        self.opts.update(x)
+        self.opts.update(parser_opts(opts))
 
     def convert_to_txt(self, filepath='', opts=None):
         opts = opts or self.options
-        
+
         _file = InfoFile(filepath, check=True)
         log.debug("working on %s" % _file)
         if _file.extension not in supported_formats:
             log.warning('%s is not supported yet.' % _file.extension)
-            return None
+            return
         _txt = None
         try:
-            _txt = InfoFile(os.path.join(self.opts['--to'], _file.name + '.txt'))
+            _txt = InfoFile(
+                os.path.join(self.opts['--to'], _file.name + '.txt'))
         except OSError, e:
             log.critical('extraction metadata fails: %e' % e)
             raise e

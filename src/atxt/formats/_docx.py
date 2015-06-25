@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:53:06
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-04-25 14:54:12
+# @Last Modified time: 2015-06-25 00:17:38
 from atxt.log_conf import Logger
 log = Logger.log
 
@@ -27,7 +27,7 @@ def docx(from_file, to_txt, opts):
     except Exception, e:
         log.critical('fail to create txt: %s' % _txt.basename)
         log.critical(e)
-        return None
+        return 
 
     if hero == 'python-docx':
         _doc = docx.opendocx(_file.path)
@@ -44,7 +44,7 @@ def docx(from_file, to_txt, opts):
             _txt.content.write(_content)
         except Exception, e:
             log.critical(e)
-            return None
+            return 
     return _txt
 
 

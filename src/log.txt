@@ -1,14 +1,14 @@
 DEBUG| atxt is setting::lib.py:115
 DEBUG| ready to start atxt conversion::lib.py:133
 DEBUG| --lang: None::__main__.py:115
-DEBUG| <source>: ['prueba.html']::__main__.py:115
+DEBUG| <source>: []::__main__.py:115
 DEBUG| log_path: /Users/usuario/python-atxt/src/log.txt::__main__.py:115
 DEBUG| <files>: []::__main__.py:115
-DEBUG| --file: True::__main__.py:115
+DEBUG| --file: False::__main__.py:115
 DEBUG| --check: False::__main__.py:115
 DEBUG| hero_pdf: xpdf::__main__.py:115
 DEBUG| --path: False::__main__.py:115
-DEBUG| <file>: ['prueba.html']::__main__.py:115
+DEBUG| <file>: []::__main__.py:115
 DEBUG| --enc: utf-8::__main__.py:115
 DEBUG| --depth: 0::__main__.py:115
 DEBUG| -e: utf-8::__main__.py:115
@@ -17,7 +17,7 @@ DEBUG| --from: /Users/usuario/python-atxt/src::__main__.py:115
 DEBUG| -l: ./::__main__.py:115
 DEBUG| -o: False::__main__.py:115
 DEBUG| <path>: []::__main__.py:115
-DEBUG| -i: False::__main__.py:115
+DEBUG| -i: True::__main__.py:115
 DEBUG| -h: False::__main__.py:115
 DEBUG| -u: False::__main__.py:115
 DEBUG| <format>: []::__main__.py:115
@@ -25,11 +25,25 @@ DEBUG| -v: False::__main__.py:115
 DEBUG| --use-temp: False::__main__.py:115
 DEBUG| --to: ./::__main__.py:115
 DEBUG| hero_docx: xml::__main__.py:115
-DEBUG| with option --file::run_file.py:28
-DEBUG| -> prueba.html::run_file.py:33
-DEBUG| extracting metadata from file: /Users/usuario/python-atxt/src/prueba.html::infofile.py:54
-DEBUG| working on prueba.html::lib.py:185
-DEBUG| extracting metadata from file: ./prueba.txt::infofile.py:54
-INFO| successful conversion for: /Users/usuario/python-atxt/src/prueba.html::run_file.py:68
-INFO| --------------- end of aTXT ---------------::__main__.py:138
-INFO| files: 1	finished: 1::__main__.py:139
+INFO| Starting the graphical interface...::__main__.py:118
+DEBUG| GUI aTXT::window.py:94
+DEBUG| [('csv', <PySide.QtGui.QCheckBox object at 0x10e64ab48>), ('html', <PySide.QtGui.QCheckBox object at 0x10e64ab90>), ('txt', <PySide.QtGui.QCheckBox object at 0x10e64abd8>)]::window.py:201
+DEBUG| render csv for gui::window.py:205
+DEBUG| render html for gui::window.py:205
+DEBUG| render txt for gui::window.py:205
+DEBUG| set source for extraction::window.py:238
+INFO| set path: /Users/usuario/Downloads::window.py:247
+DEBUG| --depth: 1::window.py:256
+INFO| Starting process::window.py:320
+WARNING| Warning: scan a folder can take long time if is a big one::window.py:321
+DEBUG| created QThread for WalkThread::walk_thread.py:33
+INFO| (1): /Users/usuario/Downloads/tareas MIERCOLES.txt::walk_thread.py:56
+INFO| (2): /Users/usuario/Downloads/antes del 9 de junio/sublime-text-3-licence.txt::walk_thread.py:56
+INFO| (3): /Users/usuario/Downloads/twitter-sentiment-classifier/README.txt::walk_thread.py:56
+INFO| [number of files estimate]: 3::walk_thread.py:63
+INFO| [size on disk estimate]: 4.0 kB::walk_thread.py:64
+DEBUG| _start()::window.py:349
+INFO| Starting process::window.py:355
+DEBUG| _start()::window.py:349
+INFO| Starting process::window.py:355
+DEBUG| Exit::window.py:231
