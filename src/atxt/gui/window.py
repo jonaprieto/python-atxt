@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-25 00:57:02
+# @Last Modified time: 2015-06-25 10:59:47
 import os
 import sys
 from PySide import QtGui, QtCore
@@ -17,6 +17,7 @@ from PySide.QtGui import (
     QMessageBox
 )
 from walk_thread import WalkThread
+from process import Process
 import atxt.walking as wk
 from atxt.formats import supported_formats
 from constants import *
@@ -139,7 +140,7 @@ class Window(QtGui.QWidget):
         self._layout1.addWidget(box)
 
         self._label_save = QtGui.QLabel(MSG_SAVE_IN)
-        self._edt_save = QtGui.QLineEdit(NAME_FOLDER_TXT)
+        self._edt_save = QtGui.QLineEdit("")
         self._edt_save.setFixedSize(200, 20)
         self._edt_save.setToolTip(TOOLTIP_SAVEIN)
         self._btn2 = QtGui.QPushButton(BTN_BROWSER)
@@ -179,7 +180,7 @@ class Window(QtGui.QWidget):
 
     def _save_log(self):
         save_log_dir = QFileDialog.getSaveFileName(
-            self, "Save File", "", "Text File (*.txt)")
+            self, "Save Log File", "", "Text File (*.txt)")
         f = QtCore.QFile(str(save_log_dir[0]))
         try:
             if f.open(QtCore.QIODevice.ReadWrite):
@@ -247,12 +248,14 @@ class Window(QtGui.QWidget):
                     log.info('set path: %s' % f)
                     run_type = "path"
                     self._btn_scan.setEnabled(True)
+                    self._edt_save.setText(f)
 
                 elif os.path.isfile(f):
                     log.debug('--from %s' % os.path.dirname(f))
                     log.debug('file: %s' % os.path.basename(f))
                     run_type = "file"
                     self._btn_scan.setEnabled(False)
+                    sefl._edt_save.setText(os.path.dirname(f))
                 log.debug('--depth: %s' % self._depth.text())
                 self._edt_source.setText(f)
 
@@ -355,3 +358,21 @@ class Window(QtGui.QWidget):
             log.info("Starting process")
         elif QMessageBox.No:
             log.info("Starting cancelled")
+            return
+
+        self._thread = Process(self)
+        self._thread._cursor_end.connect(self._cursor_end)
+
+        # self._thread._end_process.connect(self.end_process)
+        # self._thread._part.connect(self.set_progress)
+        # self._thread._ready.connect(self.ready)
+
+        # self._progress_bar.setValue(0)
+        # self._progress_bar.setMinimum(0)
+        # self._progress_bar.setMaximum(100)
+        self._thread.start()
+        self._cursor_end()
+        self._btn_start.setEnabled(True)
+        self._btn_stop.setEnabled(False)
+        self._btn_scan.setEnabled(True)
+

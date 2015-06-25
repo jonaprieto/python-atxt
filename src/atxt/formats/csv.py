@@ -3,14 +3,15 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:53:25
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-25 00:17:38
+# @Last Modified time: 2015-06-25 11:46:26
 
 from atxt.log_conf import Logger
 from atxt.infofile import InfoFile
+import codecs
 
 log = Logger.log
 
-import csv as libCSV
+import csv as _csv
 
 __all__ = ['csv']
 
@@ -25,7 +26,7 @@ def csv(from_file, to_txt, opts):
         log.debug('using encoding: %s' % encoding)
     try:
         f = codecs.open(from_file.path, 'r', encoding=encoding)
-        reader = libCSV.reader(f)
+        reader = _csv.reader(f)
         f.close()
         f = codecs.open(to_txt.path, 'w', encoding=encoding)
         text = '\n'.join(['\t'.join(row) for row in reader])
@@ -33,5 +34,5 @@ def csv(from_file, to_txt, opts):
         f.close()
     except Exception, e:
         log.critical(e)
-        return 
+        return
     return to_txt.path

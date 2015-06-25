@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:48
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-25 00:38:06
+# @Last Modified time: 2015-06-25 12:35:18
 from __future__ import print_function
 import sys
 import os
@@ -23,12 +23,12 @@ from atxt.encoding import encoding_path
 __all__ = ['run_paths', 'run_one_path']
 
 
-def run_paths(manager):
+def run_paths(manager, thread=None):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not opts['--path'] or not opts['<path>']:
         log.debug('nothing for path')
-        return 
+        return
     log.debug('<path>: %s' % opts['<path>'])
     if opts['--depth'] < 0:
         opts['--depth'] = 0
@@ -38,13 +38,20 @@ def run_paths(manager):
     if opts['--to'] == 'TXT':
         opts['--to'] = os.path.join(opts['--from'], opts['--to'])
         make_dir(opts['--to'])
-    tfiles = set(supported_formats[:])
-    opts['tfiles'] = list(tfiles)
+
+    if 'tfiles' in opts and opts['tfiles']:
+        opts['tfiles'] = set(supported_formats[:]) & set(opts['tfiles'])
+        opts['tfiles'] = list(opts['tfiles'])
+
     manager.options = opts
     log.debug(manager.options)
     total, finished = 0, 0
+    if thread:
+        thread._cursor_end.emit(True)
     for path in opts['<path>']:
-        res = run_one_path(manager, path)
+        res = run_one_path(manager, path, thread)
+        if thread:
+            thread._cursor_end.emit(True)
         if res:
             total += res[0]
             finished += res[1]
@@ -53,19 +60,20 @@ def run_paths(manager):
     return total, finished
 
 
-def run_one_path(manager, path=None):
+def run_one_path(manager, path=None, thread=None):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not path:
         if opts['--path']:  # the path will be always stored on <path>
             return run_paths(manager)
         else:
-            raise ValueError('--path is not on')
+            log.critical('--path is not on')
+            return
     log.debug('working over: %s' % path)
     assert isinstance(path, str) or isinstance(path, unicode)
     if not os.path.isdir(path):
         log.error('%s is not a valid path for --path option' % path)
-        return 
+        return
     # the part below can be omitted for a second time (tfiles->opts)
     if 'tfiles' not in opts:
         log.critical('there is not tfiles key. Grave.')
@@ -81,7 +89,7 @@ def run_one_path(manager, path=None):
     log.debug('searching for: %s' % opts['tfiles'])
     # manager.word()
     total = 0
-    successful_files = defaultdict(str)
+    finished = 0
     for _root, _, _files in wk.walk(path,
                                     level=opts['--depth'],
                                     tfiles=opts['tfiles']):
@@ -97,13 +105,17 @@ def run_one_path(manager, path=None):
             new_path = None
             try:
                 new_path = manager.convert_to_txt(filepath=file_path)
+                if not new_path:
+                    log.error('unsucessful conversion: %s' % file_path)
+                    if thread:
+                        thread._cursor_end.emit(True)
             except Exception, e:
                 log.critical(e)
-                return
-            if new_path:
-                log.info('successful conversion: %s' % file_path)
-                successful_files[new_path] = file_path
-            else:
-                log.error('unsucessful conversion: %s' % file_path)
-    finished = len(successful_files)
+                continue
+
+            log.info('successful conversion: %s' % file_path)
+            finished += 1
+            if thread:
+                thread._cursor_end.emit(True)
+
     return total, finished

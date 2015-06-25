@@ -66,15 +66,21 @@ def main():
         $ atxt prueba.html
         $ atxt --file ~/Documents/prueba.html
         $ atxt ~ -d 2
-        $ atxt --path ~ -d 2
+        $ atxt --path ~ -d 2 --format 'txt,html'
     """
 
     opts = docopt(main.__doc__, version=__version__)
     opts['<format>'] = []
 
-    for ext in supported_formats:
-        if opts['--format'] and opts['--format'].find(ext) > 0:
+    for ext in supported_formats[:]:
+        if opts['--format'] and opts['--format'].find(ext) >= 0:
             opts['<format>'].append(ext)
+            if 'tfiles' in opts:
+                opts['tfiles'].append(ext)
+            else:
+                opts['tfiles'] = [ext]
+    if 'tfiles' not in opts or not opts['tfiles']:
+        opts['tfiles'] = supported_formats[:]
 
     if opts['-v']:
         print(__version__)

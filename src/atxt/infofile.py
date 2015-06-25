@@ -94,7 +94,6 @@ class InfoFile(object):
         self._temp_dir = value
         if not value or not os.path.exists(self._temp_dir):
             try:
-                log.debug('creating a temporary directory')
                 self._temp_dir = tmp.mkdtemp()
                 log.debug('tempdir: %s' % self._temp_dir)
             except Exception, e:

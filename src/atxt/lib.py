@@ -150,7 +150,7 @@ class aTXT(object):
         opts = opts or self.options
 
         _file = InfoFile(filepath, check=True)
-        log.debug("working on %s" % _file)
+        log.debug("file name: %s" % _file)
         if _file.extension not in supported_formats:
             log.warning('%s is not supported yet.' % _file.extension)
             return
@@ -166,6 +166,7 @@ class aTXT(object):
         if not self.opts['-o'] and os.path.exists(_txt.path):
             return _txt.path
 
+        res = None
         if self.opts['--use-temp']:
             try:
                 _file.create_temp()
@@ -176,7 +177,7 @@ class aTXT(object):
             except Exception, e:
                 log.critical(e)
             try:
-                convert(from_file=_tempfile, to_txt=_txt, opts=opts)
+                res = convert(from_file=_tempfile, to_txt=_txt, opts=opts)
             except Exception, e:
                 log.critical('conversion fails (--use-temp): %e' % e)
             try:
@@ -185,7 +186,10 @@ class aTXT(object):
                 log.critical(e)
         else:
             try:
-                convert(from_file=_file, to_txt=_txt, opts=opts)
+                res = convert(from_file=_file, to_txt=_txt, opts=opts)
             except Exception, e:
                 log.critical('conversion fails: %e' % e)
+        if not res:
+            raise IOError('problems with I/O reading file')
+            return None
         return _txt.path

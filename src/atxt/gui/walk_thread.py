@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:19
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-25 01:02:09
+# @Last Modified time: 2015-06-25 11:58:20
 import os
 
 import logging
@@ -49,19 +49,20 @@ class WalkThread(QtCore.QThread):
                 self._end_process(True)
                 return
             for f in files:
-                conta += 1
                 # self._part.emit(conta * factor)
                 file_path = os.path.join(root, f.name)
                 file_path = encoding_path(file_path)
-                try:
-                    log.info("(%d): %s" % (conta, file_path))
-                except Exception, e:
-                    log.debug(e)
-                self._cursor_end.emit(True)
-                try:
-                    tsize += os.path.getsize(file_path)
-                except Exception, e:
-                    log.debug('os.path.getsize(file_path) failed')
+                if os.access(file_path, os.R_OK):
+                    conta += 1
+                    try:
+                        log.info("(%d): %s" % (conta, file_path))
+                    except Exception, e:
+                        log.debug(e)
+                    self._cursor_end.emit(True)
+                    try:
+                        tsize += os.path.getsize(file_path)
+                    except Exception, e:
+                        log.debug('os.path.getsize(file_path) failed')
 
         log.info('[number of files estimate]: %d' % conta)
         log.info('[size on disk estimate]: %s' % wk.size_str(tsize))
