@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 02:38:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-25 00:17:38
+# @Last Modified time: 2015-06-27 01:10:54
 
 from atxt.log_conf import Logger
 log = Logger.log
@@ -11,6 +11,7 @@ log = Logger.log
 import codecs
 from atxt.infofile import InfoFile
 
+from _utils import raw_data, save_raw_data, find_encoding
 try:
     import html2text
 except:
@@ -23,22 +24,7 @@ __all__ = ['html']
 
 def html(from_file, to_txt, opts):
     log.debug('html2txt starting')
-    assert isinstance(from_file, InfoFile)
-    _file = from_file
-    encoding = 'utf-8'
-    if '-e' in opts:
-        encoding = opts['-e'].strip()
-        log.debug('using encoding: %s' % encoding)
 
-    try:
-        f = codecs.open(_file.path, 'r', encoding=encoding)
-    except Exception, e:
-        log.critical(e)
-        return 
-
-    s = ''
-    for l in f:
-        s += l
     h = html2text.HTML2Text()
     h.split_next_td = False
     h.td_count = 0
@@ -60,9 +46,10 @@ def html(from_file, to_txt, opts):
     h.emphasis_mark = '_'
     h.strong_mark = '**'
     h.single_line_break = True
-    text = h.handle(s)
-    f = codecs.open(to_txt.path, 'w', encoding=encoding)
-    f.write(text)
-    f.close()
-    log.debug('txt finished: %s' % to_txt.path)
-    return to_txt.path
+
+    _encoding = find_encoding(from_file.path)
+    html = raw_data(from_file.path, _encoding)
+    if not html:
+        return
+    text = h.handle(html)
+    return save_raw_data(to_txt.path, text, _encoding)

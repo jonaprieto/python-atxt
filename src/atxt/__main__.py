@@ -31,10 +31,10 @@ def main():
 
     Usage:
         aTXT [--check] [-l LOGPATH]
-        aTXT [-ihvuo] [-l LOGPATH] [--use-temp] [--lang LANG]
-        aTXT <source>... [-hvuo] [-d DEPTH] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
-        aTXT --file <files>... [-hvuo] [-l LOGPATH] [-e ENC] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
-        aTXT --path <path>...  [-d DEPTH] [-hvuo] [-l LOGPATH] [-e ENC] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
+        aTXT [-ihvo] [-l LOGPATH] [--use-temp] [--lang LANG]
+        aTXT <source>... [-hvo] [-d DEPTH] [-l LOGPATH] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
+        aTXT --file <files>... [-hvo] [-l LOGPATH] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
+        aTXT --path <path>...  [-d DEPTH] [-hvuo] [-l LOGPATH] [--to PATH] [--format EXT] [--use-temp] [--lang LANG]
 
     Arguments:
         <source>...         It can be files, foldres or mix of them.
@@ -51,13 +51,11 @@ def main():
         -d, --depth DEPTH   Integer for depth for trasvering path using 
                             Depth-first-search on folders @int for path of files in <source>
                             [default: 0]
-        -e ENC              Give a codification to open/save files. [default: utf-8].
         --from PATH         root path of the files [default: ./].
         --to PATH           root path of save the result files [default: ./].
         --check             check the system for requirements: Xpdf, Tesseract
         --use-temp          use the generation of temporary files for avoid problems with filepaths
         --lang LANG         option of a language for tesseract OCR, please be sure that its package is installed
-        -u                  To uppercase the text files.
         -o                  Overwrite result files.
 
     Examples:

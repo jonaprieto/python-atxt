@@ -18,45 +18,26 @@ from formats import convert, supported_formats
 class aTXT(object):
     opts = dict()
 
-    @property
-    def uppercase(self):
-        return self.opts['-u']
+    def __init__(self):
 
-    @uppercase.setter
-    def uppercase(self, value):
-        self.opts['-u'] = value
-
-    @property
-    def overwrite(self):
-        return self.opts['-o']
-
-    @overwrite.setter
-    def overwrite(self, value):
-        self.opts['-o'] = value
-
-    @property
-    def lang(self):
-        return self.opts['--lang']
-
-    @lang.setter
-    def lang(self, value):
-        self.opts['--lang'] = True
-
-    @property
-    def use_temp(self):
-        return self.opts['--use-temp']
-
-    @use_temp.setter
-    def use_temp(self, value):
-        self.opts['--use-temp'] = value
-
-    @property
-    def encoding(self):
-        return self.opts['--enc']
-
-    @encoding.setter
-    def encoding(self, value):
-        self.opts['--enc'] = value
+        log.debug('atxt is setting')
+        self._config = Config()
+        self.opts = {
+            '-u': False,
+            '-o': True,
+            '--to': './',
+            '--lang': 'spa',
+            '--use-temp': True,
+            '--file': False,
+            '<file>': None,
+            '--path': False,
+            '<path>': None,
+            '<source>': None,
+            'hero-docx': 'xml',
+            'hero-pdf': 'xpdf'
+        }
+        self._tempfile = None
+        log.debug('ready to start atxt conversion')
 
     @property
     def to(self):
@@ -80,22 +61,6 @@ class aTXT(object):
         return self.opts['--to']
 
     @property
-    def hero_pdf(self):
-        return self._hero_pdf
-
-    @hero_pdf.setter
-    def hero_pdf(self, value):
-        self._foo = value
-
-    @property
-    def hero_docx(self):
-        return self._hero_docx
-
-    @hero_docx.setter
-    def hero_docx(self, value):
-        self._hero_docx = value
-
-    @property
     def msword(self):
         return self._msword
 
@@ -110,37 +75,9 @@ class aTXT(object):
         self._msword = msword
         self.opts['msword'] = msword
 
-    def __init__(self):
-
-        log.debug('atxt is setting')
-        self._config = Config()
-        self.opts = {
-            '-u': False,
-            '-o': True,
-            '--to': 'TXT',
-            '--lang': 'spa',
-            '--use-temp': True,
-            '--enc': 'utf-8',
-            '--file': False,
-            '<file>': None,
-            '--path': False,
-            '<path>': None,
-            '<source>': None
-        }
-        self._hero_docx = 'xml'
-        self._hero_pdf = 'xpdf'
-        self._tempfile = None
-        log.debug('ready to start atxt conversion')
-
     @property
     def options(self):
-        extra_opts = {
-            'hero_docx': self._hero_docx,
-            'hero_pdf': self._hero_pdf,
-        }
-        x = self.opts.copy()
-        x.update(extra_opts)
-        return x
+        return self.opts
 
     @options.setter
     def options(self, opts):
