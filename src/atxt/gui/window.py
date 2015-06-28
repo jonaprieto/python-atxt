@@ -3,9 +3,11 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-25 10:59:47
+# @Last Modified time: 2015-06-28 01:01:40
+import logging
 import os
 import sys
+
 from PySide import QtGui, QtCore
 from PySide.QtGui import (
     QFileDialog,
@@ -16,15 +18,13 @@ from PySide.QtGui import (
     QPushButton,
     QMessageBox
 )
-from walk_thread import WalkThread
-from process import Process
-import atxt.walking as wk
 from atxt.formats import supported_formats
-from constants import *
-
-import logging
 from atxt.log_conf import Logger
-from atxt.utils import parser_opts
+from atxt.utils import parser_opts, extract_ext
+import atxt.walking as wk
+from constants import *
+from process import Process
+from walk_thread import WalkThread
 
 log = Logger.log
 path_home = os.path.expanduser('~')
@@ -87,7 +87,6 @@ class Window(QtGui.QWidget):
     layout = QGridLayout()
     _layout1 = QtGui.QVBoxLayout()
     _layout2 = QtGui.QVBoxLayout()
-    run_type = "path"
     totalfiles = 0
 
     def __init__(self, manager=None):
@@ -141,13 +140,21 @@ class Window(QtGui.QWidget):
 
         self._label_save = QtGui.QLabel(MSG_SAVE_IN)
         self._edt_save = QtGui.QLineEdit("")
-        self._edt_save.setFixedSize(200, 20)
+        self._edt_save.setFixedSize(150, 20)
         self._edt_save.setToolTip(TOOLTIP_SAVEIN)
         self._btn2 = QtGui.QPushButton(BTN_BROWSER)
         self._btn2.clicked.connect(self.set_directory_save_in)
         self._check_overwrite = QtGui.QCheckBox(LABEL_OVERWRITE)
         self._check_overwrite.setToolTip(TOOLTIP_OVERWRITE)
         self._check_overwrite.setCheckState(checked)
+
+        self._check_ocr = QtGui.QCheckBox('OCR')
+        self._check_ocr.setCheckState(checked)
+
+        self._edt_lang = QtGui.QLineEdit()
+        self._edt_lang.setText('spa')
+        self._edt_lang.setFixedSize(40, 20)
+        self._edt_lang.setAlignment(QtCore.Qt.AlignRight)
 
         self._check_use_temp = QtGui.QCheckBox(LABEL_USE_TEMP)
         self._check_use_temp.setToolTip(TOOLTIP_USE_TEMP)
@@ -158,8 +165,10 @@ class Window(QtGui.QWidget):
         ly = QGridLayout()
         ly.addWidget(self._btn2, 0, 0)
         ly.addWidget(self._edt_save, 0, 1)
-        ly.addWidget(self._check_overwrite, 0, 2)
-        ly.addWidget(self._check_use_temp, 0, 3)
+        ly.addWidget(self._check_ocr, 0, 2)
+        ly.addWidget(self._edt_lang, 0, 3)
+        ly.addWidget(self._check_overwrite, 0, 4)
+        ly.addWidget(self._check_use_temp, 0, 5)
         box.setLayout(ly)
         self._layout1.addWidget(box)
 
@@ -236,7 +245,6 @@ class Window(QtGui.QWidget):
         QtGui.QMessageBox.information(self, "Information", value)
 
     def set_source(self):
-        log.debug('set source for extraction')
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.AnyFile)
         dialog.setViewMode(QFileDialog.Detail)
@@ -245,17 +253,18 @@ class Window(QtGui.QWidget):
             paths = dialog.selectedFiles()
             for f in paths:
                 if os.path.isdir(f):
-                    log.info('set path: %s' % f)
-                    run_type = "path"
                     self._btn_scan.setEnabled(True)
                     self._edt_save.setText(f)
 
                 elif os.path.isfile(f):
                     log.debug('--from %s' % os.path.dirname(f))
                     log.debug('file: %s' % os.path.basename(f))
-                    run_type = "file"
                     self._btn_scan.setEnabled(False)
-                    sefl._edt_save.setText(os.path.dirname(f))
+                    self._edt_save.setText(os.path.dirname(f))
+                    ext_file = extract_ext(f)
+                    for ext, widget in self.formats:
+                        if ext == ext_file:
+                            widget.setCheckState(checked)
                 log.debug('--depth: %s' % self._depth.text())
                 self._edt_source.setText(f)
 
@@ -274,16 +283,23 @@ class Window(QtGui.QWidget):
             self.on_show_info('Choose a valid source!"')
             return
 
+        if os.path.isfile(f):
+            ext_file = extract_ext(f)
         tfiles = []
         for ext, widget in self.formats:
+            if ext == ext_file:
+                widget.setCheckState(checked)
             if widget.isChecked():
                 tfiles.append(ext)
+
         opts = {
-            '<source>' : [f],
+            '<source>': [f],
             '--to': self._edt_save.text(),
             '-o': self._check_overwrite.isChecked(),
+            '--ocr': self._check_ocr.isChecked(),
             '-u': self._check_use_temp.isChecked(),
             '--depth': int(self._depth.text()),
+            '-l': self._edt_lang.text(),
             'tfiles': tfiles,
         }
         return parser_opts(opts)
@@ -294,7 +310,7 @@ class Window(QtGui.QWidget):
         # self._progress_bar.setValue(value)
 
     # def end_process(self):
-    #     # self._progress_bar.reset()
+    # self._progress_bar.reset()
     #     pass
 
     # def ready(self, value):
@@ -375,4 +391,3 @@ class Window(QtGui.QWidget):
         self._btn_start.setEnabled(True)
         self._btn_stop.setEnabled(False)
         self._btn_scan.setEnabled(True)
-

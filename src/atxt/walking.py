@@ -3,17 +3,18 @@
 # @Author: Jonathan S. Prieto
 
 import os
-from encoding import encoding_path
 
+from encoding import encoding_path
 from log_conf import Logger
+from utils import extract_ext
+
+
 log = Logger.log
 
 # from kitchen.text.converters import getwriter
 
 # UTF8Writer = getwriter('utf8')
 # sys.stdout = UTF8Writer(sys.stdout)
-
-from utils import extract_ext
 
 __all__ = ['walk', 'size_str', 'walk_size']
 

@@ -5,39 +5,53 @@
 import os
 import sys
 
-from log_conf import Logger
-log = Logger.log
-
-from infofile import InfoFile
-from config import Config
-from utils import extract_ext, make_dir, parser_opts
 from encoding import encoding_path
 from formats import convert, supported_formats
+from infofile import InfoFile
+from log_conf import Logger
+from utils import extract_ext, make_dir, parser_opts
+
+
+log = Logger.log
 
 
 class aTXT(object):
     opts = dict()
 
     def __init__(self):
-
-        log.debug('atxt is setting')
-        self._config = Config()
         self.opts = {
             '-u': False,
             '-o': True,
+            '--from': '',
             '--to': './',
-            '--lang': 'spa',
+            '-l': 'spa',
             '--use-temp': True,
             '--file': False,
-            '<file>': None,
+            '<file>': [],
             '--path': False,
-            '<path>': None,
-            '<source>': None,
+            '<path>': [],
+            '<source>': [],
             'hero-docx': 'xml',
-            'hero-pdf': 'xpdf'
+            'hero-pdf': 'xpdf',
+            '--ocr': False
         }
         self._tempfile = None
         log.debug('ready to start atxt conversion')
+
+    # @property
+    # def msword(self):
+    #     return self._msword
+
+    # @msword.setter
+    # def msword(self, msword=False):
+    #     if msword:
+    #         if isinstance(msword, bool):
+    #             try:
+    #                 self._msword = self._config.word()
+    #             except ImportError, e:
+    #                 log.error('word office doesnt run. %s' % e)
+    #     self._msword = msword
+    #     # self.opts['msword'] = msword
 
     @property
     def to(self):
@@ -60,20 +74,6 @@ class aTXT(object):
             log.debug('--to: %s' % value)
         return self.opts['--to']
 
-    @property
-    def msword(self):
-        return self._msword
-
-    @msword.setter
-    def msword(self, msword=False):
-        if msword:
-            if isinstance(msword, bool):
-                try:
-                    self._msword = self._config.word()
-                except ImportError, e:
-                    log.error('word office doesnt run. %s' % e)
-        self._msword = msword
-        self.opts['msword'] = msword
 
     @property
     def options(self):
@@ -83,7 +83,8 @@ class aTXT(object):
     def options(self, opts):
         self.opts.update(parser_opts(opts))
 
-    def convert_to_txt(self, filepath='', opts=None):
+    #FIXME This is really really ugly method :'( 
+    def convert_to_txt(self, filepath='', opts=None, thread=None):
         opts = opts or self.options
 
         _file = InfoFile(filepath, check=True)
@@ -114,7 +115,7 @@ class aTXT(object):
             except Exception, e:
                 log.critical(e)
             try:
-                res = convert(from_file=_tempfile, to_txt=_txt, opts=opts)
+                res = convert(from_file=_tempfile, to_txt=_txt, opts=opts, thread=thread)
             except Exception, e:
                 log.critical('conversion fails (--use-temp): %e' % e)
             try:
@@ -123,7 +124,7 @@ class aTXT(object):
                 log.critical(e)
         else:
             try:
-                res = convert(from_file=_file, to_txt=_txt, opts=opts)
+                res = convert(from_file=_file, to_txt=_txt, opts=opts, thread=thread)
             except Exception, e:
                 log.critical('conversion fails: %e' % e)
         if not res:

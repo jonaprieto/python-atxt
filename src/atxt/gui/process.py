@@ -3,16 +3,19 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:16:24
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-25 10:49:30
+# @Last Modified time: 2015-06-28 00:51:01
 import os
+import shutil as sh
+
 from PySide import QtCore
+from atxt.lib import aTXT
 from atxt.log_conf import Logger
+import atxt.walking as wk
+from atxt.workers import run_files, run_paths, run_one_file
+
+
 log = Logger.log
 
-from atxt.workers import run_files, run_paths, run_one_file
-from atxt.lib import aTXT
-import atxt.walking as wk
-import shutil as sh
 
 
 class Process(QtCore.QThread):
@@ -46,16 +49,14 @@ class Process(QtCore.QThread):
         total = 0
         finished = 0
 
-        assert len(opts['<path>']) == 1
-
         if manager.options['--file']:
-            res = run_files(manager)
+            res = run_files(manager, thread=self)
             if res and len(res) == 2:
                 total += res[0]
                 finished += res[1]
 
         if manager.options['--path']:
-            res = run_paths(manager, self)
+            res = run_paths(manager, thread=self)
             if res and len(res) == 2:
                 total += res[0]
                 finished += res[1]

@@ -3,26 +3,28 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:21
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-25 00:55:12
+# @Last Modified time: 2015-06-28 00:48:42
 from __future__ import print_function
-import sys
-import os
+
 from collections import defaultdict
-
 import logging
-from atxt.log_conf import Logger
-log = Logger.log
-
+import os
+import sys
 
 from atxt.formats import supported_formats
-import atxt.walking as wk
-from atxt.utils import make_dir, extract_ext
 from atxt.lib import aTXT
+from atxt.log_conf import Logger
+from atxt.utils import make_dir, extract_ext
+import atxt.walking as wk
+
+
+log = Logger.log
+
 
 __all__ = ['run_files', 'run_one_file']
 
 
-def run_files(manager):
+def run_files(manager, thread=None):
     assert isinstance(manager, aTXT)
     opts = manager.options
     log.debug('with option --file')
@@ -60,7 +62,7 @@ def run_files(manager):
         for file_path in files[ext]:
             new_path = None
             try:
-                new_path = manager.convert_to_txt(filepath=file_path)
+                new_path = manager.convert_to_txt(filepath=file_path, thread=thread)
             except Exception, e:
                 log.critical('convert_to_txt: %s' % e)
             if new_path:
@@ -68,11 +70,13 @@ def run_files(manager):
                 log.info('successful conversion for: %s' % file_path)
             else:
                 log.error('unsucessful conversion: %s' % file_path)
+            if thread:
+                thread._cursor_end.emit(True)
     finished = len(successful_files)
     return total, finished
 
 
-def run_one_file(manager, filepath=None, cache=False):
+def run_one_file(manager, filepath=None, cache=False, thread=None):
     assert isinstance(manager, aTXT)
     opts = manager.options
     assert '<file>' in opts
@@ -84,4 +88,4 @@ def run_one_file(manager, filepath=None, cache=False):
             opts['<file>'] = [filepath]
     opts['--file'] = True
     manager.options = opts
-    return run_files(manager)
+    return run_files(manager, thread=thread)

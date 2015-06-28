@@ -3,18 +3,21 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-04-25 14:07:56
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-27 01:11:11
+# @Last Modified time: 2015-06-28 00:49:27
 from __future__ import print_function
-from atxt.log_conf import Logger
-log = Logger.log
-import codecs
-import chardet
-from _utils import raw_data, find_encoding, save_raw_data
 
+import codecs
+
+from _utils import raw_data, find_encoding, save_raw_data
+from atxt.log_conf import Logger
+import chardet
+
+
+log = Logger.log
 __all__ = ['txt']
 
 
-def txt(from_file, to_txt, opts):
+def txt(from_file, to_txt, opts, thread=None):
     """This function serves as example
     """
     log.debug('txt2txt starting')

@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
-
-
 import sys
+
+from atxt.check import check_os
+from kitchen.text.converters import to_unicode
 from log_conf import Logger
-log = Logger.log
-
-
 from unicodedata import normalize, combining
 from unidecode import *
-from kitchen.text.converters import to_unicode
+
+
+log = Logger.log
 
 __version__ = "0.0.1"
 
@@ -126,12 +126,12 @@ def remove_accents(s):
 
 
 def encoding_path(s):
-    if sys.platform in ["darwin"]:
-        s = to_unicode(s)
-        try:
-            s = s.encode('utf-8', 'replace')
-        except Exception, e:
-            log.warning(e)
-    elif sys.platform in ["win32"]:
-        s = to_unicode(s, 'utf-8')
+    s = s.strip()
+    if check_os() == 'Windows':
+        return to_unicode(s, 'utf-8')
+    s = to_unicode(s)
+    try:
+        return s.encode('utf-8', 'replace')
+    except Exception, e:
+        log.warning(e)
     return s

@@ -3,25 +3,30 @@
 # @Author: Jonathan S. Prieto
 
 import os
-
-from log_conf import Logger
-log = Logger.log
+import shutil as sh
 
 from encoding import encoding_path
-import shutil as sh
+from funcy import map, compose, filter
+from log_conf import Logger
+
+
+log = Logger.log
+
+
+__all__ = ['make_dir', 'remove_dir', 'remove', 'move_to', 'copy_to',
+           'size', 'extract_ext', 'union', 'readable', 'standardpath', 'parser_opts']
 
 
 def make_dir(path):
-    try:
-        log.debug('creating directory: %s' % path)
-        os.makedirs(path)
+    path = encoding_path(path)
+    if not os.path.exists(path):
         if not os.access(path, os.W_OK):
-            log.debug('directory without permissions: %s' % path)
-    except OSError, e:
-        if os.path.exists(path):
-            log.warning('directory exists')
-        else:
-            log.error(e)
+            log.error('directory without permissions for write: %s' % path)
+        try:
+            log.debug('creating directory: %s' % path)
+            os.makedirs(path)
+        except OSError, e:
+            pass
 
 
 def remove_dir(path):
@@ -35,95 +40,109 @@ def remove_dir(path):
                 log.warning('fail to remove directory: %s' % e)
             else:
                 log.error(e)
-    else:
-        log.warning('%s is not a directory' % path)
 
 
-def remove(file_path):
-    if os.path.isfile(file_path):
-        log.debug('removing file %s' % file_path)
+def remove(filepath):
+    filepath = encoding_path(filepath)
+    if os.path.exists(filepath):
+        if os.path.isfile(filepath):
+            log.debug('removing file %s' % filepath)
+            try:
+                os.remove(filepath)
+            except IOError, e:
+                log.warning(e)
+                raise e
+        else:
+            log.warning('remove file, %s is not a file' % filepath)
+
+
+def move_to(filepath, to_path):
+    filepath = encoding_path(filepath)
+    to_path = encoding_path(to_path)
+    if os.path.isfile(filepath):
         try:
-            sh.remove(file_path)
-        except IOError, e:
-            log.warning(e)
-            raise e
-    else:
-        log.warning('remove file, %s is not a file' % file_path)
-
-
-def move_to(file_path, to_path):
-    if os.path.isfile(file_path):
-        try:
-            log.debug('moving from %s to %s' % (file_path, to_path))
+            log.debug('moving from %s to %s' % (filepath, to_path))
             if not os.path.exists(to_path):
                 make_dir(to_path)
-            sh.copy2(file_path, to_path)
+            sh.copy2(filepath, to_path)
         except Exception, e:
             log.warning(e)
             raise e
 
 
-def copy_to(file_path, to_path):
+def copy_to(filepath, to_path):
+    filepath = encoding_path(filepath)
+    to_path = encoding_path(to_path)
     try:
-        log.debug('copying %s to %s' % (file_path, to_path))
-        sh.copy2(file_path, to_path)
+        log.debug('copying %s to %s' % (filepath, to_path))
+        sh.copy2(filepath, to_path)
     except IOError, e:
         log.error(e)
         raise e
 
 
-def size(file_path):
-    if not os.path.isfile(file_path):
-        log.warning('%s isnot a file' % os.path.basename(file_path))
-        return
-    try:
-        size = os.path.getsize(file_path)
-        return size
-    except Exception, e:
-        log.warning(e)
-    return
+def size(filepath):
+    filepath = encoding_path(filepath)
+    if os.access(filepath, os.R_OK) and os.path.isfile(filepath):
+        try:
+            size = os.path.getsize(filepath)
+            return size
+        except Exception, e:
+            log.warning(e)
 
 
 def extract_ext(filepath):
-    assert isinstance(filepath, str) or isinstance(filepate, unicode)
+    filepath = encoding_path(filepath)
     ext = os.path.splitext(filepath)[1].lower()
-    if ext.startswith('.'):
-        ext = ext[1:]
-    return ext
+    return ext[1:] if ext.startswith('.') else ext
+
+
+def union(A):
+    assert isinstance(A, list)
+    return list(set(A))
+
+
+def readable(path):
+    return os.path.exists(path) and os.access(path, os.R_OK)
+
+
+def standardpath(path):
+    return compose(os.path.abspath, encoding_path)(path)
 
 
 def parser_opts(opts):
     assert isinstance(opts, dict)
-    if '--from' in opts:
-        if opts['--from']:
-            opts['--from'] = encoding_path(opts['--from'])
+    opts['--from'] = encoding_path(opts.get('--from', ''))
+    if os.path.isdir(opts['--from']):
+        opts['--from'] = os.path.abspath(opts['--from'])
+
+    opts['<source>'] = union(opts.get('<source>', []))
+    opts['<file>'] = union(opts.get('<file>', []))
+    opts['<path>'] = union(opts.get('<path>', []))
+
+    assert isinstance(opts['<source>'], list)
+    assert isinstance(opts['<file>'], list)
+    assert isinstance(opts['<file>'], list)
+
+    opts['<source>'] = map(standardpath, opts['<source>'])
+    opts['<path>'] = map(standardpath, opts['<path>'])
+    opts['<file>'] = map(standardpath, opts['<file>'])
+
+    for path in opts['<source>']:
+        if os.path.isdir(path):
+            opts['<path>'].append(path)
+        elif os.path.isfile(path):
+            opts['<file>'].append(path)
+        else:
             if os.path.isdir(opts['--from']):
-                opts['--from'] = os.path.abspath(opts['--from'])
-    if '<source>' in opts:
-        if isinstance(opts['<source>'], list):
-            opts['<source>'] = list(set(opts['<source>']))
-        opts['<file>'] = []
-        opts['<path>'] = []
-        for s in opts['<source>']:
-            s = encoding_path(s)
-            if os.path.isdir(s):
-                opts['<path>'].append(s)
-            elif os.path.isfile(s):
-                opts['<file>'].append(s)
-            else:
-                log.debug('else: %s' % s)
-                try:
-                    if '--from' in opts and os.path.isdir(opts['--from']):
-                        s = os.path.join(opts['--from'], s)
-                        if os.path.isfile(s):
-                            opts['<file>'].append(s)
-                except Exception, e:
-                    log.critical("options: %s " % e)
-        if len(opts['<file>']) > 0:
-            opts['--file'] = True
-        if len(opts['<path>']) > 0:
-            opts['--path'] = True
-            opts['<path>'] = map(encoding_path, opts['<path>'])
-            opts['<path>'] = map(os.path.abspath, opts['<path>'])
+                path = os.path.join(opts['--from'], path)
+                if os.path.isfile(s):
+                    opts['<file>'].append(s)
+
+    opts['<file>'] = filter(readable, opts['<file>'])
+    opts['<path>'] = filter(readable, opts['<path>'])
+    opts['--file'] = (len(opts['<file>']) > 0)
+    opts['--path'] = (len(opts['<path>']) > 0)
+
     opts['--depth'] = int(opts['--depth'])
     return opts.copy()

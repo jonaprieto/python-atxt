@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 13:09:59
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-27 02:15:30
+# @Last Modified time: 2015-06-28 00:02:45
 import os
 import chardet
 import codecs
@@ -23,18 +23,19 @@ def raw_data(filepath, encoding=None):
         if not encoding:
             encoding = find_encoding(filepath)
         try:
-            log.warning('trying to read file with encoding: %s' % encoding)
+            log.debug('trying to read file with encoding: %s' % encoding)
             f = codecs.open(filepath, 'r', encoding=encoding)
             rawdata = f.read()
             f.close()
         except Exception, e:
             log.critical(e)
             try:
-                log.warning('trying to read without encoding:%s' % e)
+                log.debug('trying to read without encoding:%s' % e)
                 f = codecs.open(filepath, mode='r')
                 rawdata = f.read()
                 f.close()
             except Exception, ee:
+                log.critical('(second try)')
                 log.critical(ee)
         return rawdata
 
@@ -48,7 +49,7 @@ def find_encoding(filepath):
         return encoding
 
 
-def save_raw_data(filepath, text, encoding=None):
+def save_raw_data(filepath, text, encoding='utf-8'):
     log.debug('saving text data')
     if filepath and text:
         try:

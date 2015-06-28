@@ -3,12 +3,13 @@
 # @Author: Jonathan S. Prieto
 
 import sys
+
 from PySide import QtGui
+from atxt.log_conf import Logger
 from window import Window
 
-from atxt.log_conf import Logger
-log = Logger.log
 
+log = Logger.log
 __all__ = ['run']
 
 

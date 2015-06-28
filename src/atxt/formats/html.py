@@ -3,26 +3,28 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 02:38:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-27 01:10:54
-
-from atxt.log_conf import Logger
-log = Logger.log
+# @Last Modified time: 2015-06-28 00:49:12
 
 import codecs
-from atxt.infofile import InfoFile
 
 from _utils import raw_data, save_raw_data, find_encoding
+from atxt.infofile import InfoFile
+from atxt.log_conf import Logger
+
+
+log = Logger.log
+
+
 try:
     import html2text
 except:
     log.critical('html2text module not installed')
     log.critical('please: pip install html2text')
     raise Exception('html2text module not installed')
-
 __all__ = ['html']
 
 
-def html(from_file, to_txt, opts):
+def html(from_file, to_txt, opts, thread=None):
     log.debug('html2txt starting')
 
     h = html2text.HTML2Text()

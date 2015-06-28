@@ -2,16 +2,18 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 from __future__ import print_function
+
 import os
-import sys
 import shutil as sh
 import subprocess
-from osinfo import osinfo
-
-from log_conf import Logger
-log = Logger.log
+import sys
 
 from distutils.spawn import find_executable
+from log_conf import Logger
+from osinfo import osinfo
+
+
+log = Logger.log
 
 vendors = os.path.dirname(os.path.abspath(__file__))
 vendors = os.path.join(vendors, 'vendors')
@@ -59,41 +61,41 @@ def path_program(name):
     return p if p else find_executable(name, path=path)
 
 
-def pdftotext():
+def path_pdftotext():
     return path_program('pdftotext')
 
 
-def pdftopng():
+def path_pdftopng():
     return path_program('pdftopng')
 
 
-def pdffonts():
+def path_pdffonts():
     return path_program('pdffonts')
 
 
-def tesseract():
+def path_tesseract():
     return path_program('tesseract')
 
 
 def check():
-    p = pdftotext()
+    p = path_pdftotext()
     if p:
         log.debug(p)
     else:
         log.warning('Xpdf: pdftotext is not available')
 
-    p = pdftopng()
+    p = path_pdftopng()
     if p:
         log.debug(p)
     else:
         log.warning('Xpdf: pdftopng is not available')
 
-    p = pdffonts()
+    p = path_pdffonts()
     if p:
         log.debug(p)
     else:
         log.warning('Xpdf: pdffonts is not available')
-    p = tesseract()
+    p = path_tesseract()
     if p:
         log.debug(p)
     else:

@@ -3,21 +3,22 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:53:06
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-27 02:14:33
-from atxt.log_conf import Logger
-log = Logger.log
-
-from atxt.infofile import InfoFile
-from atxt.encoding import latin2ascii
-
+# @Last Modified time: 2015-06-28 00:49:20
 import codecs
-import docx
 
 from _utils import save_raw_data
+from atxt.encoding import latin2ascii
+from atxt.log_conf import Logger
+import docx
+
+
+log = Logger.log
+
+
 
 __all__ = ['odocx']
 
-def odocx(from_file, to_txt, opts):
+def odocx(from_file, to_txt, opts, thread=None):
     log.debug('docx2txt starting')
     try:
         doc = docx.opendocx(from_file.path)
