@@ -30,7 +30,7 @@ class Logger(object):
             from colorlog import ColoredFormatter
             formatter = ColoredFormatter(LOGFORMAT)
             stream.setFormatter(formatter)
-        except:
+        except Exception:
             formatter = logging.Formatter(LOGFORMAT)
         self.log = logging.getLogger('root')
         self.log.setLevel(LOG_LEVEL)

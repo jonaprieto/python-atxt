@@ -3,12 +3,10 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 02:38:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 00:49:12
+# @Last Modified time: 2015-06-28 01:33:46
 
-import codecs
 
 from _utils import raw_data, save_raw_data, find_encoding
-from atxt.infofile import InfoFile
 from atxt.log_conf import Logger
 
 

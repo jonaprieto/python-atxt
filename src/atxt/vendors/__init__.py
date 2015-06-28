@@ -57,9 +57,11 @@ def pdftopng(filepath, to_path=None):
     sub.call(options)
 
 
-def tesseract(filepath, txt_path=None, opts={'-l':'spa'}):
+def tesseract(filepath, txt_path=None, opts=None):
     if not txt_path:
         txt_path = os.path.join(os.path.dirname(filepath), 'output')
+    if not opts:
+        opts = {'-l': 'spa'}
     cmd = [btesseract(), filepath, txt_path, '-l', opts.get('-l', 'spa')]
     cmd = map(str, cmd)
     try:

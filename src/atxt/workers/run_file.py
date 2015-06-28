@@ -3,19 +3,16 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:21
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 00:48:42
+# @Last Modified time: 2015-06-28 01:49:14
 from __future__ import print_function
 
 from collections import defaultdict
-import logging
 import os
-import sys
 
 from atxt.formats import supported_formats
 from atxt.lib import aTXT
 from atxt.log_conf import Logger
-from atxt.utils import make_dir, extract_ext
-import atxt.walking as wk
+from atxt.utils import extract_ext
 
 
 log = Logger.log

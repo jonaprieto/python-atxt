@@ -3,14 +3,19 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:52:42
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 00:48:20
+# @Last Modified time: 2015-06-28 01:38:53
 import codecs
 import os
 
 from _utils import raw_data, save_raw_data
 from atxt.log_conf import Logger
 from atxt.utils import remove
-from atxt.vendors import pdffonts, pdftopng, pdftotext, tesseract, need_ocr
+from atxt.vendors import (
+    pdftopng,
+    pdftotext,
+    tesseract,
+    need_ocr
+)
 import atxt.walking as wk
 from pdfminer import layout, pdfinterp, converter, pdfpage
 
@@ -41,14 +46,17 @@ def pdf_miner(from_file, to_txt, opts, thread=None):
 def pdf(from_file, to_txt, opts, thread=None):
     opts['--ocr'] = opts.get('--ocr', False)
     ocr = need_ocr(from_file.path)
-    if thread:
-        thread._cursor_end.emit(True)
     if opts['--ocr']:
         log.info('Extraction with OCR technology')
+        if not ocr:
+            log.info('it could be more better if you dont use OCR')
         return pdf_ocr(from_file, to_txt, opts)
     log.info('Extraction with Xpdf technology')
 
-    if thread:        thread._cursor_end.emit(True)
+    if thread:
+        thread._cursor_end.emit(True)
+    if ocr:
+        log.warning('it would be better if you use OCR options')
     return pdftotext(from_file.path, to_txt.path)
 
 

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 01:23:15
+# @Last Modified time: 2015-06-28 01:44:22
 import logging
 import os
 import sys
@@ -21,7 +21,6 @@ from PySide.QtGui import (
 from atxt.formats import supported_formats
 from atxt.log_conf import Logger
 from atxt.utils import parser_opts, extract_ext
-import atxt.walking as wk
 from constants import *
 from process import Process
 from walk_thread import WalkThread
@@ -89,7 +88,7 @@ class Window(QtGui.QWidget):
     _layout2 = QtGui.QVBoxLayout()
     totalfiles = 0
 
-    def __init__(self, manager=None):
+    def __init__(self):
         super(Window, self).__init__()
         log.debug('GUI aTXT')
         self._set_layout1()
@@ -355,14 +354,14 @@ class Window(QtGui.QWidget):
 
     def _stop(self):
         log.debug('_stop()')
-        if hasattr(self, _thread):
+        if hasattr(self, "_thread"):
             try:
                 self._thread.finished()
                 self._thread.deleteLater()
                 self._thread.FLAG = False
                 del self._thread
             except Exception, e:
-                log.debug('it can delete thread')
+                log.debug('it can delete thread: %s' % e)
 
     def _start(self):
         log.debug('_start()')

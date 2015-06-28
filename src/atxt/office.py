@@ -4,10 +4,8 @@
 
 
 import os
-from os.path import join
-import sys
 
-from atxt.check import pdftopng, pdftotext, pdffonts, tesseract
+from atxt.check import pdftopng, pdftotext, tesseract
 from log_conf import Logger
 
 

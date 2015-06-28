@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 13:09:59
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 01:22:10
+# @Last Modified time: 2015-06-28 01:33:18
 import os
 import chardet
 import codecs
@@ -19,7 +19,7 @@ def raw_data(filepath, encoding=None):
         if not os.access(filepath, os.R_OK):
             log.warning('file has not read permission')
             return
-        raw_data = None
+        rawdata = None
         if not encoding:
             encoding = find_encoding(filepath)
         try:

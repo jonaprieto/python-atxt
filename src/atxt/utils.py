@@ -25,7 +25,7 @@ def make_dir(path):
         try:
             log.debug('creating directory: %s' % path)
             os.makedirs(path)
-        except OSError, e:
+        except OSError:
             pass
 
 

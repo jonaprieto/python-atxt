@@ -3,13 +3,11 @@
 # @Author: Jonathan S. Prieto
 
 import os
-import sys
 
-from encoding import encoding_path
 from formats import convert, supported_formats
 from infofile import InfoFile
 from log_conf import Logger
-from utils import extract_ext, make_dir, parser_opts
+from utils import make_dir, parser_opts
 
 
 log = Logger.log
@@ -98,8 +96,8 @@ class aTXT(object):
                 os.path.join(self.opts['--to'], _file.name + '.txt'))
         except OSError, e:
             log.critical('extraction metadata fails: %e' % e)
-            raise e
             log.critical(opts)
+            raise e
 
         if not self.opts['-o'] and os.path.exists(_txt.path):
             return _txt.path
@@ -129,5 +127,4 @@ class aTXT(object):
                 log.critical('conversion fails: %e' % e)
         if not res:
             raise IOError('problems with I/O reading file')
-            return None
         return _txt.path

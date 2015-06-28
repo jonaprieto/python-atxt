@@ -40,7 +40,6 @@ class InfoFile(object):
             self.basename = os.path.basename(self.path)
             name = os.path.splitext(self.basename)[0]
             self.extension = utils.extract_ext(self.basename)
-            self.extension
             self.name = name
             self.dirname = os.path.dirname(self.path)
         except Exception, e:

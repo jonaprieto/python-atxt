@@ -3,13 +3,11 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:19
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 00:51:05
-import logging
+# @Last Modified time: 2015-06-28 01:40:47
 import os
 
 from PySide import QtCore
 from atxt.encoding import encoding_path
-from atxt.lib import aTXT
 from atxt.log_conf import Logger
 import atxt.walking as wk
 

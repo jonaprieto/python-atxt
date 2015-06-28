@@ -4,7 +4,6 @@
 from __future__ import print_function
 
 import os
-import subprocess
 
 from distutils.spawn import find_executable
 from log_conf import Logger

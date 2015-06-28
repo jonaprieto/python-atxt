@@ -13,7 +13,6 @@ from docopt import docopt
 from formats import supported_formats
 from lib import aTXT
 from log_conf import Logger
-from utils import make_dir
 from workers import run_files, run_paths
 
 
@@ -114,21 +113,19 @@ def main():
         check()
         return
 
-    manager = aTXT()
-    manager.options = opts
-
-    # for k in manager.options:
-    #     log.debug("%s: %s" % (k, manager.options[k]))
-
-    if manager.options['-i']:
+    if opts['-i']:
         log.info('Starting the graphical interface...')
         try:
             import gui
-            gui.run(manager)
+            gui.run()
             return
         except Exception, e:
             log.critical(e)
             return
+
+    manager = aTXT()
+    manager.options = opts
+
     res = None
     total, finished = 0, 0
     if manager.options['--file']:
