@@ -4,7 +4,6 @@
 
 from __future__ import print_function
 
-from collections import defaultdict
 import logging
 import os
 import sys
@@ -14,8 +13,7 @@ from docopt import docopt
 from formats import supported_formats
 from lib import aTXT
 from log_conf import Logger
-from utils import make_dir, extract_ext
-import walking as wk
+from utils import make_dir
 from workers import run_files, run_paths
 
 
@@ -85,7 +83,7 @@ def main():
         print(__version__)
         return
     if opts['-h']:
-        print(usagedoc.__doc__)
+        print(main.__doc__)
         return
 
     # for k,v in opts.iteritems():
@@ -98,8 +96,8 @@ def main():
             if not os.path.isfile(log_path):
                 log_path = os.path.join(log_path, 'log.txt')
             log.info('log will be save in: %s' % log_path)
-        except:
-            log.error('LOGPATH error, it is not a valid path')
+        except Exception, e:
+            log.error('LOGPATH error, it is not a valid path:%s'%e)
             print(main.__doc__)
             return
         opts['log_path'] = log_path

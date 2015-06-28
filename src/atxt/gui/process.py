@@ -3,15 +3,12 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:16:24
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 00:51:01
-import os
-import shutil as sh
+# @Last Modified time: 2015-06-28 01:15:41
 
 from PySide import QtCore
 from atxt.lib import aTXT
 from atxt.log_conf import Logger
-import atxt.walking as wk
-from atxt.workers import run_files, run_paths, run_one_file
+from atxt.workers import run_files, run_paths
 
 
 log = Logger.log

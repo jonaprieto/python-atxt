@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
-import sys
-
 from atxt.check import check_os
 from kitchen.text.converters import to_unicode
 from log_conf import Logger

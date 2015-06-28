@@ -66,7 +66,7 @@ class aTXT(object):
             log.debug('trying to set --to')
             if not os.path.exists(value):
                 try:
-                    utils.make_dir(value)
+                    make_dir(value)
                 except Exception, e:
                     log.warning(e)
                     return

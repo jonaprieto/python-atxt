@@ -4,9 +4,7 @@
 from __future__ import print_function
 
 import os
-import shutil as sh
 import subprocess
-import sys
 
 from distutils.spawn import find_executable
 from log_conf import Logger
@@ -17,17 +15,6 @@ log = Logger.log
 
 vendors = os.path.dirname(os.path.abspath(__file__))
 vendors = os.path.join(vendors, 'vendors')
-
-
-def is_tool(name):
-    try:
-        devnull = open(os.devnull)
-        subprocess.Popen([name], stdout=devnull, stderr=devnull).communicate()
-    except OSError as e:
-        if e.errno == os.errno.ENOENT:
-            return False or len(which(name)) > 0
-    return True
-
 
 def check_os():
     info = osinfo.OSInfo()
@@ -40,9 +27,9 @@ def check_office():
         return False
     try:
         from win32com import client
-        self.msword = client.DispatchEx('Word.Application')
-        self.msword.Visible = False
-        self.msword.Quit()
+        msword = client.DispatchEx('Word.Application')
+        msword.Visible = False
+        msword.Quit()
         log.debug('Successful Dispatching of Word.Application')
     except Exception, e:
         log.debug(e)

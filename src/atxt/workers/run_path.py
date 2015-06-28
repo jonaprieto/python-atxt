@@ -3,20 +3,17 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:48
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-25 12:35:18
+# @Last Modified time: 2015-06-28 01:18:04
 from __future__ import print_function
-import sys
 import os
-from collections import defaultdict
 
-import logging
 from atxt.log_conf import Logger
 log = Logger.log
 
 
 from atxt.formats import supported_formats
 import atxt.walking as wk
-from atxt.utils import make_dir, extract_ext
+from atxt.utils import make_dir
 from atxt.lib import aTXT
 from atxt.encoding import encoding_path
 
@@ -101,7 +98,6 @@ def run_one_path(manager, path=None, thread=None):
             log.debug('-' * 50)
             log.debug('file: %s' % f.name)
             file_path = os.path.join(_root, f.name)
-            ext = extract_ext(file_path)
             new_path = None
             try:
                 new_path = manager.convert_to_txt(filepath=file_path)

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 13:09:59
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 00:02:45
+# @Last Modified time: 2015-06-28 01:22:10
 import os
 import chardet
 import codecs
@@ -11,7 +11,7 @@ import codecs
 from atxt.log_conf import Logger
 log = Logger.log
 
-__all__ = ['rawdata', 'find_encoding', 'save_raw_data']
+__all__ = ['raw_data', 'find_encoding', 'save_raw_data']
 
 
 def raw_data(filepath, encoding=None):

@@ -136,8 +136,8 @@ def parser_opts(opts):
         else:
             if os.path.isdir(opts['--from']):
                 path = os.path.join(opts['--from'], path)
-                if os.path.isfile(s):
-                    opts['<file>'].append(s)
+                if os.path.isfile(path):
+                    opts['<file>'].append(path)
 
     opts['<file>'] = filter(readable, opts['<file>'])
     opts['<path>'] = filter(readable, opts['<path>'])
