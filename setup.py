@@ -15,6 +15,7 @@ from os.path import splitext
 from setuptools import find_packages
 from setuptools import setup
 
+
 def read(*names, **kwargs):
     return io.open(
         join(dirname(__file__), *names),
@@ -27,7 +28,8 @@ setup(
     version='1.0.5',
     license='BSD',
     description='An extension of aTXT v1.0.4',
-    long_description='%s\n%s' % (read('README.rst'), re.sub(':obj:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
+    long_description='%s\n%s' % (
+        read('README.rst'), re.sub(':obj:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
     author='Jonathan Steven Prieto C.',
     author_email='prieto.jona@gmail.com',
     url='https://github.com/d555/python-atxt',
@@ -37,7 +39,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     classifiers=[
-        # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
+        # complete classifier list:
+        # http://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
@@ -49,17 +52,18 @@ setup(
         'Topic :: Utilities',
     ],
     keywords=[
-        # eg: 'keyword1', 'keyword2', 'keyword3',
+        eg: 'Text', 'extraction', 'mining', 'tool', 'data', 'pdf2txt', 'csv2txt'
     ],
-    install_requires=[
-        # eg: 'aspectlib==1.1.1', 'six>=1.7',
+    install_requires=['binaryornot==0.3.0', 'chardet==2.3.0', 'colorlog==2.6.0', 'docopt==0.6.2', 'docx==0.2.4', 'funcy==1.5', 'html2text==2015.2.18', 'Jinja2==2.7.3', 'kitchen==1.2.1', 'lxml==3.4.2',
+                      'MarkupSafe==0.23', 'mock==1.0.1', 'pdfminer==20140328', 'Pillow==2.7.0', 'py==1.4.26', 'python-osinfo==0.2.1', 'PyYAML==3.11', 'scandir==0.9', 'Unidecode==0.4.17'
     ],
     extras_require={
         # eg: 'rst': ['docutils>=0.11'],
     },
     entry_points={
         'console_scripts': [
-            'atxt = atxt.__main__:main'
+            'atxt = atxt.__main__:main',
+            'aTXT = atxt.__main__:main',
         ]
     },
 )

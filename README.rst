@@ -1,57 +1,52 @@
 ===============================
-atxt
+aTXT
 ===============================
 
-| |docs| |travis| |appveyor| |coveralls| |landscape| |scrutinizer|
-| |version| |downloads| |wheel| |supported-versions| |supported-implementations|
+| A Data Mining Tool For Extract Text From Files.
+| Supported Files:
 
-.. |docs| image:: https://readthedocs.org/projects/python-atxt/badge/?style=flat
-    :target: https://readthedocs.org/projects/python-atxt
-    :alt: Documentation Status
-
-.. |travis| image:: http://img.shields.io/travis/d555/python-atxt/master.png?style=flat
-    :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/d555/python-atxt
-
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/d555/python-atxt?branch=master
-    :alt: AppVeyor Build Status
-    :target: https://ci.appveyor.com/project/d555/python-atxt
-
-.. |coveralls| image:: http://img.shields.io/coveralls/d555/python-atxt/master.png?style=flat
-    :alt: Coverage Status
-    :target: https://coveralls.io/r/d555/python-atxt
-
-.. |landscape| image:: https://landscape.io/github/d555/python-atxt/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/d555/python-atxt/master
-    :alt: Code Quality Status
+| |version| |landscape| |scrutinizer| |downloads|
 
 .. |version| image:: http://img.shields.io/pypi/v/atxt.png?style=flat
     :alt: PyPI Package latest release
     :target: https://pypi.python.org/pypi/atxt
 
-.. |downloads| image:: http://img.shields.io/pypi/dm/atxt.png?style=flat
-    :alt: PyPI Package monthly downloads
-    :target: https://pypi.python.org/pypi/atxt
+.. |landscape| image:: https://landscape.io/github/d555/python-atxt/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/d555/python-atxt/master
+    :alt: Code Quality Status
 
-.. |wheel| image:: https://pypip.in/wheel/atxt/badge.png?style=flat
-    :alt: PyPI Wheel
-    :target: https://pypi.python.org/pypi/atxt
-
-.. |supported-versions| image:: https://pypip.in/py_versions/atxt/badge.png?style=flat
-    :alt: Supported versions
-    :target: https://pypi.python.org/pypi/atxt
-
-.. |supported-implementations| image:: https://pypip.in/implementation/atxt/badge.png?style=flat
-    :alt: Supported imlementations
-    :target: https://pypi.python.org/pypi/atxt
 
 .. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/d555/python-atxt/master.png?style=flat
     :alt: Scrtinizer Status
     :target: https://scrutinizer-ci.com/g/d555/python-atxt/
 
-An extension of aTXT v1.0.4
+.. |downloads| image:: http://img.shields.io/pypi/dm/atxt.png?style=flat
+    :alt: PyPI Package monthly downloads
+    :target: https://pypi.python.org/pypi/atxt
+
+
+
+Meta
+============
+
+-  Author: Jonathan S. Prieto C.
+-  Email: prieto.jona@gmail.com
+-  Notes: Have feedback? Please send me an email. 
 
 * Free software: BSD license
+
+Requirements
+============
+
+This software is available thank to others open sources projects.
+The following list itemizes some of those:
+
+- PySide (GUI lib)
+- Tessaract OCR 
+- Xpdf
+- lxml (doc files)
+- scandir (trasversal folders fast) 
+- docx
 
 Installation
 ============
@@ -60,14 +55,37 @@ Installation
 
     pip install atxt
 
-Documentation
-=============
+Check dependencies for avoiding surprises:
 
-https://python-atxt.readthedocs.org/
+::
 
-Development
-===========
+    atxt --check
 
-To run the all tests run::
+Show help for command line:
+::
 
-    tox
+    atxt -h
+
+Usage
+============
+You can use the graphical interface (if you have installed PySide):
+
+::
+
+    atxt -i
+
+Note: aTXT will always generate a FILE for each file path.
+
+Examples:
+::
+
+    $ atxt prueba.html
+    $ atxt prueba.html -o
+    $ atxt --file ~/Documents/prueba.html
+    $ atxt --file ~/Documents/prueba.html --to ~/htmls
+
+Searching all textable files in a level-2 of depth over ~:
+::
+
+    $ atxt ~ -d 2
+    $ atxt --path ~ -d 2 --format 'txt,html'

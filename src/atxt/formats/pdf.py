@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:52:42
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-30 11:20:03
+# @Last Modified time: 2015-06-30 12:48:55
 import codecs
 import os
 
