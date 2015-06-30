@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:21
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 01:49:14
+# @Last Modified time: 2015-06-30 11:07:19
 from __future__ import print_function
 
 from collections import defaultdict
@@ -59,7 +59,7 @@ def run_files(manager, thread=None):
         for file_path in files[ext]:
             new_path = None
             try:
-                new_path = manager.convert_to_txt(filepath=file_path, thread=thread)
+                new_path = manager.convert_to_txt(filepath=file_path)
             except Exception, e:
                 log.critical('convert_to_txt: %s' % e)
             if new_path:
@@ -73,7 +73,7 @@ def run_files(manager, thread=None):
     return total, finished
 
 
-def run_one_file(manager, filepath=None, cache=False, thread=None):
+def run_one_file(manager, filepath=None, cache=False):
     assert isinstance(manager, aTXT)
     opts = manager.options
     assert '<file>' in opts
@@ -85,4 +85,4 @@ def run_one_file(manager, filepath=None, cache=False, thread=None):
             opts['<file>'] = [filepath]
     opts['--file'] = True
     manager.options = opts
-    return run_files(manager, thread=thread)
+    return run_files(manager)

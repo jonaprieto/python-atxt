@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:19
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 01:40:47
+# @Last Modified time: 2015-06-30 11:03:30
 import os
 
 from PySide import QtCore
@@ -16,7 +16,7 @@ log = Logger.log
 
 
 
-class WalkThread(QtCore.QThread):
+class Scan(QtCore.QThread):
     # _end_process = QtCore.Signal(bool)
     _cursor_end = QtCore.Signal(bool)
     # _part = QtCore.Signal(int)
@@ -29,7 +29,7 @@ class WalkThread(QtCore.QThread):
         self.window = window
 
     def run(self):
-        log.debug('created QThread for WalkThread')
+        log.debug('created QThread for Scan')
         opts = self.window.options()
 
         # self._part.emit(0)

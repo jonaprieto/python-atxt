@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 18:23:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 01:30:53
+# @Last Modified time: 2015-06-30 11:02:07
 
 import os
 import re
@@ -39,7 +39,7 @@ for root, dirs, files in os.walk(basedir_):
                 log.warning('%s is not supported' % extension)
 
 
-def convert(from_file, to_txt, opts, thread=None):
+def convert(from_file, to_txt, opts):
     if not isinstance(from_file, InfoFile):
         log.critical('the file should be instanced with InfoFile')
     bot = lambda x: x  # dummy def before a real definition based on format
@@ -49,4 +49,4 @@ def convert(from_file, to_txt, opts, thread=None):
         exec 'bot = %s' % from_file.extension
 
     log.debug('calling bot = %s' % bot.__name__)
-    return bot(from_file, to_txt, opts, thread)
+    return bot(from_file, to_txt, opts)

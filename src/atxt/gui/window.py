@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 01:44:22
+# @Last Modified time: 2015-06-30 11:04:35
 import logging
 import os
 import sys
@@ -22,8 +22,8 @@ from atxt.formats import supported_formats
 from atxt.log_conf import Logger
 from atxt.utils import parser_opts, extract_ext
 from constants import *
-from process import Process
-from walk_thread import WalkThread
+from start import Start
+from scan import Scan
 
 log = Logger.log
 path_home = os.path.expanduser('~')
@@ -339,7 +339,7 @@ class Window(QtGui.QWidget):
         log.warning(TOOLTIP_SCAN)
 
         self._btn_start.setEnabled(False)
-        self._thread = WalkThread(self)
+        self._thread = Scan(self)
         # self._thread._end_process.connect(self.end_process)
         self._thread._cursor_end.connect(self._cursor_end)
         # self._thread._part.connect(self.set_progress)
@@ -375,7 +375,7 @@ class Window(QtGui.QWidget):
             log.info("Starting cancelled")
             return
 
-        self._thread = Process(self)
+        self._thread = Start(self)
         self._thread._cursor_end.connect(self._cursor_end)
 
         # self._thread._end_process.connect(self.end_process)

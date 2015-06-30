@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:53:06
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 01:34:30
+# @Last Modified time: 2015-06-30 11:01:09
 from _utils import save_raw_data
 from atxt.log_conf import Logger
 import docx
@@ -15,7 +15,7 @@ log = Logger.log
 
 __all__ = ['odocx']
 
-def odocx(from_file, to_txt, opts, thread=None):
+def odocx(from_file, to_txt, opts):
     log.debug('docx2txt starting')
     try:
         doc = docx.opendocx(from_file.path)

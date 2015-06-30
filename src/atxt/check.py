@@ -15,6 +15,7 @@ log = Logger.log
 vendors = os.path.dirname(os.path.abspath(__file__))
 vendors = os.path.join(vendors, 'vendors')
 
+
 def check_os():
     info = osinfo.OSInfo()
     return info.system
@@ -63,29 +64,42 @@ def path_tesseract():
     return path_program('tesseract')
 
 
+def path_antiword():
+    return path_program('antiword')
+
+
 def check():
     p = path_pdftotext()
     if p:
-        log.debug(p)
+        log.debug('successful pdftotext: %s' % p)
     else:
-        log.warning('Xpdf: pdftotext is not available')
+        log.warning('pdftotext is missing. It could not be able to treat some pdf files.')
 
     p = path_pdftopng()
     if p:
-        log.debug(p)
+        log.debug('successful pdftopng: %s' % p)
     else:
-        log.warning('Xpdf: pdftopng is not available')
+        log.warning(
+            'pdftopng is missing. (ORC will not be available for pdf files.)')
 
     p = path_pdffonts()
     if p:
-        log.debug(p)
+        log.debug('successful pdffonts: %s' % p)
     else:
-        log.warning('Xpdf: pdffonts is not available')
+        log.warning(
+            'pdffonts is missing. (ORC will not be available)')
     p = path_tesseract()
     if p:
-        log.debug(p)
+        log.debug('successful ocr: %s' % p)
     else:
-        log.warning('Xpdf: pdffonts is not available')
+        log.warning('tesseract is missing. OCR recognition will no be available.')
+
+    p = path_antiword()
+    if p:
+        log.debug('successful antiword: %s' % p)
+    else:
+        log.warning('antiword is missing. .DOC will not be available.')
+
     if not check_office() and check_os == 'Windows':
         log.warning(
             'PyWin32 or Microsoft Office Suite is not installed or not available.')

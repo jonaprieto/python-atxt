@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-04-25 14:07:56
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 01:14:56
+# @Last Modified time: 2015-06-30 11:01:05
 from __future__ import print_function
 
 
@@ -15,7 +15,7 @@ log = Logger.log
 __all__ = ['txt']
 
 
-def txt(from_file, to_txt, opts, thread=None):
+def txt(from_file, to_txt, opts):
     """This function serves as example
     """
     log.debug('txt2txt starting')

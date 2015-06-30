@@ -82,7 +82,7 @@ class aTXT(object):
         self.opts.update(parser_opts(opts))
 
     #FIXME This is really really ugly method :'( 
-    def convert_to_txt(self, filepath='', opts=None, thread=None):
+    def convert_to_txt(self, filepath='', opts=None):
         opts = opts or self.options
 
         _file = InfoFile(filepath, check=True)
@@ -113,7 +113,7 @@ class aTXT(object):
             except Exception, e:
                 log.critical(e)
             try:
-                res = convert(from_file=_tempfile, to_txt=_txt, opts=opts, thread=thread)
+                res = convert(from_file=_tempfile, to_txt=_txt, opts=opts)
             except Exception, e:
                 log.critical('conversion fails (--use-temp): %e' % e)
             try:
@@ -122,7 +122,7 @@ class aTXT(object):
                 log.critical(e)
         else:
             try:
-                res = convert(from_file=_file, to_txt=_txt, opts=opts, thread=thread)
+                res = convert(from_file=_file, to_txt=_txt, opts=opts)
             except Exception, e:
                 log.critical('conversion fails: %e' % e)
         if not res:

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:53:25
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-28 01:16:14
+# @Last Modified time: 2015-06-30 11:01:16
 
 import csv
 
@@ -16,7 +16,7 @@ log = Logger.log
 __all__ = ['ocsv']
 
 
-def ocsv(from_file, to_txt, opts, thread=None):
+def ocsv(from_file, to_txt, opts):
     log.debug('csv2txt starting')
     text = None
     reader = None
