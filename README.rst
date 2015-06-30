@@ -3,7 +3,6 @@ aTXT
 ===============================
 
 | A Data Mining Tool For Extract Text From Files.
-| Supported Files:
 
 | |version| |landscape| |scrutinizer| |downloads|
 
@@ -32,13 +31,12 @@ Meta
 -  Author: Jonathan S. Prieto C.
 -  Email: prieto.jona@gmail.com
 -  Notes: Have feedback? Please send me an email. 
-
 * Free software: BSD license
 
 Requirements
 ============
 
-This software is available thank to others open sources projects.
+This software is available thanks to others open sources projects.
 The following list itemizes some of those:
 
 - PySide (GUI lib)

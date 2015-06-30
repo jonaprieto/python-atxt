@@ -24,10 +24,10 @@ def read(*names, **kwargs):
 
 
 setup(
-    name='atxt',
+    name='aTXT',
     version='1.0.5',
     license='BSD',
-    description='An extension of aTXT v1.0.4',
+    description='data mining tool for extract text for files',
     long_description='%s\n%s' % (
         read('README.rst'), re.sub(':obj:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
     author='Jonathan Steven Prieto C.',
@@ -52,18 +52,26 @@ setup(
         'Topic :: Utilities',
     ],
     keywords=[
-        eg: 'Text', 'extraction', 'mining', 'tool', 'data', 'pdf2txt', 'csv2txt'
+        'text', 'extraction', 'mining', 'tool', 'data', 'pdf2txt', 'csv2txt',
+        'text', 'txt', 'doc', 'docx', 'pdf', 'csv', 'png', 'jpg', 'doc2txt', 'docx2txt', 'convert'
     ],
     install_requires=['binaryornot==0.3.0', 'chardet==2.3.0', 'colorlog==2.6.0', 'docopt==0.6.2', 'docx==0.2.4', 'funcy==1.5', 'html2text==2015.2.18', 'Jinja2==2.7.3', 'kitchen==1.2.1', 'lxml==3.4.2',
                       'MarkupSafe==0.23', 'mock==1.0.1', 'pdfminer==20140328', 'Pillow==2.7.0', 'py==1.4.26', 'python-osinfo==0.2.1', 'PyYAML==3.11', 'scandir==0.9', 'Unidecode==0.4.17'
-    ],
+                      ],
     extras_require={
         # eg: 'rst': ['docutils>=0.11'],
     },
     entry_points={
         'console_scripts': [
             'atxt = atxt.__main__:main',
-            'aTXT = atxt.__main__:main',
+            '2txt = atxt.__main__:main',
         ]
     },
 )
+
+
+# pandoc --from=markdown_github --to=rst --output=README.rst README.md
+# Pasos para subir a pypi
+# git tag v...
+# python setup.py register -r pypi
+# python setup.py sdist upload -r pypi
