@@ -63,7 +63,7 @@ You can use the graphical interface (if you have installed PySide):
 
 You should something like this:
 
-image:: http://github.com/d555/python-atxt/gui.png
+|GUI|
 
 Note: aTXT will always generate a FILE for each file path.
 
@@ -84,6 +84,9 @@ Searching all textable files in a level-2 of depth over ~: :
     $ 2txt --path ~ -d 2 --format 'txt,html'
 
 .. |PyPI Package latest release| image:: http://img.shields.io/pypi/v/atxt.png?style=flat
+   :target: https://pypi.python.org/pypi/atxt
+
+.. |GUI| image:: https://raw.githubusercontent.com/d555/python-atxt/master/gui.png
    :target: https://pypi.python.org/pypi/atxt
 .. |Code Quality Status| image:: https://landscape.io/github/d555/python-atxt/master/landscape.svg?style=flat
    :target: https://landscape.io/github/d555/python-atxt/master
