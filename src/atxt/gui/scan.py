@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:19
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-30 11:03:30
+# @Last Modified time: 2015-06-30 14:12:25
 import os
 
 from PySide import QtCore
@@ -54,7 +54,7 @@ class Scan(QtCore.QThread):
                 if os.access(file_path, os.R_OK):
                     conta += 1
                     try:
-                        log.info("(%d): %s" % (conta, file_path))
+                        log.info("[%d] : %s" % (conta, file_path))
                     except Exception, e:
                         log.debug(e)
                     self._cursor_end.emit(True)
@@ -63,8 +63,8 @@ class Scan(QtCore.QThread):
                     except Exception, e:
                         log.debug('os.path.getsize(file_path) failed')
 
-        log.info('[number of files estimate]: %d' % conta)
-        log.info('[size on disk estimate]: %s' % wk.size_str(tsize))
+        log.info('[Number of files estimates] : %d' % conta)
+        log.info('[Size on disk estimates]: %s' % wk.size_str(tsize))
 
         self.window.totalfiles = conta
         self._cursor_end.emit(True)

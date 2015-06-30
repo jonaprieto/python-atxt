@@ -18,9 +18,9 @@ def singleton(cls):
 @singleton
 class Logger(object):
 
-    def __init__(self):
-        LOG_LEVEL = logging.DEBUG
-        logging.root.setLevel(logging.DEBUG)
+    def __init__(self, level=logging.INFO):
+        LOG_LEVEL = level
+        logging.root.setLevel(LOG_LEVEL)
         stream = logging.StreamHandler()
         stream.setLevel(LOG_LEVEL)
 

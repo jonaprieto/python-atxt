@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:16:24
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-30 11:03:14
+# @Last Modified time: 2015-06-30 13:35:40
 
 from PySide import QtCore
 from atxt.lib import aTXT
@@ -15,7 +15,7 @@ log = Logger.log
 
 
 
-class Process(QtCore.QThread):
+class Start(QtCore.QThread):
     # _end_process = QtCore.Signal(bool)
     _cursor_end = QtCore.Signal(bool)  # for the textbox
 
@@ -27,7 +27,7 @@ class Process(QtCore.QThread):
 
     def run(self):
 
-        log.debug('created QThread for Process')
+        log.debug('created QThread for Start')
 
         self.window._btn_start.setEnabled(False)
         self.window._btn_scan.setEnabled(False)
@@ -59,7 +59,7 @@ class Process(QtCore.QThread):
                 finished += res[1]
 
 
-        log.debug("Process finished")
+        log.debug("Start finished")
         log.info("Total Files: %s" % str(total))
         log.info("Files Finished: %s" % str(finished))
         log.info("Files Unfinished: %s" % str(total - finished))

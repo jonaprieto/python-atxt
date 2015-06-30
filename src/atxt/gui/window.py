@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-30 11:04:35
+# @Last Modified time: 2015-06-30 14:10:23
 import logging
 import os
 import sys
@@ -157,7 +157,7 @@ class Window(QtGui.QWidget):
 
         self._check_use_temp = QtGui.QCheckBox(LABEL_USE_TEMP)
         self._check_use_temp.setToolTip(TOOLTIP_USE_TEMP)
-        self._check_use_temp.setCheckState(checked)
+        self._check_use_temp.setCheckState(unchecked)
 
         box = QGroupBox(LABEL_BOX_SAVE_IN)
         box.setToolTip(TOOLTIP_BOX_SAVEIN)
@@ -217,22 +217,22 @@ class Window(QtGui.QWidget):
         self._layout2.addWidget(box)
 
         # ACTIONS
-        self._btn_scan = QPushButton("Scan")
-        self._btn_stop = QPushButton("Stop")
+        # self._btn_stop = QPushButton("Stop")
         self._btn_start = QPushButton("Start")
+        self._btn_scan = QPushButton("Scan")
 
         self._btn_scan.setEnabled(True)
         self._btn_scan.setToolTip(TOOLTIP_SCAN)
 
-        self._btn_stop.setEnabled(False)
+        # self._btn_stop.setEnabled(False)
         self._btn_start.setEnabled(True)
 
         box = QGroupBox(LABEL_BOX_ACTIONS)
         ly = QGridLayout()
         ly.setColumnStretch(1, 1)
-        ly.addWidget(self._btn_start,  0, 0)
-        ly.addWidget(self._btn_stop,  1, 0)
-        ly.addWidget(self._btn_scan,  2, 0)
+        # ly.addWidget(self._btn_stop,  1, 0)
+        ly.addWidget(self._btn_scan,  0, 0)
+        ly.addWidget(self._btn_start,  1, 0)
         box.setLayout(ly)
         self._layout2.addWidget(box)
 
@@ -281,7 +281,7 @@ class Window(QtGui.QWidget):
         if not os.path.exists(f):
             self.on_show_info('Choose a valid source!"')
             return
-
+        ext_file = None
         if os.path.isfile(f):
             ext_file = extract_ext(f)
         tfiles = []
@@ -296,7 +296,7 @@ class Window(QtGui.QWidget):
             '--to': self._edt_save.text(),
             '-o': self._check_overwrite.isChecked(),
             '--ocr': self._check_ocr.isChecked(),
-            '-u': self._check_use_temp.isChecked(),
+            '--use-temp': self._check_use_temp.isChecked(),
             '--depth': int(self._depth.text()),
             '-l': self._edt_lang.text(),
             'tfiles': tfiles,
@@ -318,7 +318,7 @@ class Window(QtGui.QWidget):
     def _connect_acctions(self):
         self._btn_source.clicked.connect(self.set_source)
         self._btn_scan.clicked.connect(self._scan)
-        self._btn_stop.clicked.connect(self._stop)
+        # self._btn_stop.clicked.connect(self._stop)
         self._btn_start.clicked.connect(self._start)
 
     def _scan(self):
@@ -339,6 +339,7 @@ class Window(QtGui.QWidget):
         log.warning(TOOLTIP_SCAN)
 
         self._btn_start.setEnabled(False)
+        # self._btn_stop.setEnabled(True)
         self._thread = Scan(self)
         # self._thread._end_process.connect(self.end_process)
         self._thread._cursor_end.connect(self._cursor_end)
@@ -388,5 +389,5 @@ class Window(QtGui.QWidget):
         self._thread.start()
         self._cursor_end()
         self._btn_start.setEnabled(True)
-        self._btn_stop.setEnabled(False)
+        # self._btn_stop.setEnabled(False)
         self._btn_scan.setEnabled(True)

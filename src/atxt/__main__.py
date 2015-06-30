@@ -15,6 +15,7 @@ from lib import aTXT
 from log_conf import Logger
 from workers import run_files, run_paths
 
+from use import __doc__ as usage
 
 log = Logger.log
 
@@ -22,92 +23,25 @@ __version__ = "1.0.5"
 
 
 def main():
-    """aTXT for text extraction data mining tool
-
-    Usage:
-        aTXT [--check] [--log PATH]
-        aTXT [-ihvo] [--log PATH] [--use-temp] [-l LANG]
-        aTXT <source>... [-hvo] [-d DEPTH] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [-l LANG]
-        aTXT --file <file>... [-hvo] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [-l LANG]
-        aTXT --path <path>... [-d DEPTH] [-hvuo] [--log PATH] [--to PATH] [--format EXT] [--use-temp] [-l LANG]
-
-    Arguments:
-        <source>...         It can be files, foldres or mix of them.
-        <file>...           Just files paths
-        <path>...           Just paths to directories
-
-    Options:
-        -i                  Launch the graphical interface 
-        -h                  Show help
-        -o                  Overwrite result files. [default: False].
-        --format EXT        string \"...\" separte with ',' of formats or extension to
-                            consider when it will process the files
-        --log PATH          Specify a path to save the log [default: ./].
-        -v                  Show the version. [default:False].
-        -d, --depth DEPTH   Integer for depth for trasvering path using 
-                            Depth-first-search on folders @int for path of files in <source>
-                            [default: 0]
-        --from PATH         root path of the files [default: ./].
-        --to PATH           root path of save the result files [default: ./].
-        --check             check the system for requirements: Xpdf, Tesseract
-        --ocr               Use OCR for extract text from hard pdf, if you have a language package
-                            installed, you could use option -l LANGSPEC [default: False].
-        --use-temp          use the generation of temporary files for avoid problems with filepaths
-        -l LANG             option of a language for tesseract OCR, please be sure that 
-                            thes package is installed. [default: spa].
-
-    Examples:
-
-        $ atxt -i
-        $ atxt prueba.html
-        $ atxt --file ~/Documents/prueba.html
-        $ atxt ~ -d 2
-        $ atxt --path ~ -d 2 --format 'txt,html'
-    """
-
-    opts = docopt(main.__doc__, version=__version__)
-    opts['<format>'] = []
-
-    for ext in supported_formats[:]:
-        if opts['--format'] and opts['--format'].find(ext) >= 0:
-            opts['<format>'].append(ext)
-            if 'tfiles' in opts:
-                opts['tfiles'].append(ext)
-            else:
-                opts['tfiles'] = [ext]
-    if 'tfiles' not in opts or not opts['tfiles']:
-        opts['tfiles'] = supported_formats[:]
+    opts = docopt(usage, version=__version__)
+    opts = set_tfiles(opts)
 
     if opts['-v']:
         print(__version__)
         return
-    if opts['-h']:
-        print(main.__doc__)
-        return
 
-    # for k,v in opts.iteritems():
-    #     log.critical((k,v))
+    if opts['-h']:
+        print(usage)
+        return
 
     opts['-i'] = opts.get('-i', True)
     if opts['--log']:
         try:
-            log_path = os.path.abspath(opts['--log'])
-            if not os.path.isfile(log_path):
-                log_path = os.path.join(log_path, 'log.txt')
-            log.info('log will be save in: %s' % log_path)
+            opts = set_log(opts)
         except Exception, e:
-            log.error('LOGPATH error, it is not a valid path:%s'%e)
-            print(main.__doc__)
+            log.error('LOGPATH error, it is not a valid path:%s' % e)
+            print(usage)
             return
-        opts['log_path'] = log_path
-        f = open(log_path, 'wb')
-        f.close()
-        fh = logging.FileHandler(log_path)
-        fh.setLevel(logging.DEBUG)
-        formatter = logging.Formatter(
-            "%(levelname)-1s| %(message)s::%(filename)s:%(lineno)s")
-        fh.setFormatter(formatter)
-        log.addHandler(fh)
 
     if opts['--check']:
         check()
@@ -143,9 +77,44 @@ def main():
     log.info('files: %d\tfinished: %d', total, finished)
 
     if total == 0:
-        log.critical('No files to proceed or something was wrong.')
+        log.warning('No files to proceed or something was wrong.')
         return
     return
+
+
+def set_tfiles(opts):
+    opts['<format>'] = []
+
+    for ext in supported_formats[:]:
+        if opts['--format'] and opts['--format'].find(ext) >= 0:
+            opts['<format>'].append(ext)
+            if 'tfiles' in opts:
+                opts['tfiles'].append(ext)
+            else:
+                opts['tfiles'] = [ext]
+    if 'tfiles' not in opts or not opts['tfiles']:
+        opts['tfiles'] = supported_formats[:]
+    return opts
+
+
+def set_log(opts):
+    log_path = os.path.abspath(opts['--log'])
+
+    if not os.path.isfile(log_path):
+        log_path = os.path.join(log_path, 'log.txt')
+
+    log.info('log will be save in: %s' % log_path)
+    opts['log_path'] = log_path
+    f = open(log_path, 'wb')
+    f.close()
+    fh = logging.FileHandler(log_path)
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        "%(levelname)-1s| %(message)s::%(filename)s:%(lineno)s")
+    fh.setFormatter(formatter)
+    log.addHandler(fh)
+    return opts
+
 
 if __name__ == "__main__":
     main()

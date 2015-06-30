@@ -13,9 +13,9 @@ log = Logger.log
 __all__ = ['run']
 
 
-def run(manager=None):
+def run():
     app = QtGui.QApplication(sys.argv)
-    wds = Window(manager)
+    wds = Window()
     wds.show()
     sys.exit(app.exec_())
     del wds
