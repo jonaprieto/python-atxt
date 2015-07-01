@@ -70,7 +70,7 @@ setup(
 )
 
 
-# pandoc --from=markdown_github --to=rst --output=README.rst README.md
+# pandoc --from=rst --to=rst --output=README.rst README.rst
 # Pasos para subir a pypi
 # git tag v...
 # python setup.py register -r pypi
