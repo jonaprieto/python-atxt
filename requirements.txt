@@ -1,5 +1,6 @@
 binaryornot==0.3.0
 chardet==2.3.0
+colorama==0.3.3
 colorlog==2.6.0
 cookiecutter==0.9.1
 docopt==0.6.2

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:16:24
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-30 13:35:40
+# @Last Modified time: 2015-06-30 19:27:41
 
 from PySide import QtCore
 from atxt.lib import aTXT
@@ -31,7 +31,6 @@ class Start(QtCore.QThread):
 
         self.window._btn_start.setEnabled(False)
         self.window._btn_scan.setEnabled(False)
-        self.window._btn_stop.setEnabled(True)
 
         opts = self.window.options()
 
@@ -67,6 +66,6 @@ class Start(QtCore.QThread):
         self._cursor_end.emit(True)
         self.window._btn_start.setEnabled(True)
         self.window._btn_scan.setEnabled(True)
-        self.window._btn_stop.setEnabled(False)
+        # self.window._btn_stop.setEnabled(False)
         self.exit()
         return

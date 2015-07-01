@@ -55,7 +55,7 @@ setup(
         'text', 'extraction', 'mining', 'tool', 'data', 'pdf2txt', 'csv2txt',
         'text', 'txt', 'doc', 'docx', 'pdf', 'csv', 'png', 'jpg', 'doc2txt', 'docx2txt', 'convert'
     ],
-    install_requires=['binaryornot==0.3.0', 'chardet==2.3.0', 'colorlog==2.6.0', 'docopt==0.6.2', 'docx==0.2.4', 'funcy==1.5', 'html2text==2015.2.18', 'Jinja2==2.7.3', 'kitchen==1.2.1', 'lxml==3.4.2',
+    install_requires=['binaryornot==0.3.0', 'chardet==2.3.0', 'colorlog==2.6.0', 'colorama==0.3.3', 'docopt==0.6.2', 'docx==0.2.4', 'funcy==1.5', 'html2text==2015.2.18', 'Jinja2==2.7.3', 'kitchen==1.2.1', 'lxml==3.4.2',
                       'MarkupSafe==0.23', 'mock==1.0.1', 'pdfminer==20140328', 'Pillow==2.7.0', 'py==1.4.26', 'python-osinfo==0.2.1', 'PyYAML==3.11', 'scandir==0.9', 'Unidecode==0.4.17'
                       ],
     extras_require={

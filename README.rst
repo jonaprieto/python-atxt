@@ -83,6 +83,13 @@ Searching all textable files in a level-2 of depth over ~: :
     $ 2txt ~ -d 2
     $ 2txt --path ~ -d 2 --format 'txt,html'
 
+
+Problems, Bugs?
+------------
+Please be free to comment whatever issue or problem with the installation. :
+.. _Issues: http://github.com/d555/python-atxt/issues
+
+
 .. |PyPI Package latest release| image:: http://img.shields.io/pypi/v/atxt.png?style=flat
    :target: https://pypi.python.org/pypi/atxt
 
