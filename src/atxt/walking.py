@@ -11,11 +11,6 @@ from utils import extract_ext
 
 log = Logger.log
 
-# from kitchen.text.converters import getwriter
-
-# UTF8Writer = getwriter('utf8')
-# sys.stdout = UTF8Writer(sys.stdout)
-
 __all__ = ['walk', 'size_str', 'walk_size']
 
 
@@ -47,34 +42,35 @@ def walk(top, topdown=True, tfiles=None, sdirs=None, level=0):
         import scandir
     except ImportError, e:
         log.critical('scandir library is missing, please install it:%s' % e)
-
+        
     dirs = []
     nondirs = []
     symlinks = set()
 
-    if os.access(top, os.R_OK):
-        for entry in scandir.scandir(top):
-            try:
-                fpath = os.path.join(top, entry.name)
-                if entry.name.startswith('.') or not os.access(fpath, os.R_OK):
-                    continue
-                if entry.is_dir() and not fpath in sdirs:
-                    dirs.append(entry)
-                elif "*" in tfiles:
-                    nondirs.append(entry)
-                else:
-                    ext = extract_ext(entry.name)
-                    if ext in tfiles:
-                        nondirs.append(entry)
-
-            except OSError, e:
+    # if os.access(top, os.R_OK):
+    for entry in scandir.scandir(top):
+        try:
+            fpath = os.path.join(top, entry.name)
+            # if entry.name.startswith('.') or not os.access(fpath, os.R_OK):
+            if entry.name.startswith('.'):
+                continue
+            if entry.is_dir() and not fpath in sdirs:
+                dirs.append(entry)
+            elif "*" in tfiles:
                 nondirs.append(entry)
-                log.error(e)
-            try:
-                if entry.is_symlink():
-                    symlinks.add(entry)
-            except OSError:
-                pass
+            else:
+                ext = extract_ext(entry.name)
+                if ext in tfiles:
+                    nondirs.append(entry)
+
+        except OSError, e:
+            nondirs.append(entry)
+            log.error(e)
+        try:
+            if entry.is_symlink():
+                symlinks.add(entry)
+        except OSError:
+            pass
 
     flinks = False
 
@@ -84,8 +80,8 @@ def walk(top, topdown=True, tfiles=None, sdirs=None, level=0):
         for entry in dirs:
             if flinks or entry.name not in symlinks:
                 npath = os.path.join(top, entry.name)
-                if not os.access(npath, os.R_OK):
-                    continue
+                # if not os.access(npath, os.R_OK):
+                #     continue
                 for x in walk(npath, topdown, tfiles, sdirs, level - 1):
                     yield x
 
@@ -119,10 +115,10 @@ def walk_size(top='', tfiles=None, sdirs=None, level=0):
     try:
         for root, _, files in walk(top, sdirs=sdirs, level=level, tfiles=tfiles):
             for f in files:
-                if os.access(f, os.R_OK):
-                    filepath = os.path.join(root, f.name)
-                    total_size += os.path.getsize(filepath)
-                    count_files += 1
+                # if os.access(f, os.R_OK):
+                filepath = os.path.join(root, f.name)
+                total_size += os.path.getsize(filepath)
+                count_files += 1
     except Exception, e:
         log.error(e)
     return [count_files, total_size]

@@ -9,6 +9,7 @@ from distutils.spawn import find_executable
 from log_conf import Logger
 from osinfo import osinfo
 
+import subprocess as sub
 
 log = Logger.log
 
@@ -32,18 +33,19 @@ def check_office():
         msword.Quit()
         log.debug('Successful Dispatching of Word.Application')
     except Exception, e:
-        log.debug(e)
+        log.warning(e)
     return False
 
 
-def path_program(name):
+def path_program(name, path=None):
     system = check_os()
-    path = vendors
-    if system == 'Windows':
-        name = name + '.exe' if not name.endswith('.exe') else name
-        path = os.path.join(vendors, system)
-    else:
-        path = os.path.join(vendors, 'Unix')
+    if not path:
+        path = vendors
+        if system == 'Windows':
+            name = name + '.exe' if not name.endswith('.exe') else name
+            path = os.path.join(vendors, system)
+        else:
+            path = os.path.join(vendors, 'Unix')
     p = find_executable(name)
     return p if p else find_executable(name, path=path)
 
@@ -65,7 +67,39 @@ def path_tesseract():
 
 
 def path_antiword():
-    return path_program('antiword')
+    set_antiword()
+    if check_os() != 'Windows':
+        return path_program('antiword')
+    path = os.path.join('C:\\', 'antiword\\')
+    if os.path.exists(path) and find_executable('antiword.exe', path=path):
+        return find_executable('antiword.exe', path=path)
+    path = os.path.join(vendors, 'Windows', 'antiword')
+    return find_executable('antiword.exe', path=path)
+
+
+def set_antiword():
+    if check_os() == 'Windows':
+        p = os.path.join('C:\\', 'antiword\\')
+        path_anti = p
+        if 'PATH' in os.environ.keys():
+            if os.environ['PATH'].find('antiword') < 0:
+                cmd = ['setx', 'PATH', '{path}{anti}'.format(
+                    path=os.environ['PATH'], anti=path_anti)]
+                try:
+                    sub.call(cmd)
+                    log.info('antiword was added to PATH variable')
+                except Exception, e:
+                    log.warning(e)
+
+        if 'HOME' not in os.environ.keys():
+            home = os.path.expanduser('~')
+
+            cmd = ['setx', 'HOME', home]
+            try:
+                sub.call(cmd)
+                log.info('HOME was added as new environ variable')
+            except Exception, e:
+                log.warning(e)
 
 
 def check():
@@ -73,7 +107,8 @@ def check():
     if p:
         log.debug('successful pdftotext: %s' % p)
     else:
-        log.warning('pdftotext is missing. It could not be able to treat some pdf files.')
+        log.warning(
+            'pdftotext is missing. It could not be able to treat some pdf files.')
 
     p = path_pdftopng()
     if p:
@@ -92,7 +127,8 @@ def check():
     if p:
         log.debug('successful ocr: %s' % p)
     else:
-        log.warning('tesseract is missing. OCR recognition will no be available.')
+        log.warning(
+            'tesseract is missing. OCR recognition will no be available.')
 
     p = path_antiword()
     if p:

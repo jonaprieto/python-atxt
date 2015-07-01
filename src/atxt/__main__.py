@@ -3,6 +3,9 @@
 # @Author: Jonathan S. Prieto
 
 from __future__ import print_function
+from colorama import init, Fore
+init()
+
 
 import logging
 import os
@@ -16,6 +19,8 @@ from log_conf import Logger
 from workers import run_files, run_paths
 
 from use import __doc__ as usage
+
+
 
 log = Logger.log
 

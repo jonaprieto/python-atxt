@@ -245,7 +245,8 @@ class Window(QtGui.QWidget):
 
     def set_source(self):
         dialog = QFileDialog(self)
-        dialog.setFileMode(QFileDialog.AnyFile)
+        dialog.setFileMode(QFileDialog.ExistingFiles)
+        dialog.setOption(QFileDialog.DontUseNativeDialog)
         dialog.setViewMode(QFileDialog.Detail)
         dialog.setDirectory(path_home)
         if dialog.exec_():
