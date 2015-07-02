@@ -6,6 +6,7 @@
 # @Last Modified time: 2015-06-30 12:48:55
 import codecs
 import os
+import re
 
 from _utils import raw_data, save_raw_data
 from atxt.log_conf import Logger
@@ -16,7 +17,7 @@ from atxt.vendors import (
     tesseract,
     need_ocr
 )
-import atxt.walking as wk
+from atxt.walking import walk
 from pdfminer import layout, pdfinterp, converter, pdfpage
 
 
@@ -68,7 +69,8 @@ def pdf_ocr(from_file, to_txt, opts):
     pdftopng(from_file.path, to_txt.path)
     text = ''
     outputpath = os.path.join(to_txt.dirname, 'output.txt')
-    for root, _, files in wk.walk(to_txt.dirname, tfiles=['png']):
+    regex = re.compile('.*png$')
+    for root, _, files in walk(to_txt.dirname, regex=regex):
         for f in files:
             if (f.name).startswith(to_txt.basename):
                 filepath = os.path.join(root, f.name)

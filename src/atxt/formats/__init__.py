@@ -11,6 +11,7 @@ import re
 from atxt.infofile import InfoFile
 from atxt.log_conf import Logger
 
+from atxt.walking import walk
 
 log = Logger.log
 
@@ -20,23 +21,21 @@ __all__ = ['convert', 'supported_formats']
 supported_formats = []
 
 regex = re.compile(r'[^(_|\.)+]\w+\.py$')
-for root, dirs, files in os.walk(basedir_):
-    files.sort()
+for root, dirs, files in walk(basedir_, regex=regex):
     for f in files:
-        if regex.match(f):
-            extension = os.path.splitext(f)[0].lower()
-            if extension.startswith('o'):
-                log.info('{} is supported'.format(extension[1:]))
-                supported_formats.append(extension[1:])
-            try:
-                s = 'from {ext} import {ext}'.format(ext=extension)
-                exec s
-                if not extension.startswith('o'):
-                    log.info('%s is supported' % extension)
-                    supported_formats.append(extension)
-            except Exception, e:
-                log.warning(e)
-                log.warning('%s is not supported' % extension)
+        extension = os.path.splitext(f.name)[0].lower()
+        if extension.startswith('o'):
+            log.info('{} is supported'.format(extension[1:]))
+            supported_formats.append(extension[1:])
+        try:
+            s = 'from {ext} import {ext}'.format(ext=extension)
+            exec s
+            if not extension.startswith('o'):
+                log.info('%s is supported' % extension)
+                supported_formats.append(extension)
+        except Exception, e:
+            log.warning(e)
+            log.warning('%s is not supported' % extension)
 
 
 def convert(from_file, to_txt, opts):
