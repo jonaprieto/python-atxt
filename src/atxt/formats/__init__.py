@@ -48,4 +48,8 @@ def convert(from_file, to_txt, opts):
         exec 'bot = %s' % from_file.extension
 
     log.debug('calling bot = %s' % bot.__name__)
-    return bot(from_file, to_txt, opts)
+    try:
+        return bot(from_file, to_txt, opts)
+    except Exception,e:
+        log.critical('formats/__init__.py:')
+        log.critical(e)

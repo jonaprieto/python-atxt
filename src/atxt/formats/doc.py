@@ -13,7 +13,7 @@ def doc(from_file, to_txt, opts):
     try:
         return antiword(from_file.path, to_txt.path)
     except Exception, e:
-        log.critical(e)
+        log.critical('doc.py : %s' % e)
         if check_os == 'Windows' and check_office():
             return doc_win(from_file, to_txt)
 

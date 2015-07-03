@@ -1,0 +1,1 @@
+python -m atxt  C:\Users\rafael\Desktop\test\ --to C:\Users\rafael\Desktop\TXT -o --format "doc"

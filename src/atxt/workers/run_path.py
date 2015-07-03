@@ -20,7 +20,7 @@ from atxt.encoding import encoding_path
 __all__ = ['run_paths', 'run_one_path']
 
 
-def run_paths(manager, thread=None):
+def run_paths(manager, thread=None, total_=0, finished_=0):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not opts['--path'] or not opts['<path>']:
@@ -42,11 +42,11 @@ def run_paths(manager, thread=None):
 
     manager.options = opts
     log.debug(manager.options)
-    total, finished = 0, 0
+    total, finished = total_, finished_
     if thread:
         thread._cursor_end.emit(True)
     for path in opts['<path>']:
-        res = run_one_path(manager, path, thread)
+        res = run_one_path(manager, path, thread, total)
         if thread:
             thread._cursor_end.emit(True)
         if res:
@@ -71,15 +71,16 @@ def set_formats(opts):
         opts['tfiles'] = list(tfiles)
 
 
-def run_one_path(manager, path=None, thread=None):
+def run_one_path(manager, path=None, thread=None, total_=0):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not path:
-        if opts.get('--path', None):  # the path will be always stored on <path>
+        # the path will be always stored on <path>
+        if opts.get('--path', None):
             return run_paths(manager)
         log.critical('--path is not on')
         return
-        
+
     log.debug('working over: %s' % path)
     assert isinstance(path, str) or isinstance(path, unicode)
     if not os.path.isdir(path):
@@ -87,29 +88,33 @@ def run_one_path(manager, path=None, thread=None):
         return
     otps = set_formats(opts)
     log.debug('searching for: %s' % opts['tfiles'])
-    # manager.word()
-    total = 0
-    finished = 0
+    total, finished = 0,0
+    # from random import randint
+    # a = randint(1, 100)
     for r, _, files in walk(path, level=opts['--depth']):
         if not files:
             continue
-        log.debug('path=%s' % r.path)
+        log.debug('path=%s' % r)
+        # log.critical(a)
         for f in files:
             if extract_ext(f.name) not in opts['tfiles']:
                 continue
             total += 1
             log.debug('-' * 50)
-            log.debug('file: %s' % f.name)
             new_path = None
-            try:
-                new_path = manager.convert_to_txt(filepath=f.path)
-            except Exception, e:
-                log.critical(e)
-            if not path:
-                log.error('unsucessful conversion: %s' % f.path)
-            else:
-                log.info('successful conversion: %s' % f.path)
+            new_path = manager.convert_to_txt(filepath=f.path)
+            if new_path:
+                try:
+                    log.info("{c:2d} | [OK] | {p}".format(c=total_+total, p=f.path))
+                except Exception:
+                    log.info("{c:2d} | [OK] ".format(c=total_+total))
                 finished += 1
+            else:
+                try:
+                    log.info("{c:2d} | [FAIL] | {p}".format(c=total_+total, p=f.path))
+                except Exception:
+                    log.info("{c:2d} | [FAIL] ".format(c=total_+total))
+
             if thread:
                 thread._cursor_end.emit(True)
 

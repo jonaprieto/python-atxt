@@ -29,13 +29,13 @@ class ColourStreamHandler(StreamHandler):
         try:
             message = self.format(record)
             line = self.colours[
-                record.levelname] + '{: <5} | '.format(record.levelname)
+                record.levelname] + '{} | '.format(record.levelname)
 
             if record.levelname not in ['CRITICAL', 'CRIT']:
                 line += Style.RESET_ALL
 
             line += message
-            if record.levelname in ['DEBUG','CRITICAL', 'CRIT']:
+            if record.levelname in ['DEBUG', 'CRITICAL', 'CRIT']:
                 line += ' :: {filename} : {lineno}'.format(
                     filename=record.filename, lineno=record.lineno)
             line += Style.RESET_ALL
@@ -71,8 +71,9 @@ def singleton(cls):
 
 @singleton
 class Logger(object):
+    level = logging.DEBUG
 
-    def __init__(self, level=logging.INFO):
+    def __init__(self, db=None):
         # LOG_LEVEL = level
         # logging.root.setLevel(LOG_LEVEL)
         # stream = logging.StreamHandler()
@@ -87,5 +88,7 @@ class Logger(object):
         # except Exception:
         #     formatter = logging.Formatter(LOGFORMAT)
         self.log = getLogger('root')
-        # self.log.setLevel(LOG_LEVEL)
+        if db:
+            self.level = db
+        self.log.setLevel(self.level)
         # self.log.addHandler(stream)

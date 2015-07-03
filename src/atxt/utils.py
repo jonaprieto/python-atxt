@@ -139,8 +139,13 @@ def parser_opts(opts):
                 if os.path.isfile(path):
                     opts['<file>'].append(path)
 
+    opts['<file>'] = compose(list,set)(opts['<file>'])
+    opts['<path>'] = compose(list,set)(opts['<path>'])
+    
     opts['<file>'] = filter(readable, opts['<file>'])
     opts['<path>'] = filter(readable, opts['<path>'])
+
+
     opts['--file'] = (len(opts['<file>']) > 0)
     opts['--path'] = (len(opts['<path>']) > 0)
 

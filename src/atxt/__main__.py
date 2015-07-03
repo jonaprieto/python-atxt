@@ -72,6 +72,7 @@ def main():
         if res and len(res) == 2:
             total += res[0]
             finished += res[1]
+    # log.critical(manager.options['<path>'])
     if manager.options['--path']:
         res = run_paths(manager)
         if res and len(res) == 2:

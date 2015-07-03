@@ -50,7 +50,7 @@ class Scan(QtCore.QThread):
                     continue
                 if os.access(f.path, os.R_OK):
                     try:
-                        log.info("[%d] : %s" % (conta, f.path))
+                        log.info("{c:2d} | {p}".format(c=conta+1, p=f.path))
                     except Exception, e:
                         log.debug(e)
                     self._cursor_end.emit(True)
@@ -60,8 +60,8 @@ class Scan(QtCore.QThread):
                     except Exception, e:
                         log.debug('os.path.getsize(f.path) failed')
 
-        log.info('[Number of files estimates] : %d' % conta)
-        log.info('[Size on disk estimates]: %s' % size_str(tsize))
+        log.info('Number of files estimates : %d' % conta)
+        log.info('Size on disk estimates : %s' % size_str(tsize))
 
         self.window.totalfiles = conta
         self._cursor_end.emit(True)
