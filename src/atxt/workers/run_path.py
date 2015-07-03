@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:48
-# @Last Modified by:   Jonathan Prieto 
+# @Last Modified by:   Jonathan Prieto
 # @Last Modified time: 2015-06-30 11:07:29
 from __future__ import print_function
 import os
@@ -12,15 +12,15 @@ log = Logger.log
 
 
 from atxt.formats import supported_formats
-import atxt.walking as wk
-from atxt.utils import make_dir
+from atxt.walking import walk
+from atxt.utils import make_dir, extract_ext
 from atxt.lib import aTXT
 from atxt.encoding import encoding_path
 
 __all__ = ['run_paths', 'run_one_path']
 
 
-def run_paths(manager, thread=None):
+def run_paths(manager, thread=None, total_=0, finished_=0):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not opts['--path'] or not opts['<path>']:
@@ -42,11 +42,11 @@ def run_paths(manager, thread=None):
 
     manager.options = opts
     log.debug(manager.options)
-    total, finished = 0, 0
+    total, finished = total_, finished_
     if thread:
         thread._cursor_end.emit(True)
     for path in opts['<path>']:
-        res = run_one_path(manager, path, thread)
+        res = run_one_path(manager, path, thread, total)
         if thread:
             thread._cursor_end.emit(True)
         if res:
@@ -57,21 +57,7 @@ def run_paths(manager, thread=None):
     return total, finished
 
 
-def run_one_path(manager, path=None, thread=None):
-    assert isinstance(manager, aTXT)
-    opts = manager.options
-    if not path:
-        if opts['--path']:  # the path will be always stored on <path>
-            return run_paths(manager)
-        else:
-            log.critical('--path is not on')
-            return
-    log.debug('working over: %s' % path)
-    assert isinstance(path, str) or isinstance(path, unicode)
-    if not os.path.isdir(path):
-        log.error('%s is not a valid path for --path option' % path)
-        return
-    # the part below can be omitted for a second time (tfiles->opts)
+def set_formats(opts):
     if 'tfiles' not in opts:
         log.critical('there is not tfiles key. Grave.')
         tfiles = set(supported_formats[:])
@@ -83,34 +69,52 @@ def run_one_path(manager, path=None, thread=None):
                 if f in supported_formats:
                     tfiles.add(f)
         opts['tfiles'] = list(tfiles)
+
+
+def run_one_path(manager, path=None, thread=None, total_=0):
+    assert isinstance(manager, aTXT)
+    opts = manager.options
+    if not path:
+        # the path will be always stored on <path>
+        if opts.get('--path', None):
+            return run_paths(manager)
+        log.critical('--path is not on')
+        return
+
+    log.debug('working over: %s' % path)
+    assert isinstance(path, str) or isinstance(path, unicode)
+    if not os.path.isdir(path):
+        log.error('%s is not a valid path for --path option' % path)
+        return
+    otps = set_formats(opts)
     log.debug('searching for: %s' % opts['tfiles'])
-    # manager.word()
-    total = 0
-    finished = 0
-    for _root, _, _files in wk.walk(path,
-                                    level=opts['--depth'],
-                                    tfiles=opts['tfiles']):
-        if not _files:
+    total, finished = 0,0
+    # from random import randint
+    # a = randint(1, 100)
+    for r, _, files in walk(path, level=opts['--depth']):
+        if not files:
             continue
-        log.debug('path=%s' % _root)
-        for f in _files:
+        log.debug('path=%s' % r)
+        # log.critical(a)
+        for f in files:
+            if extract_ext(f.name) not in opts['tfiles']:
+                continue
             total += 1
             log.debug('-' * 50)
-            log.debug('file: %s' % f.name)
-            file_path = os.path.join(_root, f.name)
             new_path = None
-            try:
-                new_path = manager.convert_to_txt(filepath=file_path)
-                if not new_path:
-                    log.error('unsucessful conversion: %s' % file_path)
-                    if thread:
-                        thread._cursor_end.emit(True)
-            except Exception, e:
-                log.critical(e)
-                continue
+            new_path = manager.convert_to_txt(filepath=f.path)
+            if new_path:
+                try:
+                    log.info("{c:2d} | [OK] | {p}".format(c=total_+total, p=f.path))
+                except Exception:
+                    log.info("{c:2d} | [OK] ".format(c=total_+total))
+                finished += 1
+            else:
+                try:
+                    log.info("{c:2d} | [FAIL] | {p}".format(c=total_+total, p=f.path))
+                except Exception:
+                    log.info("{c:2d} | [FAIL] ".format(c=total_+total))
 
-            log.info('successful conversion: %s' % file_path)
-            finished += 1
             if thread:
                 thread._cursor_end.emit(True)
 

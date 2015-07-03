@@ -21,6 +21,7 @@ from PySide.QtGui import (
 from atxt.formats import supported_formats
 from atxt.log_conf import Logger
 from atxt.utils import parser_opts, extract_ext
+from atxt.check import check_os
 from constants import *
 from start import Start
 from scan import Scan
@@ -45,7 +46,6 @@ class QtHandler(logging.Handler):
 
 handler = QtHandler()
 log.addHandler(handler)
-log.setLevel(logging.DEBUG)
 
 
 class XStream(QtCore.QObject):
@@ -108,7 +108,7 @@ class Window(QtGui.QWidget):
 
     def _set_layout1(self):
         self.setWindowTitle(TITLE_WINDOW)
-        self.setFixedSize(850, 400)
+        self.setFixedSize(750, 400)
         self.setContentsMargins(15, 15, 15, 15)
         self._layout1 = QtGui.QVBoxLayout()
         self._layout1.addStretch(1)
@@ -141,6 +141,9 @@ class Window(QtGui.QWidget):
         self._edt_save = QtGui.QLineEdit("")
         self._edt_save.setFixedSize(150, 20)
         self._edt_save.setToolTip(TOOLTIP_SAVEIN)
+        self._edt_save.setText(path_home)
+        self._edt_save.setAlignment(QtCore.Qt.AlignRight)
+
         self._btn2 = QtGui.QPushButton(BTN_BROWSER)
         self._btn2.clicked.connect(self.set_directory_save_in)
         self._check_overwrite = QtGui.QCheckBox(LABEL_OVERWRITE)
@@ -148,7 +151,7 @@ class Window(QtGui.QWidget):
         self._check_overwrite.setCheckState(checked)
 
         self._check_ocr = QtGui.QCheckBox('OCR')
-        self._check_ocr.setCheckState(checked)
+        self._check_ocr.setCheckState(unchecked)
 
         self._edt_lang = QtGui.QLineEdit()
         self._edt_lang.setText('spa')
@@ -207,11 +210,9 @@ class Window(QtGui.QWidget):
         self.formats = []
         for ext in supported_formats:
             self.formats.append((ext, QCheckBox(str(ext))))
-        log.debug(self.formats)
         box = QGroupBox(LABEL_BOX_FORMATS)
         ly = QGridLayout()
         for ext, widget in self.formats:
-            log.debug('render %s for gui' % ext)
             ly.addWidget(widget)
         box.setLayout(ly)
         self._layout2.addWidget(box)
@@ -245,7 +246,12 @@ class Window(QtGui.QWidget):
 
     def set_source(self):
         dialog = QFileDialog(self)
-        dialog.setFileMode(QFileDialog.AnyFile)
+        if check_os() == 'Windows':
+            dialog.setFileMode(QFileDialog.Directory)
+            # dialog.setOption(QFileDialog.DontUseNativeDialog)
+            dialog.setOption(QFileDialog.ShowDirsOnly)
+        else:
+            dialog.setFileMode(QFileDialog.AnyFile)
         dialog.setViewMode(QFileDialog.Detail)
         dialog.setDirectory(path_home)
         if dialog.exec_():
@@ -266,6 +272,7 @@ class Window(QtGui.QWidget):
                             widget.setCheckState(checked)
                 log.debug('--depth: %s' % self._depth.text())
                 self._edt_source.setText(f)
+                self._edt_save.setText(f)
 
     def set_directory_save_in(self):
         options = QFileDialog.DontResolveSymlinks | QFileDialog.ShowDirsOnly
@@ -352,6 +359,8 @@ class Window(QtGui.QWidget):
         self._thread.start()
         self._cursor_end()
         self._btn_start.setEnabled(True)
+        log.info('')
+        log.info('')
 
     def _stop(self):
         log.debug('_stop()')

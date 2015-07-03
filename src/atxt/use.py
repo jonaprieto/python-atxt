@@ -5,10 +5,10 @@
 Usage:
     aTXT [-h]
     aTXT [--check] [--log PATH]
-    aTXT [-ihvo] [--log PATH] [--use-temp] [-l LANG]
-    aTXT <source>... [-hvo] [-d DEPTH] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [-l LANG]
-    aTXT --file <file>... [-hvo] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--use-temp] [-l LANG]
-    aTXT --path <path>... [-d DEPTH] [-hvuo] [--log PATH] [--to PATH] [--format EXT] [--use-temp] [-l LANG]
+    aTXT [-ihvo] [--log PATH] [--use-temp] [-l LANG] [--ocr]
+    aTXT <source>... [-hvo] [-d DEPTH] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--ocr] [--use-temp] [-l LANG]
+    aTXT --file <file>... [-hvo] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--ocr] [--use-temp] [-l LANG]
+    aTXT --path <path>... [-d DEPTH] [-hvuo] [--log PATH] [--to PATH] [--format EXT] [--ocr] [--use-temp] [-l LANG]
 
 Arguments:
     <source>...         It can be files, foldres or mix of them.

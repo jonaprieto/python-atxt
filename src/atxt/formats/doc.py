@@ -1,17 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+import os
 from atxt.log_conf import Logger
 from atxt.vendors import antiword
 from atxt.check import check_os, check_office
+
+from _utils import raw_data
 
 log = Logger.log
 
 
 def doc(from_file, to_txt, opts):
     try:
-        return antiword(from_file.path, to_txt.path)
+        res = antiword(from_file.path, to_txt.path)
+        if not os.path.exists(to_txt.path):
+            raise OSError('file does not exist.')
+        return res
     except Exception, e:
         log.critical(e)
         if check_os == 'Windows' and check_office():

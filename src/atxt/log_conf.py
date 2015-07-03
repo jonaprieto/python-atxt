@@ -2,7 +2,76 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 
+from logging import StreamHandler, DEBUG, getLogger as realGetLogger, Formatter
 import logging
+
+from colorama import Fore, Back, Style, init
+
+init()
+
+def to_display(s):
+    s = s.strip()
+    if check_os() == 'Windows':
+        return to_unicode(s, 'utf-8')
+    s = to_unicode(s)
+    try:
+        return s.encode('utf-8', 'replace')
+    except Exception, e:
+        log.warning(e)
+    return s
+
+
+class ColourStreamHandler(StreamHandler):
+
+    """ A colorized output SteamHandler """
+
+    # Some basic colour scheme defaults
+    colours = {
+        'DEBUG': Fore.CYAN,
+        'INFO': Fore.GREEN,
+        'WARN': Fore.YELLOW,
+        'WARNING': Fore.YELLOW,
+        'ERROR': Fore.RED,
+        'CRIT': Back.RED + Fore.WHITE,
+        'CRITICAL': Back.RED + Fore.WHITE
+    }
+
+    def emit(self, record):
+        try:
+            message = self.format(record)
+            try:
+                message = to_display(message)
+            except Exception:
+                pass
+            line =  Style.RESET_ALL + self.colours[
+                record.levelname] + '{} | '.format(record.levelname)
+
+            if record.levelname not in ['CRITICAL', 'CRIT']:
+                line += Style.RESET_ALL
+
+            line += message
+            if record.levelname in ['DEBUG', 'CRITICAL', 'CRIT']:
+                line += ' :: {filename} : {lineno}'.format(
+                    filename=record.filename, lineno=record.lineno)
+            line += Style.RESET_ALL
+            self.stream.write(line)
+            self.stream.write(getattr(self, 'terminator', '\n'))
+            self.flush()
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
+            self.handleError(record)
+
+
+def getLogger(name=None, fmt='%(message)s'):
+    log = realGetLogger(name)
+    handler = ColourStreamHandler()
+    handler.setLevel(DEBUG)
+    handler.setFormatter(Formatter(fmt))
+    log.addHandler(handler)
+    log.setLevel(DEBUG)
+    log.propagate = 0  # Don't bubble up to the root logger
+    return log
 
 
 def singleton(cls):
@@ -17,21 +86,24 @@ def singleton(cls):
 
 @singleton
 class Logger(object):
+    level = logging.DEBUG
 
-    def __init__(self, level=logging.INFO):
-        LOG_LEVEL = level
-        logging.root.setLevel(LOG_LEVEL)
-        stream = logging.StreamHandler()
-        stream.setLevel(LOG_LEVEL)
+    def __init__(self, db=None):
+        # LOG_LEVEL = level
+        # logging.root.setLevel(LOG_LEVEL)
+        # stream = logging.StreamHandler()
+        # stream.setLevel(LOG_LEVEL)
 
-        LOGFORMAT = "%(levelname)-1s | %(message)s ::%(filename)s:%(lineno)s"
-        try:
-            LOGFORMAT = "%(log_color)s%(levelname)-1s%(reset)s | %(log_color)s%(message)s%(reset)s ::%(filename)s:%(lineno)s"
-            from colorlog import ColoredFormatter
-            formatter = ColoredFormatter(LOGFORMAT)
-            stream.setFormatter(formatter)
-        except Exception:
-            formatter = logging.Formatter(LOGFORMAT)
-        self.log = logging.getLogger('root')
-        self.log.setLevel(LOG_LEVEL)
-        self.log.addHandler(stream)
+        # LOGFORMAT = "%(levelname)-1s | %(message)s ::%(filename)s:%(lineno)s"
+        # try:
+        # LOGFORMAT = "%(log_color)s%(levelname)-1s%(reset)s | %(log_color)s%(message)s%(reset)s ::%(filename)s:%(lineno)s"
+        #     from colorlog import ColoredFormatter
+        #     formatter = ColoredFormatter(LOGFORMAT)
+        #     stream.setFormatter(formatter)
+        # except Exception:
+        #     formatter = logging.Formatter(LOGFORMAT)
+        self.log = getLogger('root')
+        if db:
+            self.level = db
+        self.log.setLevel(self.level)
+        # self.log.addHandler(stream)

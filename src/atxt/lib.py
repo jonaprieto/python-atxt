@@ -97,7 +97,7 @@ class aTXT(object):
         except OSError, e:
             log.critical('extraction metadata fails: %e' % e)
             log.critical(opts)
-            raise e
+            return 
 
         if not self.opts['-o'] and os.path.exists(_txt.path):
             return _txt.path
@@ -107,24 +107,16 @@ class aTXT(object):
             try:
                 _file.create_temp()
             except Exception, e:
-                log.critical(e)
+                log.debug(e)
             try:
                 _tempfile = InfoFile(_file.temp)
             except Exception, e:
                 log.critical(e)
-            try:
-                res = convert(from_file=_tempfile, to_txt=_txt, opts=opts)
-            except Exception, e:
-                log.critical('conversion fails (--use-temp): %e' % e)
+            res = convert(from_file=_tempfile, to_txt=_txt, opts=opts)
             try:
                 _file.remove_temp()
             except Exception, e:
-                log.critical(e)
+                log.debug(e)
         else:
-            try:
-                res = convert(from_file=_file, to_txt=_txt, opts=opts)
-            except Exception, e:
-                log.critical('conversion fails: %e' % e)
-        if not res:
-            raise IOError('problems with I/O reading file')
-        return _txt.path
+            res = convert(from_file=_file, to_txt=_txt, opts=opts)
+        return res

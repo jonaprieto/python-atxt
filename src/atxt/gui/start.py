@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Author: Jonathan S. Prieto
-# @Date:   2015-03-20 23:16:24
-# @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-30 19:27:41
+
 
 from PySide import QtCore
 from atxt.lib import aTXT
@@ -12,7 +9,6 @@ from atxt.workers import run_files, run_paths
 
 
 log = Logger.log
-
 
 
 class Start(QtCore.QThread):
@@ -46,17 +42,16 @@ class Start(QtCore.QThread):
         finished = 0
 
         if manager.options['--file']:
-            res = run_files(manager, thread=self)
+            res = run_files(manager, self, total, finished)
             if res and len(res) == 2:
                 total += res[0]
                 finished += res[1]
 
         if manager.options['--path']:
-            res = run_paths(manager, thread=self)
+            res = run_paths(manager, self, total, finished)
             if res and len(res) == 2:
                 total += res[0]
                 finished += res[1]
-
 
         log.debug("Start finished")
         log.info("Total Files: %s" % str(total))

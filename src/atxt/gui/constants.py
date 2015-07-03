@@ -1,10 +1,13 @@
 from atxt.__main__ import __version__
+from atxt.check import check_os
+
+windows = check_os() == 'Windows'
 
 
 BTN_BROWSER = "Browser"
 BTN_SAVE_LOG = "Save Log"
 LABEL_BOX_ACTIONS = "Actions"
-LABEL_BOX_DIRECTORY = "From:[directory or file]"
+LABEL_BOX_DIRECTORY = "From:" + (' [directory]' if windows else  ' [directory or file]')
 LABEL_BOX_FORMATS = "Extensions"
 LABEL_BOX_LAYOUT1 = "Settings"
 LABEL_BOX_LAYOUT2 = ""
