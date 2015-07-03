@@ -2,7 +2,13 @@
 Changelog
 =========
 
-1.0.5.2 (2015-07-03)
+
+1.0.5.3 (2015-07-03)
+-----------------------------------------
+* "fix bugs suggested by landscape.io"
+
+
+1.0.5.2 (2015-07-02)
 -----------------------------------------
 This version is more relate with Windows support:
 
