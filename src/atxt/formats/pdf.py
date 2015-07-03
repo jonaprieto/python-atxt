@@ -50,14 +50,14 @@ def pdf(from_file, to_txt, opts):
     if opts['--ocr']:
         log.info('Extraction with OCR technology')
         if not ocr:
-            log.info('it could be more better if you do not use OCR')
+            log.info('It could be more better if you do not use OCR')
         try:
             return pdf_ocr(from_file, to_txt, opts)
         except Exception, e:
             log.critical(e)
     log.info('Extraction with Xpdf technology')
     if ocr:
-        log.warning('it would be better if you try to use OCR options')
+        log.warning('It would be better if you try to use OCR options')
     try:
         return pdftotext(from_file.path, to_txt.path)
     except Exception, e:
@@ -67,7 +67,7 @@ def pdf(from_file, to_txt, opts):
 
 def pdf_ocr(from_file, to_txt, opts):
     pdftopng(from_file.path, to_txt.path)
-    text = ''
+    text = []
     outputpath = os.path.join(to_txt.dirname, 'output.txt')
     regex = re.compile('.*png$')
     for root, _, files in walk(to_txt.dirname, regex=regex):
@@ -78,7 +78,7 @@ def pdf_ocr(from_file, to_txt, opts):
                 tesseract(filepath, None, opts)
                 try:
                     raw = raw_data(outputpath)
-                    text = text + '\n' + raw
+                    text.append(raw)
                 except Exception, e:
                     log.critical(e)
                 remove(os.path.join(root, f.name))

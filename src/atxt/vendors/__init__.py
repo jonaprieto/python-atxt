@@ -1,18 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-from atxt.log_conf import Logger
-log = Logger.log
-
 import subprocess as sub
+import sys
 
-from atxt.check import path_pdftotext as bpdftotext
-from atxt.check import path_pdftopng as bpdftopng
-from atxt.check import path_pdffonts as bpdffonts
-from atxt.check import path_tesseract as btesseract
 from atxt.check import path_antiword as bantiword
-
+from atxt.check import path_pdffonts as bpdffonts
+from atxt.check import path_pdftopng as bpdftopng
+from atxt.check import path_pdftotext as bpdftotext
+from atxt.check import path_tesseract as btesseract
+from atxt.encoding import encoding_path
+from atxt.log_conf import Logger
 from funcy import map
+
+
+log = Logger.log
+fse = sys.getfilesystemencoding()
+
+
+def set_encoding(cmd):
+    fse = sys.getfilesystemencoding()
+    cmd = [arg.encode(fse) if isinstance(arg, unicode) else arg for arg in cmd]
+    return cmd
 
 
 def pdftotext(filepath, txtpath):
@@ -20,6 +29,7 @@ def pdftotext(filepath, txtpath):
         raise ImportError('pdftotex is missing. --check command')
     f = file(txtpath, 'wb')
     cmd = [bpdftotext(), filepath, '-']
+    cmd = set_encoding(cmd)
     try:
         output = sub.call(cmd, stdout=f)
     except Exception, e:
@@ -42,6 +52,8 @@ def pdffonts(filepath):
     if not bpdffonts():
         raise ImportError('pdftotex is missing. --check command')
     cmd = [bpdffonts(), filepath]
+    cmd = set_encoding(cmd)
+
     return sub.check_output(cmd)
 
 
@@ -61,6 +73,7 @@ def pdftopng(filepath, to_path=None):
     if not to_path:
         to_path = os.path.dirname(filepath)
     cmd = [bpdftopng(), filepath, to_path]
+    cmd = set_encoding(cmd)
     sub.call(cmd)
 
 
@@ -72,7 +85,7 @@ def tesseract(filepath, txtpath=None, opts=None):
     if not opts:
         opts = {'-l': 'spa'}
     cmd = [btesseract(), filepath, txtpath, '-l', opts.get('-l', 'spa')]
-    cmd = map(str, cmd)
+    cmd = set_encoding(cmd)
     try:
         sub.call(cmd)
     except Exception, e:
@@ -83,10 +96,14 @@ def antiword(filepath, txtpath):
     if not bantiword():
         raise ImportError('antiword is missing')
     cmd = [bantiword(), filepath]
+    cmd = set_encoding(cmd)
+    if isinstance(txtpath, unicode):
+        txtpath = txtpath.encode(fse)
     f = file(txtpath, 'wb')
     try:
         sub.call(cmd, stdout=f)
     except Exception, e:
+        log.critical('cmd subcall')
         log.critical(e)
         f.close()
         return

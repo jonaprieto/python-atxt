@@ -3,24 +3,23 @@
 # @Author: Jonathan S. Prieto
 
 from __future__ import print_function
-from colorama import init, Fore
-init()
-
 
 import logging
 import os
 import sys
 
 from check import check
+from colorama import init as initColorama
 from docopt import docopt
 from formats import supported_formats
+from funcy import map, compose
 from lib import aTXT
 from log_conf import Logger
+from use import __doc__ as usage
 from workers import run_files, run_paths
 
-from use import __doc__ as usage
 
-
+initColorama()
 
 log = Logger.log
 
@@ -89,17 +88,24 @@ def main():
 
 
 def set_tfiles(opts):
-    opts['<format>'] = []
+    if not opts['--format']:
+        opts['tfiles'] = opts.get('tfiles', supported_formats[:])
+        return opts
+    opts['tfiles'] = opts.get('tfiles', [])
+    sformat = opts.get('--format', '')
+    lformat = []
+    if ',' in sformat:
+        lformat = sformat.rsplit(',')
+    elif ' ' in sformat:
+        lformat = sformat.split()
+    else:
+        lformat = [sformat]
+    lformat = map(str.strip, lformat)
 
     for ext in supported_formats[:]:
-        if opts['--format'] and opts['--format'].find(ext) >= 0:
-            opts['<format>'].append(ext)
-            if 'tfiles' in opts:
-                opts['tfiles'].append(ext)
-            else:
-                opts['tfiles'] = [ext]
-    if 'tfiles' not in opts or not opts['tfiles']:
-        opts['tfiles'] = supported_formats[:]
+        if ext in lformat:
+            opts['tfiles'].append(ext)
+    opts['tfiles'] = compose(list, set)(opts['tfiles'])
     return opts
 
 

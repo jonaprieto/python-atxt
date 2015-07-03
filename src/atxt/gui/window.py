@@ -151,7 +151,7 @@ class Window(QtGui.QWidget):
         self._check_overwrite.setCheckState(checked)
 
         self._check_ocr = QtGui.QCheckBox('OCR')
-        self._check_ocr.setCheckState(checked)
+        self._check_ocr.setCheckState(unchecked)
 
         self._edt_lang = QtGui.QLineEdit()
         self._edt_lang.setText('spa')

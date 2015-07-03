@@ -28,7 +28,7 @@ class ColourStreamHandler(StreamHandler):
     def emit(self, record):
         try:
             message = self.format(record)
-            line = self.colours[
+            line =  Style.RESET_ALL + self.colours[
                 record.levelname] + '{} | '.format(record.levelname)
 
             if record.levelname not in ['CRITICAL', 'CRIT']:

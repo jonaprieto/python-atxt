@@ -21,5 +21,5 @@ def odocx(from_file, to_txt, opts):
         doc = docx.opendocx(from_file.path)
     except Exception, e:
         log.critical(e)
-    text = '\n'.join(line for line in docx.getdocumenttext(doc))
+    text = [line for line in docx.getdocumenttext(doc)]
     return save_raw_data(to_txt.path, text, encoding='utf-8')

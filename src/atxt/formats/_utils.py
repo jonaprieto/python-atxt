@@ -54,7 +54,11 @@ def save_raw_data(filepath, text, encoding='utf-8'):
     if filepath and text:
         try:
             f = codecs.open(filepath, mode='w', encoding=encoding)
-            f.write(text)
+            if isinstance(text, list):
+                for line in text:
+                    f.write(line + os.linesep)
+            else:
+                f.write(text)
             f.close()
             return filepath
         except Exception, e:
