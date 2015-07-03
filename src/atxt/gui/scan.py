@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:19
-# @Last Modified by:   Jonathan Prieto
-# @Last Modified time: 2015-06-30 14:12:25
+# @Last Modified by:   Jonathan Prieto 
+# @Last Modified time: 2015-07-03 01:27:56
 import os
 
 from PySide import QtCore
-from atxt.encoding import encoding_path
 from atxt.log_conf import Logger
 from atxt.walking import walk, size_str
 from atxt.utils import extract_ext
@@ -39,7 +38,7 @@ class Scan(QtCore.QThread):
         # factor = 0.1 if opts['depth'] != 0 else 0.01 * opts['depth']
         assert len(opts['<path>']) == 1
 
-        for root, _, files in walk(opts['<path>'][0],
+        for _, _, files in walk(opts['<path>'][0],
                                    level=opts['--depth']):
             if not self.FLAG:
                 # self._part(0)

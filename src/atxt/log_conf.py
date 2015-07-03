@@ -6,18 +6,23 @@ from logging import StreamHandler, DEBUG, getLogger as realGetLogger, Formatter
 import logging
 
 from colorama import Fore, Back, Style, init
+from osinfo import osinfo
+from kitchen.text.converters import to_unicode
+
 
 init()
 
+
 def to_display(s):
     s = s.strip()
-    if check_os() == 'Windows':
+    info = osinfo.OSInfo()
+    if info == 'Windows':
         return to_unicode(s, 'utf-8')
     s = to_unicode(s)
     try:
         return s.encode('utf-8', 'replace')
-    except Exception, e:
-        log.warning(e)
+    except Exception:
+        pass
     return s
 
 
@@ -43,7 +48,7 @@ class ColourStreamHandler(StreamHandler):
                 message = to_display(message)
             except Exception:
                 pass
-            line =  Style.RESET_ALL + self.colours[
+            line = Style.RESET_ALL + self.colours[
                 record.levelname] + '{} | '.format(record.levelname)
 
             if record.levelname not in ['CRITICAL', 'CRIT']:
@@ -59,7 +64,7 @@ class ColourStreamHandler(StreamHandler):
             self.flush()
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception:
             self.handleError(record)
 
 

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:48
-# @Last Modified by:   Jonathan Prieto
-# @Last Modified time: 2015-06-30 11:07:29
+# @Last Modified by:   Jonathan Prieto 
+# @Last Modified time: 2015-07-03 01:26:20
 from __future__ import print_function
 import os
 
@@ -58,17 +58,18 @@ def run_paths(manager, thread=None, total_=0, finished_=0):
 
 
 def set_formats(opts):
-    if 'tfiles' not in opts:
-        log.critical('there is not tfiles key. Grave.')
-        tfiles = set(supported_formats[:])
-        if '<format>' in opts and opts['<format>']:
-            tfiles = set()
-            for f in opts['<format>']:
-                f = f[1:] if f.startswith('.') else f
-                f = f.lower()
-                if f in supported_formats:
-                    tfiles.add(f)
-        opts['tfiles'] = list(tfiles)
+    if 'tfiles' in opts:
+        return opts
+    log.critical('there is not tfiles key. Grave.')
+    tfiles = set(supported_formats[:])
+    if '<format>' in opts and opts['<format>']:
+        tfiles = set()
+        for f in opts['<format>']:
+            f = f[1:] if f.startswith('.') else f
+            f = f.lower()
+            if f in supported_formats:
+                tfiles.add(f)
+    opts['tfiles'] = list(tfiles)
 
 
 def run_one_path(manager, path=None, thread=None, total_=0):

@@ -6,7 +6,6 @@ from atxt.log_conf import Logger
 from atxt.vendors import antiword
 from atxt.check import check_os, check_office
 
-from _utils import raw_data
 
 log = Logger.log
 

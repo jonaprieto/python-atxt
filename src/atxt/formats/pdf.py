@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:52:42
-# @Last Modified by:   Jonathan Prieto
-# @Last Modified time: 2015-06-30 12:48:55
+# @Last Modified by:   Jonathan Prieto 
+# @Last Modified time: 2015-07-03 01:25:23
 import codecs
 import os
 import re
@@ -72,7 +72,7 @@ def pdf_ocr(from_file, to_txt, opts):
     outputpath = os.path.join(to_txt.dirname, 'output.txt')
     regex = re.compile('.*png$')
     raw = None
-    for root, _, files in walk(to_txt.dirname, regex=regex):
+    for _, _, files in walk(to_txt.dirname, regex=regex):
         for f in files:
             if (f.name).startswith(to_txt.basename):
                 log.info('tesseract is processing:')
