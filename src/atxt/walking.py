@@ -9,6 +9,8 @@ from encoding import encoding_path
 from log_conf import Logger
 from scandir import islink
 from scandir import scandir
+
+from os.path import islink
 from utils import extract_ext
 
 log = Logger.log
