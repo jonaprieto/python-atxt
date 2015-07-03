@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:52:42
-# @Last Modified by:   Jonathan Prieto 
+# @Last Modified by:   Jonathan Prieto
 # @Last Modified time: 2015-06-30 12:48:55
 import codecs
 import os
@@ -55,6 +55,7 @@ def pdf(from_file, to_txt, opts):
             return pdf_ocr(from_file, to_txt, opts)
         except Exception, e:
             log.critical(e)
+            return
     log.info('Extraction with Xpdf technology')
     if ocr:
         log.warning('It would be better if you try to use OCR options')
@@ -70,17 +71,19 @@ def pdf_ocr(from_file, to_txt, opts):
     text = []
     outputpath = os.path.join(to_txt.dirname, 'output.txt')
     regex = re.compile('.*png$')
+    raw = None
     for root, _, files in walk(to_txt.dirname, regex=regex):
         for f in files:
             if (f.name).startswith(to_txt.basename):
-                filepath = os.path.join(root, f.name)
-                log.info('tesseract is processing: {}'.format(filepath))
-                tesseract(filepath, None, opts)
+                log.info('tesseract is processing:')
+                log.info(f.path)
+                tesseract(f.path, None, opts)
                 try:
                     raw = raw_data(outputpath)
-                    text.append(raw)
                 except Exception, e:
-                    log.critical(e)
-                remove(os.path.join(root, f.name))
+                    log.critical('pdf_ocr: %s' % e)
+                text.append(raw)
+                remove(f.path)
     remove(outputpath)
-    return save_raw_data(to_txt.path, text)
+    if text:
+        return save_raw_data(to_txt.path, text)

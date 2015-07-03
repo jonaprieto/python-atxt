@@ -2,12 +2,23 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 
-import logging
 from logging import StreamHandler, DEBUG, getLogger as realGetLogger, Formatter
-
+import logging
 
 from colorama import Fore, Back, Style, init
+
 init()
+
+def to_display(s):
+    s = s.strip()
+    if check_os() == 'Windows':
+        return to_unicode(s, 'utf-8')
+    s = to_unicode(s)
+    try:
+        return s.encode('utf-8', 'replace')
+    except Exception, e:
+        log.warning(e)
+    return s
 
 
 class ColourStreamHandler(StreamHandler):
@@ -28,6 +39,10 @@ class ColourStreamHandler(StreamHandler):
     def emit(self, record):
         try:
             message = self.format(record)
+            try:
+                message = to_display(message)
+            except Exception:
+                pass
             line =  Style.RESET_ALL + self.colours[
                 record.levelname] + '{} | '.format(record.levelname)
 

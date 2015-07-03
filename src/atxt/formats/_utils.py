@@ -56,6 +56,7 @@ def save_raw_data(filepath, text, encoding='utf-8'):
             f = codecs.open(filepath, mode='w', encoding=encoding)
             if isinstance(text, list):
                 for line in text:
+                    line = line.replace('\n', os.linesep)
                     f.write(line + os.linesep)
             else:
                 f.write(text)
