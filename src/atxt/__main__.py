@@ -12,7 +12,8 @@ from check import check
 from colorama import init as initColorama
 from docopt import docopt
 from formats import supported_formats
-from funcy import map, compose
+from funcy import map as fmap
+from funcy import compose
 from lib import aTXT
 from log_conf import Logger
 from use import __doc__ as usage
@@ -100,7 +101,7 @@ def set_tfiles(opts):
         lformat = sformat.split()
     else:
         lformat = [sformat]
-    lformat = map(str.strip, lformat)
+    lformat = fmap(str.strip, lformat)
 
     for ext in supported_formats[:]:
         if ext in lformat:

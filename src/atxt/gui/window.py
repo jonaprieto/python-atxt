@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
-# @Last Modified by:   Jonathan Prieto 
+# @Last Modified by:   Jonathan Prieto
 # @Last Modified time: 2015-06-30 14:10:23
 import logging
 import os
@@ -20,7 +20,7 @@ from PySide.QtGui import (
 )
 from atxt.formats import supported_formats
 from atxt.log_conf import Logger
-from atxt.utils import parser_opts, extract_ext
+from atxt.utils import parser_opts, extract_ext, remove
 from atxt.check import check_os
 from constants import *
 from start import Start
@@ -89,10 +89,13 @@ class Window(QtGui.QWidget):
     totalfiles = 0
 
     def __init__(self):
-        super(Window, self).__init__()
+        QtGui.QWidget.__init__(self)
         log.debug('GUI aTXT')
-        self._set_layout1()
+        self._set_layout_source()
+        self._set_layout_save()
+        self._set_layout_console()
         self._set_layout2()
+
         self._connect_acctions()
         box = QGroupBox(LABEL_BOX_LAYOUT1)
         box.setLayout(self._layout1)
@@ -103,10 +106,14 @@ class Window(QtGui.QWidget):
         self.layout.addWidget(box, 0, 1)
         self.setLayout(self.layout)
 
-        XStream.stdout().messageWritten.connect(self._console.insertPlainText)
-        XStream.stderr().messageWritten.connect(self._console.insertPlainText)
+        XStream.stdout().messageWritten.connect(self._cursor_visible)
+        XStream.stderr().messageWritten.connect(self._cursor_visible)
 
-    def _set_layout1(self):
+    def _cursor_visible(self, value):
+        self._console.insertPlainText(value)
+        self._console.ensureCursorVisible()
+
+    def _set_layout_source(self):
         self.setWindowTitle(TITLE_WINDOW)
         self.setFixedSize(750, 400)
         self.setContentsMargins(15, 15, 15, 15)
@@ -137,6 +144,7 @@ class Window(QtGui.QWidget):
         box.setLayout(ly)
         self._layout1.addWidget(box)
 
+    def _set_layout_save(self):
         self._label_save = QtGui.QLabel(MSG_SAVE_IN)
         self._edt_save = QtGui.QLineEdit("")
         self._edt_save.setFixedSize(150, 20)
@@ -174,6 +182,7 @@ class Window(QtGui.QWidget):
         box.setLayout(ly)
         self._layout1.addWidget(box)
 
+    def _set_layout_console(self):
         self._console = QTextBrowser(self)
         frameStyle = QtGui.QFrame.Sunken | QtGui.QFrame.Panel
         self._console.setFrameStyle(frameStyle)
@@ -192,19 +201,25 @@ class Window(QtGui.QWidget):
     def _save_log(self):
         save_log_dir = QFileDialog.getSaveFileName(
             self, "Save Log File", "", "Text File (*.txt)")
-        f = QtCore.QFile(str(save_log_dir[0]))
+        try:
+            remove(save_log_dir[0])
+        except Exception, e:
+            log.error(e)
+        f = QtCore.QFile(save_log_dir[0])
         try:
             if f.open(QtCore.QIODevice.ReadWrite):
                 stream = QtCore.QTextStream(f)
-                stream << self._console.toPlainText()
+                text = self._console.toPlainText()
+                text = text.replace('\n', os.linesep)
+                exec "stream << text"
                 f.flush()
                 f.close()
 
         except Exception, e:
             log.critical(e)
 
-    def _cursor_end(self, value=None):
-        self._console.moveCursor(QtGui.QTextCursor.End)
+    # def _cursor_end(self, value=None):
+    #     self._console.moveCursor(QtGui.QTextCursor.End)
 
     def _set_layout2(self):
         self.formats = []
@@ -310,22 +325,9 @@ class Window(QtGui.QWidget):
         }
         return parser_opts(opts)
 
-    # def set_progress(self, value):
-    #     if value > 100:
-    #         value = 100
-        # self._progress_bar.setValue(value)
-
-    # def end_process(self):
-    # self._progress_bar.reset()
-    #     pass
-
-    # def ready(self, value):
-    #     self._ready = value
-
     def _connect_acctions(self):
         self._btn_source.clicked.connect(self.set_source)
         self._btn_scan.clicked.connect(self._scan)
-        # self._btn_stop.clicked.connect(self._stop)
         self._btn_start.clicked.connect(self._start)
 
     def _scan(self):
@@ -342,22 +344,12 @@ class Window(QtGui.QWidget):
         if response == QMessageBox.No:
             log.info("Scaning cancelled")
             return
-        log.info("Starting process")
+        log.debug("Starting process")
         log.warning(TOOLTIP_SCAN)
 
         self._btn_start.setEnabled(False)
-        # self._btn_stop.setEnabled(True)
         self._thread = Scan(self)
-        # self._thread._end_process.connect(self.end_process)
-        self._thread._cursor_end.connect(self._cursor_end)
-        # self._thread._part.connect(self.set_progress)
-        # self._thread._ready.connect(self.ready)
-
-        # self._progress_bar.setValue(0)
-        # self._progress_bar.setMinimum(0)
-        # self._progress_bar.setMaximum(100)
         self._thread.start()
-        self._cursor_end()
         self._btn_start.setEnabled(True)
         log.info('')
         log.info('')
@@ -380,23 +372,18 @@ class Window(QtGui.QWidget):
         question = WARNING_LONG_PROCESS
         response = QMessageBox.question(self, "Question", question, flags)
         if response == QMessageBox.Yes:
-            log.info("Starting process")
+            log.debug("Starting process")
         elif QMessageBox.No:
-            log.info("Starting cancelled")
+            log.debug("Starting cancelled")
             return
 
+        self._btn_start.setEnabled(False)
+        self._btn_scan.setEnabled(False)
         self._thread = Start(self)
-        self._thread._cursor_end.connect(self._cursor_end)
-
-        # self._thread._end_process.connect(self.end_process)
-        # self._thread._part.connect(self.set_progress)
-        # self._thread._ready.connect(self.ready)
-
-        # self._progress_bar.setValue(0)
-        # self._progress_bar.setMinimum(0)
-        # self._progress_bar.setMaximum(100)
         self._thread.start()
-        self._cursor_end()
+        self._thread.finished.connect(self._thread_finished)
+        self._thread.terminated.connect(self._thread_finished)
+
+    def _thread_finished(self):
         self._btn_start.setEnabled(True)
-        # self._btn_stop.setEnabled(False)
         self._btn_scan.setEnabled(True)

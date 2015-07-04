@@ -20,7 +20,7 @@ from atxt.encoding import encoding_path
 __all__ = ['run_paths', 'run_one_path']
 
 
-def run_paths(manager, thread=None, total_=0, finished_=0):
+def run_paths(manager, total_=0, finished_=0):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not opts['--path'] or not opts['<path>']:
@@ -43,12 +43,8 @@ def run_paths(manager, thread=None, total_=0, finished_=0):
     manager.options = opts
     log.debug(manager.options)
     total, finished = total_, finished_
-    if thread:
-        thread._cursor_end.emit(True)
     for path in opts['<path>']:
-        res = run_one_path(manager, path, thread, total)
-        if thread:
-            thread._cursor_end.emit(True)
+        res = run_one_path(manager, path, total)
         if res:
             total += res[0]
             finished += res[1]
@@ -71,8 +67,7 @@ def set_formats(opts):
                 tfiles.add(f)
     opts['tfiles'] = list(tfiles)
 
-
-def run_one_path(manager, path=None, thread=None, total_=0):
+def run_one_path(manager, path=None, total_=0):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not path:
@@ -87,7 +82,7 @@ def run_one_path(manager, path=None, thread=None, total_=0):
     if not os.path.isdir(path):
         log.error('%s is not a valid path for --path option' % path)
         return
-    otps = set_formats(opts)
+    opts = set_formats(opts)
     log.debug('searching for: %s' % opts['tfiles'])
     total, finished = 0,0
     # from random import randint
@@ -106,17 +101,16 @@ def run_one_path(manager, path=None, thread=None, total_=0):
             new_path = manager.convert_to_txt(filepath=f.path)
             if new_path:
                 try:
-                    log.info("{c:2d} | [OK] | {p}".format(c=total_+total, p=f.path))
+                    log.info("{c:3d} | [OK] | {p}".format(c=total_+total, p=f.path))
                 except Exception:
-                    log.info("{c:2d} | [OK] ".format(c=total_+total))
+                    log.info("{c:3d} | [OK] ".format(c=total_+total))
+                    log.info(f.path)
                 finished += 1
             else:
                 try:
-                    log.info("{c:2d} | [FAIL] | {p}".format(c=total_+total, p=f.path))
+                    log.info("{c:3d} | [FAIL] | {p}".format(c=total_+total, p=f.path))
                 except Exception:
-                    log.info("{c:2d} | [FAIL] ".format(c=total_+total))
-
-            if thread:
-                thread._cursor_end.emit(True)
+                    log.info("{c:3d} | [FAIL] ".format(c=total_+total))
+                    log.info(f.path)
 
     return total, finished

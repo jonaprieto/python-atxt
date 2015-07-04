@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 18:23:55
-# @Last Modified by:   Jonathan Prieto 
+# @Last Modified by:   Jonathan Prieto
 # @Last Modified time: 2015-06-30 11:02:07
 
 import os
@@ -50,6 +50,6 @@ def convert(from_file, to_txt, opts):
     log.debug('calling bot = %s' % bot.__name__)
     try:
         return bot(from_file, to_txt, opts)
-    except Exception,e:
+    except Exception, e:
         log.critical('formats/__init__.py:')
         log.critical(e)

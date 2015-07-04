@@ -51,7 +51,7 @@ def find_encoding(filepath):
 
 def save_raw_data(filepath, text, encoding='utf-8'):
     log.debug('saving text data')
-    if filepath and text:
+    if filepath:
         try:
             f = codecs.open(filepath, mode='w', encoding=encoding)
             if isinstance(text, list):

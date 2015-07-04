@@ -6,7 +6,9 @@ import os
 import shutil as sh
 
 from encoding import encoding_path
-from funcy import map, compose, filter
+from funcy import map as fmap
+from funcy import compose
+from funcy import filter as ffilter
 from log_conf import Logger
 
 
@@ -99,7 +101,7 @@ def extract_ext(filepath):
 
 def union(A):
     assert isinstance(A, list)
-    return list(set(A))
+    return compose(list, set)(A)
 
 
 def readable(path):
@@ -124,9 +126,9 @@ def parser_opts(opts):
     assert isinstance(opts['<file>'], list)
     assert isinstance(opts['<file>'], list)
 
-    opts['<source>'] = map(standardpath, opts['<source>'])
-    opts['<path>'] = map(standardpath, opts['<path>'])
-    opts['<file>'] = map(standardpath, opts['<file>'])
+    opts['<source>'] = fmap(standardpath, opts['<source>'])
+    opts['<path>'] = fmap(standardpath, opts['<path>'])
+    opts['<file>'] = fmap(standardpath, opts['<file>'])
 
     for path in opts['<source>']:
         if os.path.isdir(path):
@@ -139,12 +141,11 @@ def parser_opts(opts):
                 if os.path.isfile(path):
                     opts['<file>'].append(path)
 
-    opts['<file>'] = compose(list,set)(opts['<file>'])
-    opts['<path>'] = compose(list,set)(opts['<path>'])
-    
-    opts['<file>'] = filter(readable, opts['<file>'])
-    opts['<path>'] = filter(readable, opts['<path>'])
+    opts['<file>'] = union(opts['<file>'])
+    opts['<path>'] = union(opts['<path>'])
 
+    opts['<file>'] = ffilter(readable, opts['<file>'])
+    opts['<path>'] = ffilter(readable, opts['<path>'])
 
     opts['--file'] = (len(opts['<file>']) > 0)
     opts['--path'] = (len(opts['<path>']) > 0)

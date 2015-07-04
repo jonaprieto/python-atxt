@@ -12,9 +12,6 @@ log = Logger.log
 
 
 class Start(QtCore.QThread):
-    # _end_process = QtCore.Signal(bool)
-    _cursor_end = QtCore.Signal(bool)  # for the textbox
-
     FLAG = True
 
     def __init__(self, window):
@@ -22,33 +19,23 @@ class Start(QtCore.QThread):
         self.window = window
 
     def run(self):
-
         log.debug('created QThread for Start')
-
-        self.window._btn_start.setEnabled(False)
-        self.window._btn_scan.setEnabled(False)
-
         opts = self.window.options()
 
         manager = aTXT()
         manager.options = opts
         opts = manager.options
 
-        # for k in opts.keys():
-        #     log.critical((k, opts[k]))
-
-        res = 0
-        total = 0
-        finished = 0
+        res, total, finished = 0, 0, 0
 
         if manager.options['--file']:
-            res = run_files(manager, self, total, finished)
+            res = run_files(manager, total, finished)
             if res and len(res) == 2:
                 total += res[0]
                 finished += res[1]
 
         if manager.options['--path']:
-            res = run_paths(manager, self, total, finished)
+            res = run_paths(manager, total, finished)
             if res and len(res) == 2:
                 total += res[0]
                 finished += res[1]
@@ -57,10 +44,5 @@ class Start(QtCore.QThread):
         log.info("Total Files: %s" % str(total))
         log.info("Files Finished: %s" % str(finished))
         log.info("Files Unfinished: %s" % str(total - finished))
-
-        self._cursor_end.emit(True)
-        self.window._btn_start.setEnabled(True)
-        self.window._btn_scan.setEnabled(True)
-        # self.window._btn_stop.setEnabled(False)
         self.exit()
         return
