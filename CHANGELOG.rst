@@ -2,6 +2,11 @@
 Changelog
 =========
 
+1.0.5.4 (2015-07-04)
+-----------------------------------------
+* "fix bugs for GUI related problems on *nix and Windows"
+* "fix style errors and encoding problems"
+
 
 1.0.5.3 (2015-07-03)
 -----------------------------------------
