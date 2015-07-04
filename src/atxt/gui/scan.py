@@ -35,11 +35,11 @@ class Scan(QtCore.QThread):
                 if extract_ext(f.name) not in opts['tfiles']:
                     continue
                 if os.access(f.path, os.R_OK):
-                    path = encoding_path(f.path)
                     try:
-                        log.info("{c:2d} | {p}".format(c=conta+1, p=path))
+                        log.info("{c:3d} | {p}".format(c=conta+1, p=f.path))
                     except Exception, e:
-                        log.debug(e)
+                        log.info("{c:3d} |".format(c=conta+1))
+                        log.debug(f.path)
                     try:
                         tsize += os.path.getsize(f.path)
                         conta += 1

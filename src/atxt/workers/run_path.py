@@ -101,14 +101,16 @@ def run_one_path(manager, path=None, total_=0):
             new_path = manager.convert_to_txt(filepath=f.path)
             if new_path:
                 try:
-                    log.info("{c:2d} | [OK] | {p}".format(c=total_+total, p=f.path))
+                    log.info("{c:3d} | [OK] | {p}".format(c=total_+total, p=f.path))
                 except Exception:
-                    log.info("{c:2d} | [OK] ".format(c=total_+total))
+                    log.info("{c:3d} | [OK] ".format(c=total_+total))
+                    log.info(f.path)
                 finished += 1
             else:
                 try:
-                    log.info("{c:2d} | [FAIL] | {p}".format(c=total_+total, p=f.path))
+                    log.info("{c:3d} | [FAIL] | {p}".format(c=total_+total, p=f.path))
                 except Exception:
-                    log.info("{c:2d} | [FAIL] ".format(c=total_+total))
+                    log.info("{c:3d} | [FAIL] ".format(c=total_+total))
+                    log.info(f.path)
 
     return total, finished
