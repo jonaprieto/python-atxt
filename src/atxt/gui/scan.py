@@ -7,7 +7,6 @@
 import os
 
 from PySide import QtCore
-from atxt.encoding import encoding_path
 from atxt.log_conf import Logger
 from atxt.walking import walk, size_str
 from atxt.utils import extract_ext
@@ -44,7 +43,7 @@ class Scan(QtCore.QThread):
                         tsize += os.path.getsize(f.path)
                         conta += 1
                     except Exception, e:
-                        log.debug('os.path.getsize(f.path) failed')
+                        log.debug('os.path.getsize(f.path) failed:%s' % e)
 
         log.info('Number of files estimates : %d' % conta)
         log.info('Size on disk estimates : %s' % size_str(tsize))
