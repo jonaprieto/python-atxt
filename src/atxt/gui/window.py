@@ -20,7 +20,7 @@ from PySide.QtGui import (
 )
 from atxt.formats import supported_formats
 from atxt.log_conf import Logger
-from atxt.utils import parser_opts, extract_ext
+from atxt.utils import parser_opts, extract_ext, remove
 from atxt.check import check_os
 from constants import *
 from start import Start
@@ -201,11 +201,17 @@ class Window(QtGui.QWidget):
     def _save_log(self):
         save_log_dir = QFileDialog.getSaveFileName(
             self, "Save Log File", "", "Text File (*.txt)")
-        f = QtCore.QFile(str(save_log_dir[0]))
+        try:
+            remove(save_log_dir[0])
+        except Exception, e:
+            log.error(e)
+        f = QtCore.QFile(save_log_dir[0])
         try:
             if f.open(QtCore.QIODevice.ReadWrite):
                 stream = QtCore.QTextStream(f)
-                stream << self._console.toPlainText()
+                text = self._console.toPlainText()
+                text = text.replace('\n', os.linesep)
+                exec "stream << text"
                 f.flush()
                 f.close()
 
@@ -338,7 +344,7 @@ class Window(QtGui.QWidget):
         if response == QMessageBox.No:
             log.info("Scaning cancelled")
             return
-        log.info("Starting process")
+        log.debug("Starting process")
         log.warning(TOOLTIP_SCAN)
 
         self._btn_start.setEnabled(False)
@@ -366,12 +372,18 @@ class Window(QtGui.QWidget):
         question = WARNING_LONG_PROCESS
         response = QMessageBox.question(self, "Question", question, flags)
         if response == QMessageBox.Yes:
-            log.info("Starting process")
+            log.debug("Starting process")
         elif QMessageBox.No:
-            log.info("Starting cancelled")
+            log.debug("Starting cancelled")
             return
 
+        self._btn_start.setEnabled(False)
+        self._btn_scan.setEnabled(False)
         self._thread = Start(self)
         self._thread.start()
+        self._thread.finished.connect(self._thread_finished)
+        self._thread.terminated.connect(self._thread_finished)
+
+    def _thread_finished(self):
         self._btn_start.setEnabled(True)
         self._btn_scan.setEnabled(True)

@@ -54,18 +54,18 @@ def run_paths(manager, total_=0, finished_=0):
 
 
 def set_formats(opts):
-    if 'tfiles' not in opts:
-        log.critical('there is not tfiles key. Grave.')
-        tfiles = set(supported_formats[:])
-        if '<format>' in opts and opts['<format>']:
-            tfiles = set()
-            for f in opts['<format>']:
-                f = f[1:] if f.startswith('.') else f
-                f = f.lower()
-                if f in supported_formats:
-                    tfiles.add(f)
-        opts['tfiles'] = list(tfiles)
-
+    if 'tfiles' in opts:
+        return opts
+    log.critical('there is not tfiles key. Grave.')
+    tfiles = set(supported_formats[:])
+    if '<format>' in opts and opts['<format>']:
+        tfiles = set()
+        for f in opts['<format>']:
+            f = f[1:] if f.startswith('.') else f
+            f = f.lower()
+            if f in supported_formats:
+                tfiles.add(f)
+    opts['tfiles'] = list(tfiles)
 
 def run_one_path(manager, path=None, total_=0):
     assert isinstance(manager, aTXT)
@@ -82,7 +82,7 @@ def run_one_path(manager, path=None, total_=0):
     if not os.path.isdir(path):
         log.error('%s is not a valid path for --path option' % path)
         return
-    otps = set_formats(opts)
+    opts = set_formats(opts)
     log.debug('searching for: %s' % opts['tfiles'])
     total, finished = 0,0
     # from random import randint

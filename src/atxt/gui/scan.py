@@ -28,16 +28,16 @@ class Scan(QtCore.QThread):
         opts = self.window.options()
         conta, tsize = 0, 0
         assert len(opts['<path>']) == 1
-        for root, _, files in walk(opts['<path>'][0],
-                                   level=opts['--depth']):
+        for _, _, files in walk(opts['<path>'][0], level=opts['--depth']):
             if not self.FLAG:
                 return
             for f in files:
                 if extract_ext(f.name) not in opts['tfiles']:
                     continue
                 if os.access(f.path, os.R_OK):
+                    path = encoding_path(f.path)
                     try:
-                        log.info("{c:2d} | {p}".format(c=conta+1, p=f.path))
+                        log.info("{c:2d} | {p}".format(c=conta+1, p=path))
                     except Exception, e:
                         log.debug(e)
                     try:

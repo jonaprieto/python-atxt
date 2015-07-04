@@ -19,19 +19,14 @@ class Start(QtCore.QThread):
         self.window = window
 
     def run(self):
-
         log.debug('created QThread for Start')
-
-        self.window._btn_start.setEnabled(False)
-        self.window._btn_scan.setEnabled(False)
-
         opts = self.window.options()
 
         manager = aTXT()
         manager.options = opts
         opts = manager.options
 
-        res, total, finished  = 0, 0, 0
+        res, total, finished = 0, 0, 0
 
         if manager.options['--file']:
             res = run_files(manager, total, finished)
@@ -49,8 +44,5 @@ class Start(QtCore.QThread):
         log.info("Total Files: %s" % str(total))
         log.info("Files Finished: %s" % str(finished))
         log.info("Files Unfinished: %s" % str(total - finished))
-
-        self.window._btn_start.setEnabled(True)
-        self.window._btn_scan.setEnabled(True)
         self.exit()
         return
