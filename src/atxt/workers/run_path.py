@@ -20,7 +20,7 @@ from atxt.encoding import encoding_path
 __all__ = ['run_paths', 'run_one_path']
 
 
-def run_paths(manager, thread=None, total_=0, finished_=0):
+def run_paths(manager, total_=0, finished_=0):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not opts['--path'] or not opts['<path>']:
@@ -43,12 +43,8 @@ def run_paths(manager, thread=None, total_=0, finished_=0):
     manager.options = opts
     log.debug(manager.options)
     total, finished = total_, finished_
-    if thread:
-        thread._cursor_end.emit(True)
     for path in opts['<path>']:
-        res = run_one_path(manager, path, thread, total)
-        if thread:
-            thread._cursor_end.emit(True)
+        res = run_one_path(manager, path, total)
         if res:
             total += res[0]
             finished += res[1]
@@ -71,7 +67,7 @@ def set_formats(opts):
         opts['tfiles'] = list(tfiles)
 
 
-def run_one_path(manager, path=None, thread=None, total_=0):
+def run_one_path(manager, path=None, total_=0):
     assert isinstance(manager, aTXT)
     opts = manager.options
     if not path:
@@ -114,8 +110,5 @@ def run_one_path(manager, path=None, thread=None, total_=0):
                     log.info("{c:2d} | [FAIL] | {p}".format(c=total_+total, p=f.path))
                 except Exception:
                     log.info("{c:2d} | [FAIL] ".format(c=total_+total))
-
-            if thread:
-                thread._cursor_end.emit(True)
 
     return total, finished

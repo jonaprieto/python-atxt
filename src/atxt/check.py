@@ -8,6 +8,7 @@ import os
 from distutils.spawn import find_executable
 from log_conf import Logger
 from osinfo import osinfo
+from kitchen.text.converters import to_unicode
 
 import subprocess as sub
 

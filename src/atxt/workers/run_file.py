@@ -22,7 +22,7 @@ log = Logger.log
 __all__ = ['run_files', 'run_one_file']
 
 
-def run_files(manager, thread=None, total=0, finished=0):
+def run_files(manager, total=0, finished=0):
     assert isinstance(manager, aTXT)
     opts = manager.options
     log.debug('with option --file')
@@ -34,9 +34,6 @@ def run_files(manager, thread=None, total=0, finished=0):
             file_path = os.path.join(opts['--from'], file_path)
         if not os.path.isfile(file_path) or not os.access(file_path, os.R_OK):
             log.info('file is missing or it is not readable')
-            # if file_path correspond to a folder path,(user omitted --path flag)
-            # it should be process with run_paths(manager) --path=True
-            # and before that: manager.opts.update({'<path>': [file_path]})
             continue
         ext = extract_ext(file_path)
         if ext in supported_formats:
@@ -66,9 +63,6 @@ def run_files(manager, thread=None, total=0, finished=0):
                 finished += 1
             else:
                 log.info("{c:2d} | [FAIL] | {p}".format(c=total, p=file_path))
-
-            if thread:
-                thread._cursor_end.emit(True)
     return total, finished
 
 

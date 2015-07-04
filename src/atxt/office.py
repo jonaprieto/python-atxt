@@ -5,7 +5,7 @@
 
 import os
 
-from atxt.check import pdftopng, pdftotext, tesseract
+from atxt.check import pdftotext, tesseract
 from log_conf import Logger
 
 
