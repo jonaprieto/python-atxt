@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
-# @Last Modified by:   Jonathan Prieto
-# @Last Modified time: 2015-06-30 14:10:23
+# @Last Modified by:   Jonathan Prieto 
+# @Last Modified time: 2015-07-04 15:05:07
 import logging
 import os
 import sys
@@ -115,7 +115,7 @@ class Window(QtGui.QWidget):
 
     def _set_layout_source(self):
         self.setWindowTitle(TITLE_WINDOW)
-        self.setFixedSize(750, 400)
+        self.setFixedSize(850, 400)
         self.setContentsMargins(15, 15, 15, 15)
         self._layout1 = QtGui.QVBoxLayout()
         self._layout1.addStretch(1)
