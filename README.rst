@@ -4,7 +4,7 @@ aTXT
 A Data Mining Tool For Extract Text From Files.
 
 |PyPI Package latest release| |Code Quality Status| |Scrtinizer Status|
-|PyPI Package monthly downloads|
+|PyPI Package monthly downloads| |GitHub issues for python-atxt|
 
 Meta
 ----
@@ -95,5 +95,7 @@ http://github.com/d555/python-atxt/issues
    :target: https://scrutinizer-ci.com/g/d555/python-atxt/
 .. |PyPI Package monthly downloads| image:: http://img.shields.io/pypi/dm/atxt.png?style=flat
    :target: https://pypi.python.org/pypi/atxt
+.. |GitHub issues for python-atxt| image:: https://img.shields.io/github/issues/d555/python-atxt.svg?style=flat-square
+   :target: https://github.com/d555/python-atxt/issues
 .. |GUI| image:: https://raw.githubusercontent.com/d555/python-atxt/master/gui.png
    :target: https://pypi.python.org/pypi/atxt

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 02:38:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-06-30 11:01:24
+# @Last Modified time: 2015-07-06 10:56:22
 
 
 from _utils import raw_data, save_raw_data, find_encoding
@@ -22,7 +22,7 @@ except:
 __all__ = ['html']
 
 
-def html(from_file, to_txt, opts):
+def html(from_file, to_txt, opts=None):
     log.debug('html2txt starting')
 
     h = html2text.HTML2Text()
