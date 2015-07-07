@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 18:23:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-07-07 03:18:35
+# @Last Modified time: 2015-07-07 03:40:47
 
 import os
 import re
@@ -37,8 +37,10 @@ def supported_formats():
                 log.warning('%s is not supported' % extension)
     return formats
 
-for extension in supported_formats()+['ocsv', 'odocx']:
+for extension in supported_formats():
     try:
+        if extension in ['csv', 'docx']:
+            extension = 'o' + extension
         s = 'from {ext} import {ext}'.format(ext=extension)
         exec s
     except Exception, e:
