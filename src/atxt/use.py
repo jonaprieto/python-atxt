@@ -3,12 +3,12 @@
 """aTXT for text extraction data mining tool
 
 Usage:
-    aTXT [-h]
+    aTXT (-h | -v)
     aTXT [--check] [--log PATH]
-    aTXT [-ihvo] [--log PATH] [--use-temp] [-l LANG] [--ocr]
-    aTXT <source>... [-hvo] [-d DEPTH] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--ocr] [--use-temp] [-l LANG]
-    aTXT --file <file>... [-hvo] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--ocr] [--use-temp] [-l LANG]
-    aTXT --path <path>... [-d DEPTH] [-hvuo] [--log PATH] [--to PATH] [--format EXT] [--ocr] [--use-temp] [-l LANG]
+    aTXT [-ihvo] [--log PATH] [--use-temp] [-l LANG] [--ocr] [--ocr-necessary]
+    aTXT <source>... [-hvo] [-d DEPTH] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--ocr] [--use-temp] [--ocr-necessary] [-l LANG]
+    aTXT --file <file>... [-hvo] [--log PATH] [--from PATH] [--to PATH] [--format EXT] [--ocr] [--use-temp] [--ocr-necessary] [-l LANG]
+    aTXT --path <path>... [-d DEPTH] [-hvuo] [--log PATH] [--to PATH] [--format EXT] [--ocr] [--use-temp] [--ocr-necessary] [-l LANG]
 
 Arguments:
     <source>...         It can be files, foldres or mix of them.
@@ -31,6 +31,7 @@ Options:
     --check             check the system for requirements: Xpdf, Tesseract
     --ocr               Use OCR for extract text from hard pdf, if you have a language package
                         installed, you could use option -l LANGSPEC [default: False].
+    --ocr-necessary      Just perform a OCR Recognition if it is necessary. [default: False]
     --use-temp          use the generation of temporary files for 
                         avoid problems with filepaths. [default: False].
     -l LANG             option of a language for tesseract OCR, please be sure that 

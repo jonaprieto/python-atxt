@@ -22,13 +22,11 @@ __all__ = ['make_dir', 'remove_dir', 'remove', 'move_to', 'copy_to',
 def make_dir(path):
     path = encoding_path(path)
     if not os.path.exists(path):
-        if not os.access(path, os.W_OK):
-            log.error('directory without permissions for write: %s' % path)
         try:
-            log.debug('creating directory: %s' % path)
             os.makedirs(path)
-        except OSError:
-            pass
+            log.debug('new sudirectory: %s' % path)
+        except OSError, e:
+            log.error(e)
 
 
 def remove_dir(path):
@@ -112,8 +110,17 @@ def standardpath(path):
     return compose(os.path.abspath, encoding_path)(path)
 
 
+def parser_opts_ocr(opts):
+    opts['--ocr'] = opts.get('--ocr', False)
+    opts['--ocr-necessary'] = opts.get('--ocr-necessary', False)
+    if opts['--ocr-necessary']:
+        opts['--ocr'] = False
+    return opts.copy()
+
+
 def parser_opts(opts):
     assert isinstance(opts, dict)
+    opts = parser_opts_ocr(opts)
     opts['--from'] = encoding_path(opts.get('--from', ''))
     if os.path.isdir(opts['--from']):
         opts['--from'] = os.path.abspath(opts['--from'])

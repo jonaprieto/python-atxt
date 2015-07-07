@@ -90,7 +90,7 @@ def main():
 
 def set_tfiles(opts):
     if not opts['--format']:
-        opts['tfiles'] = opts.get('tfiles', supported_formats[:])
+        opts['tfiles'] = opts.get('tfiles', supported_formats())
         return opts
     opts['tfiles'] = opts.get('tfiles', [])
     sformat = opts.get('--format', '')
@@ -103,7 +103,7 @@ def set_tfiles(opts):
         lformat = [sformat]
     lformat = fmap(str.strip, lformat)
 
-    for ext in supported_formats[:]:
+    for ext in supported_formats():
         if ext in lformat:
             opts['tfiles'].append(ext)
     opts['tfiles'] = compose(list, set)(opts['tfiles'])

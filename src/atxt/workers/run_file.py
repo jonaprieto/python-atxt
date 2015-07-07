@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:21
-# @Last Modified by:   Jonathan Prieto
-# @Last Modified time: 2015-06-30 11:07:19
+# @Last Modified by:   Jonathan Prieto 
+# @Last Modified time: 2015-07-06 14:57:17
 from __future__ import print_function
 
 from collections import defaultdict
@@ -36,7 +36,7 @@ def run_files(manager, total=0, finished=0):
             log.info('file is missing or it is not readable')
             continue
         ext = extract_ext(file_path)
-        if ext in supported_formats:
+        if ext in supported_formats():
             tfiles.add(ext)
             files[ext].append(file_path)
         else:
@@ -49,7 +49,7 @@ def run_files(manager, total=0, finished=0):
             log.error('%s is not a valid path for --to option' %
                       opts['--to'])
             return
-    for ext in supported_formats:
+    for ext in supported_formats():
         for file_path in files[ext]:
             total += 1
             new_path = None

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-07-04 15:05:07
+# @Last Modified time: 2015-07-07 03:34:06
 import logging
 import os
 import sys
@@ -147,7 +147,7 @@ class Window(QtGui.QWidget):
     def _set_layout_save(self):
         self._label_save = QtGui.QLabel(MSG_SAVE_IN)
         self._edt_save = QtGui.QLineEdit("")
-        self._edt_save.setFixedSize(150, 20)
+        self._edt_save.setFixedSize(350, 20)
         self._edt_save.setToolTip(TOOLTIP_SAVEIN)
         self._edt_save.setText(path_home)
         self._edt_save.setAlignment(QtCore.Qt.AlignRight)
@@ -161,24 +161,34 @@ class Window(QtGui.QWidget):
         self._check_ocr = QtGui.QCheckBox('OCR')
         self._check_ocr.setCheckState(unchecked)
 
+        self._label_lang = QtGui.QLabel('ORC language: ')
         self._edt_lang = QtGui.QLineEdit()
         self._edt_lang.setText('spa')
-        self._edt_lang.setFixedSize(40, 20)
+        self._edt_lang.setFixedSize(80, 20)
         self._edt_lang.setAlignment(QtCore.Qt.AlignRight)
 
-        self._check_use_temp = QtGui.QCheckBox(LABEL_USE_TEMP)
-        self._check_use_temp.setToolTip(TOOLTIP_USE_TEMP)
-        self._check_use_temp.setCheckState(unchecked)
+        self._check_ocr_necessary = QtGui.QCheckBox("Smart OCR")
+        self._check_ocr_necessary.setToolTip(TOOLTIP_OCR_NECESSARY)
+        self._check_ocr_necessary.setCheckState(unchecked)
+
+        # self._check_use_temp = QtGui.QCheckBox(LABEL_USE_TEMP)
+        # self._check_use_temp.setToolTip(TOOLTIP_USE_TEMP)
+        # self._check_use_temp.setCheckState(unchecked)
 
         box = QGroupBox(LABEL_BOX_SAVE_IN)
         box.setToolTip(TOOLTIP_BOX_SAVEIN)
         ly = QGridLayout()
         ly.addWidget(self._btn2, 0, 0)
         ly.addWidget(self._edt_save, 0, 1)
-        ly.addWidget(self._check_ocr, 0, 2)
-        ly.addWidget(self._edt_lang, 0, 3)
         ly.addWidget(self._check_overwrite, 0, 4)
-        ly.addWidget(self._check_use_temp, 0, 5)
+
+
+        ly.addWidget(self._check_ocr, 1, 0)
+        ly.addWidget(self._label_lang, 1, 1)
+        ly.addWidget(self._edt_lang, 1, 2)
+        ly.addWidget(self._check_ocr_necessary, 1, 3)
+
+        # ly.addWidget(self._check_use_temp, 0, 5)
         box.setLayout(ly)
         self._layout1.addWidget(box)
 
@@ -223,7 +233,7 @@ class Window(QtGui.QWidget):
 
     def _set_layout2(self):
         self.formats = []
-        for ext in supported_formats:
+        for ext in supported_formats():
             self.formats.append((ext, QCheckBox(str(ext))))
         box = QGroupBox(LABEL_BOX_FORMATS)
         ly = QGridLayout()
@@ -312,13 +322,17 @@ class Window(QtGui.QWidget):
                 widget.setCheckState(checked)
             if widget.isChecked():
                 tfiles.append(ext)
+        if self._check_ocr_necessary.isChecked():
+            self._check_ocr.setCheckState(unchecked)
 
         opts = {
             '<source>': [f],
             '--to': self._edt_save.text(),
             '-o': self._check_overwrite.isChecked(),
             '--ocr': self._check_ocr.isChecked(),
-            '--use-temp': self._check_use_temp.isChecked(),
+            '--ocr-necessary': self._check_ocr_necessary.isChecked(),
+            '--use-temp': False,
+            # '--use-temp': self._check_use_temp.isChecked(),
             '--depth': int(self._depth.text()),
             '-l': self._edt_lang.text(),
             'tfiles': tfiles,

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 18:23:55
-# @Last Modified by:   Jonathan Prieto
-# @Last Modified time: 2015-06-30 11:02:07
+# @Last Modified by:   Jonathan Prieto 
+# @Last Modified time: 2015-07-07 03:18:35
 
 import os
 import re
@@ -18,24 +18,31 @@ log = Logger.log
 basedir_ = os.path.dirname(os.path.abspath(__file__))
 __all__ = ['convert', 'supported_formats']
 
-supported_formats = []
 
-regex = re.compile(r'[^(_|\.)+]\w+\.py$')
-for root, dirs, files in walk(basedir_, regex=regex):
-    for f in files:
-        extension = os.path.splitext(f.name)[0].lower()
-        if extension.startswith('o'):
-            log.info('{} is supported'.format(extension[1:]))
-            supported_formats.append(extension[1:])
-        try:
-            s = 'from {ext} import {ext}'.format(ext=extension)
-            exec s
-            if not extension.startswith('o'):
-                log.info('%s is supported' % extension)
-                supported_formats.append(extension)
-        except Exception, e:
-            log.warning(e)
-            log.warning('%s is not supported' % extension)
+def supported_formats():
+    formats = []
+    regex = re.compile(r'[^(_|\.)+]\w+\.py$')
+    for root, dirs, files in walk(basedir_, regex=regex):
+        for f in files:
+            extension = os.path.splitext(f.name)[0].lower()
+            if extension.startswith('o'):
+                formats.append(extension[1:])
+            try:
+                s = 'from {ext} import {ext}'.format(ext=extension)
+                exec s
+                if not extension.startswith('o'):
+                    formats.append(extension)
+            except Exception, e:
+                log.warning('supported_formats(): %s' % e)
+                log.warning('%s is not supported' % extension)
+    return formats
+
+for extension in supported_formats()+['ocsv', 'odocx']:
+    try:
+        s = 'from {ext} import {ext}'.format(ext=extension)
+        exec s
+    except Exception, e:
+        log.warning('%s is not supported' % extension)
 
 
 def convert(from_file, to_txt, opts):
@@ -51,5 +58,5 @@ def convert(from_file, to_txt, opts):
     try:
         return bot(from_file, to_txt, opts)
     except Exception, e:
-        log.critical('formats/__init__.py:')
+        log.critical('from formats/__init__.py:')
         log.critical(e)

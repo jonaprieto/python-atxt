@@ -51,11 +51,11 @@ class ColourStreamHandler(StreamHandler):
             line = Style.RESET_ALL + self.colours[
                 record.levelname] + '{} | '.format(record.levelname)
 
-            if record.levelname not in ['CRITICAL', 'CRIT']:
+            if record.levelname not in ['CRITICAL', 'CRIT', 'ERROR']:
                 line += Style.RESET_ALL
 
             line += message
-            if record.levelname in ['DEBUG', 'CRITICAL', 'CRIT']:
+            if record.levelname in ['DEBUG', 'CRITICAL', 'CRIT', 'ERROR']:
                 line += ' :: {filename} : {lineno}'.format(
                     filename=record.filename, lineno=record.lineno)
             line += Style.RESET_ALL
@@ -66,7 +66,6 @@ class ColourStreamHandler(StreamHandler):
             raise
         except Exception:
             self.handleError(record)
-
 
 def getLogger(name=None, fmt='%(message)s'):
     log = realGetLogger(name)
@@ -94,21 +93,7 @@ class Logger(object):
     level = logging.DEBUG
 
     def __init__(self, db=None):
-        # LOG_LEVEL = level
-        # logging.root.setLevel(LOG_LEVEL)
-        # stream = logging.StreamHandler()
-        # stream.setLevel(LOG_LEVEL)
-
-        # LOGFORMAT = "%(levelname)-1s | %(message)s ::%(filename)s:%(lineno)s"
-        # try:
-        # LOGFORMAT = "%(log_color)s%(levelname)-1s%(reset)s | %(log_color)s%(message)s%(reset)s ::%(filename)s:%(lineno)s"
-        #     from colorlog import ColoredFormatter
-        #     formatter = ColoredFormatter(LOGFORMAT)
-        #     stream.setFormatter(formatter)
-        # except Exception:
-        #     formatter = logging.Formatter(LOGFORMAT)
-        self.log = getLogger('root')
+        self.log = getLogger('atxt')
         if db:
             self.level = db
         self.log.setLevel(self.level)
-        # self.log.addHandler(stream)

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 02:38:43
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-07-06 10:56:22
+# @Last Modified time: 2015-07-06 11:11:40
 
 
 from _utils import raw_data, save_raw_data, find_encoding

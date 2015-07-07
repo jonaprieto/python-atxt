@@ -87,7 +87,7 @@ class aTXT(object):
 
         _file = InfoFile(filepath, check=True)
         log.debug("file name: %s" % _file)
-        if _file.extension not in supported_formats:
+        if _file.extension not in supported_formats():
             log.warning('%s is not supported yet.' % _file.extension)
             return
         _txt = None

@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:52:42
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-07-03 01:25:23
+# @Last Modified time: 2015-07-07 03:37:01
 import codecs
 import os
 import re
@@ -45,12 +45,11 @@ def pdf_miner(from_file, to_txt):
 
 
 def pdf(from_file, to_txt, opts):
-    opts['--ocr'] = opts.get('--ocr', False)
     ocr = need_ocr(from_file.path)
     if opts['--ocr']:
         log.info('Extraction with OCR technology')
         if not ocr:
-            log.info('It could be more better if you do not use OCR')
+            log.info('It could be better if you do not use OCR')
         try:
             return pdf_ocr(from_file, to_txt, opts)
         except Exception, e:
@@ -58,9 +57,20 @@ def pdf(from_file, to_txt, opts):
             return
     log.info('Extraction with Xpdf technology')
     if ocr:
-        log.warning('It would be better if you try to use OCR options')
+        if not opts['--ocr-necessary']:
+            log.warning('It would be better if you try to use OCR options')
+        else:
+            try:
+                return pdf_ocr(from_file, to_txt, opts)
+            except Exception, e:
+                log.critical(e)
+                return
     try:
-        return pdftotext(from_file.path, to_txt.path)
+        path = pdftotext(from_file.path, to_txt.path)
+        if path and to_txt.size() <= 1000:
+            log.info('OCR running. The last output text file is suspicious and almost empty') 
+            return pdf_ocr(from_file, to_txt, opts)
+        return path
     except Exception, e:
         log.critical(e)
     return pdf_miner(from_file, to_txt)
