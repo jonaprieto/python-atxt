@@ -14,6 +14,7 @@ mock==1.0.1
 pdfminer==20140328
 Pillow==2.7.0
 py==1.4.26
+pyth==0.6.0
 PySide==1.2.2
 python-osinfo==0.2.1
 PyYAML==3.11

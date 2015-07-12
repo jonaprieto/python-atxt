@@ -2,6 +2,15 @@
 Changelog
 =========
 
+1.0.5.6 (2015-07-04)
+-----------------------------------------
+* New support for RTF15 files by using the library 'pyth'
+
+1.0.5.5 (2015-07-04)
+-----------------------------------------
+* new button 'Smart OCR' in the GUI. It provied the abbility to decidy if
+the document if would be better process with OCR or without it. Prove it!
+
 1.0.5.4 (2015-07-04)
 -----------------------------------------
 * "fix bugs for GUI related problems on *nix and Windows"
