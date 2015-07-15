@@ -2,11 +2,20 @@
 Changelog
 =========
 
-1.0.5.6 (2015-07-04)
+1.0.5.8 (2015-07-15)
 -----------------------------------------
-* New support for RTF15 files by using the library 'pyth'
+* New support for ODT files by using the the recipe provided from:
+.. https://github.com/deanmalmgren/textract/blob/master/textract/parsers/odt_parser.py
 
-1.0.5.5 (2015-07-04)
+1.0.5.7 (2015-07-13)
+-----------------------------------------
+* New support for XLS/XLSX files by using the library 'xlrd' recipes.
+
+1.0.5.6 (2015-07-12)
+-----------------------------------------
+* New support for RTF15 files by using the library 'pyth'.
+
+1.0.5.5 (2015-07-07)
 -----------------------------------------
 * new button 'Smart OCR' in the GUI. It provied the abbility to decidy if
 the document if would be better process with OCR or without it. Prove it!

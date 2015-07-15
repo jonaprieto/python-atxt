@@ -3,7 +3,7 @@
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-15 18:23:55
 # @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-07-07 03:40:47
+# @Last Modified time: 2015-07-15 10:12:37
 
 import os
 import re
@@ -25,12 +25,12 @@ def supported_formats():
     for root, dirs, files in walk(basedir_, regex=regex):
         for f in files:
             extension = os.path.splitext(f.name)[0].lower()
-            if extension.startswith('o'):
+            if extension.startswith('q'):
                 formats.append(extension[1:])
             try:
                 s = 'from {ext} import {ext}'.format(ext=extension)
                 exec s
-                if not extension.startswith('o'):
+                if not extension.startswith('q'):
                     formats.append(extension)
             except Exception, e:
                 log.warning('supported_formats(): %s' % e)
@@ -40,7 +40,7 @@ def supported_formats():
 for extension in supported_formats():
     try:
         if extension in ['csv', 'docx']:
-            extension = 'o' + extension
+            extension = 'q' + extension
         s = 'from {ext} import {ext}'.format(ext=extension)
         exec s
     except Exception, e:
@@ -52,7 +52,7 @@ def convert(from_file, to_txt, opts):
         log.critical('the file should be instanced with InfoFile')
     bot = lambda x: x  # dummy def before a real definition based on format
     if from_file.extension in ['csv', 'docx']:
-        exec 'bot = o{}'.format(from_file.extension)
+        exec 'bot = q{}'.format(from_file.extension)
     else:
         exec 'bot = %s' % from_file.extension
 
