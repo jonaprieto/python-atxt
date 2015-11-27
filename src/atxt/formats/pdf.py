@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-16 01:52:42
-# @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-07-07 03:37:01
+# @Last Modified by:   d555
+# @Last Modified time: 2015-11-11 00:22:10
 import codecs
 import os
 import re
@@ -45,35 +45,27 @@ def pdf_miner(from_file, to_txt):
 
 
 def pdf(from_file, to_txt, opts):
-    ocr = need_ocr(from_file.path)
-    if opts['--ocr']:
-        log.info('Extraction with OCR technology')
-        if not ocr:
-            log.info('It could be better if you do not use OCR')
-        try:
-            return pdf_ocr(from_file, to_txt, opts)
-        except Exception, e:
-            log.critical(e)
-            return
-    log.info('Extraction with Xpdf technology')
-    if ocr:
-        if not opts['--ocr-necessary']:
-            log.warning('It would be better if you try to use OCR options')
-        else:
-            try:
-                return pdf_ocr(from_file, to_txt, opts)
-            except Exception, e:
-                log.critical(e)
-                return
+    path = None
     try:
-        path = pdftotext(from_file.path, to_txt.path)
-        if path and to_txt.size() <= 1000:
-            log.info('OCR running. The last output text file is suspicious and almost empty') 
-            return pdf_ocr(from_file, to_txt, opts)
-        return path
+        ocr_required = need_ocr(from_file.path)
+        opts['--ocr'] = opts['--ocr'] or (ocr_required and opts['--ocr-necessary'])
+        if not opts['--ocr']:
+            try:
+                path = pdftotext(from_file.path, to_txt.path)
+            except:
+                path = pdf_miner(from_file, to_txt)
+        else:
+            path = pdf_ocr(from_file, to_txt, opts)
     except Exception, e:
         log.critical(e)
-    return pdf_miner(from_file, to_txt)
+        log.critical('IGNORED')
+    try:
+        if path and to_txt.size() <= 1000:
+            if not opts['--ocr'] and not opts['--without-ocr']:
+                log.info('OCR running. The last output text file is suspicious and almost empty') 
+                path = pdf_ocr(from_file, to_txt, opts)
+    except: 
+        log.critical('IGNORED')
 
 
 def pdf_ocr(from_file, to_txt, opts):

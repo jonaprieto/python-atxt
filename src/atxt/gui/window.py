@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-20 23:17:55
-# @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-07-07 03:34:06
+# @Last Modified by:   d555
+# @Last Modified time: 2015-11-11 10:29:54
 import logging
 import os
 import sys
@@ -325,12 +325,15 @@ class Window(QtGui.QWidget):
         if self._check_ocr_necessary.isChecked():
             self._check_ocr.setCheckState(unchecked)
 
+        only_ocr = self._check_ocr.isChecked() and not self._check_ocr_necessary.isChecked()
+        necessary_ocr = not self._check_ocr.isChecked()  and self._check_ocr_necessary.isChecked()
         opts = {
             '<source>': [f],
             '--to': self._edt_save.text(),
             '-o': self._check_overwrite.isChecked(),
-            '--ocr': self._check_ocr.isChecked(),
-            '--ocr-necessary': self._check_ocr_necessary.isChecked(),
+            '--ocr': only_ocr  ,
+            '--ocr-necessary': necessary_ocr,
+            '--without-ocr': not only_ocr,
             '--use-temp': False,
             # '--use-temp': self._check_use_temp.isChecked(),
             '--depth': int(self._depth.text()),

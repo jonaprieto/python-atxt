@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Jonathan S. Prieto
 # @Date:   2015-03-26 20:07:48
-# @Last Modified by:   Jonathan Prieto 
-# @Last Modified time: 2015-07-06 14:57:51
+# @Last Modified by:   d555
+# @Last Modified time: 2015-11-10 23:48:23
 from __future__ import print_function
 import os
 
@@ -44,12 +44,16 @@ def run_paths(manager, total_=0, finished_=0):
     log.debug(manager.options)
     total, finished = total_, finished_
     for path in opts['<path>']:
-        res = run_one_path(manager, path, total)
-        if res:
-            total += res[0]
-            finished += res[1]
-        else:
-            log.warning('errors with path: %s' % path)
+        try:
+            res = run_one_path(manager, path, total)
+            if res:
+                total += res[0]
+                finished += res[1]
+            else:
+                log.warning('errors with path: %s' % path)
+        except KeyboardInterrupt:
+            continue
+
     return total, finished
 
 
@@ -93,24 +97,27 @@ def run_one_path(manager, path=None, total_=0):
         log.debug('path=%s' % r)
         # log.critical(a)
         for f in files:
-            if extract_ext(f.name) not in opts['tfiles']:
+            try:
+                if extract_ext(f.name) not in opts['tfiles']:
+                    continue
+                total += 1
+                log.debug('-' * 50)
+                new_path = None
+                new_path = manager.convert_to_txt(filepath=f.path)
+                if new_path:
+                    try:
+                        log.info("{c:3d} | [OK] | {p}".format(c=total_+total, p=f.path))
+                    except Exception:
+                        log.info("{c:3d} | [OK] ".format(c=total_+total))
+                        log.info(f.path)
+                    finished += 1
+                else:
+                    try:
+                        log.info("{c:3d} | [FAIL] | {p}".format(c=total_+total, p=f.path))
+                    except Exception:
+                        log.info("{c:3d} | [FAIL] ".format(c=total_+total))
+                        log.info(f.path)
+            except KeyboardInterrupt:
                 continue
-            total += 1
-            log.debug('-' * 50)
-            new_path = None
-            new_path = manager.convert_to_txt(filepath=f.path)
-            if new_path:
-                try:
-                    log.info("{c:3d} | [OK] | {p}".format(c=total_+total, p=f.path))
-                except Exception:
-                    log.info("{c:3d} | [OK] ".format(c=total_+total))
-                    log.info(f.path)
-                finished += 1
-            else:
-                try:
-                    log.info("{c:3d} | [FAIL] | {p}".format(c=total_+total, p=f.path))
-                except Exception:
-                    log.info("{c:3d} | [FAIL] ".format(c=total_+total))
-                    log.info(f.path)
 
     return total, finished

@@ -24,7 +24,7 @@ initColorama()
 
 log = Logger.log
 
-__version__ = "1.0.5.8"
+__version__ = "1.0.5.9"
 
 
 def main():

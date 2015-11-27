@@ -19,11 +19,12 @@ class aTXT(object):
     def __init__(self):
         self.opts = {
             '-u': False,
-            '-o': True,
+            '-o': False,
             '--from': '',
             '--to': './',
             '-l': 'spa',
             '--use-temp': True,
+            '--without-ocr' : True,
             '--file': False,
             '<file>': [],
             '--path': False,
@@ -31,7 +32,8 @@ class aTXT(object):
             '<source>': [],
             'hero-docx': 'xml',
             'hero-pdf': 'xpdf',
-            '--ocr': False
+            '--ocr': False,
+            '--ocr-necessary': False
         }
         self._tempfile = None
         log.debug('ready to start atxt conversion')

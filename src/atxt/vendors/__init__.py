@@ -33,7 +33,9 @@ def pdftotext(filepath, txtpath):
     try:
         output = sub.call(cmd, stdout=f)
     except Exception, e:
+        log.critical('estoy aca')
         log.critical(e)
+
     f.close()
     if output == 0:
         log.debug('Everything ok.')
