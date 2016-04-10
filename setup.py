@@ -25,7 +25,7 @@ def read(*names, **kwargs):
 
 setup(
     name='aTXT',
-    version='1.0.5.',
+    version='1.0.5.9',
     license='BSD',
     description='data mining tool for extract text for files',
     long_description='%s\n%s' % (
@@ -48,7 +48,6 @@ setup(
         'Operating System :: POSIX',
         'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
         'Topic :: Utilities',
     ],
     keywords=[
